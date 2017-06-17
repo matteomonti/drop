@@ -6,8 +6,6 @@
 
 class myclass
 {
-public:
-
     progressive(myscope)
     {
     };
