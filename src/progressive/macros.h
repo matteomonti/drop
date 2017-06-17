@@ -20,8 +20,8 @@
                                                                     \
 template <template <size_t, bool> typename, size_t, size_t> friend  \
     class :: progressive :: exists;                                 \
-template <size_t, bool> struct scope;                               \
-template <bool __dummy__> struct scope <:: progressive :: count     \
+template <size_t, bool> class scope;                                \
+template <bool __dummy__> class scope <:: progressive :: count      \
     <scope, __counter__> :: value, __dummy__> : public              \
     :: progressive :: base
 

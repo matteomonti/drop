@@ -2,13 +2,31 @@
 
 #include <iostream>
 
-#include "bytewise/buffer.h"
+#include "bytewise/macros.h"
+#include "bytewise/count.h"
+
+class myclass
+{
+    // Self
+
+    typedef myclass self;
+
+    // Members
+
+    int n;
+    double k;
+    char l;
+
+    // Bytewise
+
+    bytewise(n);
+    bytewise(k);
+    bytewise(l);
+};
 
 int main()
 {
-    bytewise :: buffer my_buffer("Hello World!");
-    std :: cout << my_buffer << std :: endl;
-    std :: cout << my_buffer.size() << std :: endl;
+    std :: cout << bytewise :: count <myclass> :: value << std :: endl;
 }
 
 #endif
