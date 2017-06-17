@@ -6,6 +6,8 @@
 
 int main()
 {
+    bytewise :: buffer my_buffer("Hello World!");
+    std :: cout << my_buffer << std :: endl;
 }
 
 #endif

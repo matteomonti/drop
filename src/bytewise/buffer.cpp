@@ -6,9 +6,10 @@ namespace bytewise
 
     buffer :: buffer() : _size(0), _alloc(0) {}
 
-    buffer :: buffer(const char * bytes, const size_t & size) : _bytes(new char [size]), _size(size), _alloc(size)
+    buffer :: buffer(const char * bytes, const size_t & size) : _bytes(new char [size + 1]), _size(size), _alloc(size)
     {
         memcpy(this->_bytes, bytes, size);
+        this->_bytes[this->_alloc] = '\0';
     }
 
     buffer :: buffer(const char * bytes) : buffer(bytes, strlen(bytes)) {}
@@ -38,7 +39,8 @@ namespace bytewise
               delete [] this->_bytes;
 
             this->_alloc = size;
-            this->_bytes = new char[this->_alloc];
+            this->_bytes = new char[this->_alloc + 1];
+            this->_bytes[this->_alloc] = '\0';
         }
 
         this->_size = size;
