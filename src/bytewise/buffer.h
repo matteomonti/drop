@@ -37,6 +37,10 @@ namespace bytewise
 
         ~buffer();
 
+        // Getters
+
+        const size_t & size() const;
+
         // Methods
 
         void alloc(const size_t &);

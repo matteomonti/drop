@@ -29,6 +29,13 @@ namespace bytewise
             delete [] this->_bytes;
     }
 
+    // Getters
+
+    const size_t & buffer :: size() const
+    {
+        return this->_size;
+    }
+
     // Methods
 
     void buffer :: alloc(const size_t & size)
