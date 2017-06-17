@@ -3,28 +3,26 @@
 #include <iostream>
 
 #include "progressive/macros.h"
-#include "progressive/counter.h"
 
 class myclass
 {
 public:
 
-    template <size_t, bool> struct myscope;
-
-    template <bool dummy> struct myscope <0, dummy>
+    progressive(myscope)
     {
-        static constexpr bool exists = true;
     };
 
-    template <bool dummy> struct myscope <1, dummy>
+    progressive(myscope)
     {
-        static constexpr bool exists = true;
+    };
+
+    progressive(myscope)
+    {
     };
 };
 
 int main()
 {
-    std :: cout << progressive :: counter <myclass :: myscope, 0> :: value << std :: endl;
 }
 
 #endif

@@ -6,11 +6,11 @@
 
 namespace progressive
 {
-    template <template <size_t, bool> typename, size_t> class counter;
+    template <template <size_t, bool> typename, size_t> class count;
 };
 
-#if !defined(__forward__) && !defined(__drop__progressive__counter__h)
-#define __drop__progressive__counter__h
+#if !defined(__forward__) && !defined(__drop__progressive__count__h)
+#define __drop__progressive__count__h
 
 // Includes
 
@@ -18,7 +18,7 @@ namespace progressive
 
 namespace progressive
 {
-    template <template <size_t, bool> typename scope, size_t shuffle> class counter
+    template <template <size_t, bool> typename scope, size_t shuffle> class count
     {
         // Service nested classes
 
