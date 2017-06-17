@@ -1,32 +1,14 @@
 #ifdef __main__
 
 #include <iostream>
+#include <type_traits>
 
-#include "bytewise/macros.h"
-#include "bytewise/count.h"
-
-class myclass
-{
-    // Self
-
-    typedef myclass self;
-
-    // Members
-
-    int n;
-    double k;
-    char l;
-
-    // Bytewise
-
-    bytewise(n);
-    bytewise(k);
-    bytewise(l);
-};
+#include "bytewise/map.h"
 
 int main()
 {
-    std :: cout << bytewise :: count <myclass> :: value << std :: endl;
+    using namespace bytewise;
+    std :: cout << std :: is_same <map <path <0, 1, 2>, path <3, 4, 5>> :: append <map <path <6, 7, 8>>> :: type :: prefix <14> :: type, map <path <14, 0, 1, 2>, path <14, 3, 4, 5>, path <14, 6, 7, 8>>> :: value << std :: endl;
 }
 
 #endif
