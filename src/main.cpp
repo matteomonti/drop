@@ -4,7 +4,7 @@
 #include <type_traits>
 
 #include "bytewise/macros.h"
-#include "bytewise/proxy.hpp"
+#include "bytewise/scanners/arithmetic.h"
 
 class myclass
 {
@@ -27,10 +27,9 @@ class myclass
 
 int main()
 {
-    myclass myobj;
+    using namespace bytewise :: scanners;
 
-    bytewise :: proxy <myclass, 0> :: get(myobj) = 17;
-    std :: cout << bytewise :: proxy <myclass, 0> :: get(myobj) << std :: endl;
+    std :: cout << arithmetic <myclass> :: valid <const int[1][2][4]> :: value << std :: endl;
 }
 
 #endif
