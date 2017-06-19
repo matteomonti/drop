@@ -109,7 +109,7 @@ namespace bytewise
         // Static members
 
         static constexpr type local = __drop__bytewise__endianess__endianess;
-        static constexpr type network = big;
+        static constexpr type network = little;
 
         static constexpr bool foreign = (local != network);
     };
