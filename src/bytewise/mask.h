@@ -19,6 +19,20 @@ namespace bytewise
 
     template <typename... ranges> class mask
     {
+        // Service nested classes
+
+        template <bool, typename> struct size_iterator;
+
+        template <bool dummy> struct size_iterator <dummy, mask <>>
+        {
+            static constexpr size_t value = 0;
+        };
+
+        template <bool dummy, size_t beg, size_t end, bool swap, typename... tail> struct size_iterator <dummy, mask <range <beg, end, swap>, tail...>>
+        {
+            static constexpr size_t value = (end - beg) + size_iterator <false, mask <tail...>> :: value;
+        };
+
     public:
 
         // Nested classes
@@ -125,6 +139,10 @@ namespace bytewise
                 mask <>
             > :: type type;
         };
+
+        // Static members
+
+        static constexpr size_t size = size_iterator <false, mask <ranges...>> :: value;
     };
 };
 

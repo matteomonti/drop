@@ -27,6 +27,8 @@ int main()
         type,
         mask <range <2, 4, false>, range <4, 5, true>, range <7, 8, true>, range <8, 9, false>, range <11, 16, false>, range <16, 17, true>>
     > :: value << std :: endl;
+
+    std :: cout << type :: size << std :: endl;
 }
 
 #endif
