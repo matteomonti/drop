@@ -55,8 +55,6 @@ namespace bytewise
 
         class compress
         {
-        public: // REMOVE ME
-
             // Service nested classes
 
             template <typename, size_t> struct min;
