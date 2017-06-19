@@ -62,6 +62,11 @@ namespace bytewise :: scanners
             typedef mask <> type;
         };
 
+        template <size_t offset, size_t reps, size_t size> struct repeat <offset, reps, mask <range <0, size, false>>, size>
+        {
+            typedef mask <range <offset, offset + size * reps, false>> type;
+        };
+
         template <size_t offset, size_t reps, typename pattern, size_t size> struct repeat
         {
             typedef typename pattern :: template shift <offset> :: type :: template append <typename repeat <offset + size, reps - 1, pattern, size> :: type> :: type type;
