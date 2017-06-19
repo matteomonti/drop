@@ -21,6 +21,7 @@ namespace bytewise
 #include "bytewise/count.h"
 #include "bytewise/proxy.h"
 #include "bytewise/mask.h"
+#include "bytewise/endianess.h"
 
 namespace bytewise :: scanners
 {
@@ -71,6 +72,44 @@ namespace bytewise :: scanners
         {
             typedef typename pattern :: template shift <offset> :: type :: template append <typename repeat <offset + size, reps - 1, pattern, size> :: type> :: type type;
         };
+
+        template <size_t index> struct member
+        {
+            typedef typename proxy <target, index> :: type mtype;
+            typedef typename std :: remove_all_extents <mtype> :: type base;
+
+            typedef typename std :: conditional
+            <
+                valid <mtype> :: value,
+                typename std :: conditional
+                <
+                    std :: is_arithmetic <base> :: value,
+                    mask <range <0, sizeof(base), (endianess :: foreign && sizeof(base) > 1)>>,
+                    typename arithmetic <mtype> :: type
+                > :: type,
+                mask <>
+            > :: type pattern;
+
+            typedef typename repeat <proxy <target, index> :: offset, (std :: is_array <mtype> :: value ? extent <mtype> :: value : 1), pattern, sizeof(base)> :: type type;
+        };
+
+        template <ssize_t, bool> struct iterator;
+
+        template <bool dummy> struct iterator <-1, dummy>
+        {
+            typedef mask <> type;
+        };
+
+        template <ssize_t index, bool dummy> struct iterator
+        {
+            typedef typename iterator <index - 1, dummy> :: type :: template append <typename member <index> :: type> :: type type;
+        };
+
+    public:
+
+        // Typedefs
+
+        typedef typename iterator <(ssize_t)(count <target> :: value) - 1, false> :: type type;
     };
 };
 

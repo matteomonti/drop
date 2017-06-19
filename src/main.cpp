@@ -6,6 +6,23 @@
 #include "bytewise/macros.h"
 #include "bytewise/scanners/arithmetic.h"
 
+class myotherclass
+{
+    // Self
+
+    typedef myotherclass self;
+
+    // Members
+
+    int a;
+    int b;
+
+    // Bytewise
+
+    bytewise(a);
+    bytewise(b);
+};
+
 class myclass
 {
     // Self
@@ -14,25 +31,28 @@ class myclass
 
     // Members
 
-    int x;
+    int x[4];
     double y;
-    char z;
+    myotherclass m;
+    char q[16];
 
     // Bytewise
 
     bytewise(x);
     bytewise(y);
-    bytewise(z);
+    bytewise(m);
+    bytewise(q);
 };
 
 int main()
 {
     using namespace bytewise;
 
-    std :: cout << std :: is_same <scanners :: arithmetic <myclass> :: repeat <3, 3, mask <range <0, 4, true>>, 4> :: type, mask <range <3, 7, true>, range <7, 11, true>, range <11, 15, true>>> :: value << std :: endl;
-    std :: cout << std :: is_same <scanners :: arithmetic <myclass> :: repeat <3, 3, mask <range <0, 2, true>>, 4> :: type, mask <range <3, 5, true>, range <7, 9, true>, range <11, 13, true>>> :: value << std :: endl;
-    std :: cout << std :: is_same <scanners :: arithmetic <myclass> :: repeat <3, 3, mask <range <0, 2, true>, range <3, 4, false>>, 4> :: type, mask <range <3, 5, true>, range <6, 7, false>, range <7, 9, true>, range <10, 11, false>, range <11, 13, true>, range <14, 15, false>>> :: value << std :: endl;
-    std :: cout << std :: is_same <scanners :: arithmetic <myclass> :: repeat <3, 4, mask <range <0, 4, false>>, 4> :: type, mask <range <3, 19, false>>> :: value << std :: endl;
+    std :: cout << std :: is_same
+    <
+        scanners :: arithmetic <myclass> :: type,
+        mask <range <0, 4, true>, range <4, 8, true>, range <8, 12, true>, range <12, 16, true>, range <16, 24, true>, range <24, 28, true>, range <28, 32, true>, range <32, 48, false>>
+    > :: value << std :: endl;
 }
 
 #endif
