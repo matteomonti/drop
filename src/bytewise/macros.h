@@ -21,6 +21,8 @@ progressive(bytewise)                                               \
 {                                                                   \
     template <typename, size_t> friend class :: bytewise :: proxy;  \
                                                                     \
+    typedef decltype(self :: name) type;                            \
+                                                                    \
     static constexpr const size_t offset()                          \
     {                                                               \
         return offsetof(self, name);                                \

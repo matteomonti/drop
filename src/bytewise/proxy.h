@@ -14,12 +14,16 @@ namespace bytewise
 
 namespace bytewise
 {
-    template <typename type, size_t index> class proxy
+    template <typename target, size_t index> class proxy
     {
+        // Typedefs
+
+        typedef typename target :: template bytewise <index> :: type type;
+
         // Static methods
 
-        static inline auto & get(type &);
-        static inline const auto & get(const type &);
+        static inline auto & get(target &);
+        static inline const auto & get(const target &);
     };
 };
 
