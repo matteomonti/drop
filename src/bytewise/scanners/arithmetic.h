@@ -20,10 +20,11 @@ namespace bytewise
 
 #include "bytewise/count.h"
 #include "bytewise/proxy.h"
+#include "bytewise/mask.h"
 
 namespace bytewise :: scanners
 {
-    template <typename type> struct arithmetic
+    template <typename target> struct arithmetic
     {
         // Service nested classes
 
@@ -52,6 +53,18 @@ namespace bytewise :: scanners
         template <typename mtype> struct valid
         {
             static constexpr bool value = (std :: is_class <typename std :: remove_all_extents <mtype> :: type> :: value || std :: is_arithmetic <typename std :: remove_all_extents <mtype> :: type> :: value) && (std :: rank <mtype> :: value == 0 || extent <mtype> :: value != 0);
+        };
+
+        template <size_t, size_t, typename, size_t> struct repeat;
+
+        template <size_t offset, typename pattern, size_t size> struct repeat <offset, 0, pattern, size>
+        {
+            typedef mask <> type;
+        };
+
+        template <size_t offset, size_t reps, typename pattern, size_t size> struct repeat
+        {
+            typedef typename pattern :: template shift <offset> :: type :: template append <typename repeat <offset + size, reps - 1, pattern, size> :: type> :: type type;
         };
     };
 };
