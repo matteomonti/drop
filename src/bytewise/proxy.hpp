@@ -9,9 +9,14 @@ namespace bytewise
 {
     // Static methods
 
-    template <typename type, size_t index> inline auto && proxy <type, index> :: get(type && obj)
+    template <typename target, size_t index> inline auto & proxy <target, index> :: get(target & obj)
     {
-        return type :: template bytewise <index, false> :: get(std :: forward <type> (obj));
+        return target :: template bytewise <index, false> :: get(obj);
+    }
+
+    template <typename target, size_t index> inline auto & proxy <target, index> :: get(const target & obj)
+    {
+        return target :: template bytewise <index, false> :: get(obj);
     }
 };
 
