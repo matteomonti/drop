@@ -20,8 +20,6 @@ namespace bytewise :: visitors
 {
     template <typename ttype> class arithmetic
     {
-    public: // REMOVE ME
-
         // Service nested classes
 
         template <size_t, size_t, bool> struct selector;
