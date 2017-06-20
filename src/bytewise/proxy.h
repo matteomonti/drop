@@ -12,10 +12,15 @@ namespace bytewise
 #if !defined(__forward__) && !defined(__drop__bytewise__proxy__h)
 #define __drop__bytewise__proxy__h
 
+// Libraries
+
+#include <utility>
+
 // Forward includes
 
 #define __forward__
 #include "scanners/arithmetic.h"
+#include "scanners/buffer.h"
 #undef __forward__
 
 namespace bytewise
@@ -37,8 +42,7 @@ namespace bytewise
 
         // Static methods
 
-        static inline auto & get(target &);
-        static inline const auto & get(const target &);
+        static inline auto && get(target &&);
     };
 };
 

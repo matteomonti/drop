@@ -91,6 +91,23 @@ namespace bytewise :: scanners
             > :: type pattern;
 
             typedef typename repeat <proxy <target, index> :: offset, (std :: is_array <mtype> :: value ? extent <mtype> :: value : 1), pattern, sizeof(base)> :: type type;
+
+            template <bool, bool> struct arithmetic_conditional;
+
+            template <bool dummy> struct arithmetic_conditional <true, dummy>
+            {
+                static constexpr bool empty = false;
+                static constexpr bool writable = !(std :: is_const <base> :: value);
+            };
+
+            template <bool dummy> struct arithmetic_conditional <false, dummy>
+            {
+                static constexpr bool empty = arithmetic <base> :: empty;
+                static constexpr bool writable = arithmetic <base> :: writable && (arithmetic <base> :: empty || !(std :: is_const <base> :: value));
+            };
+
+            static constexpr bool empty = (!valid <mtype> :: value) || (arithmetic_conditional <std :: is_arithmetic <base> :: value, false> :: empty);
+            static constexpr bool writable = (!valid <mtype> :: value) || (arithmetic_conditional <std :: is_arithmetic <base> :: value, false> :: writable);
         };
 
         template <ssize_t, bool> struct iterator;
@@ -98,11 +115,17 @@ namespace bytewise :: scanners
         template <bool dummy> struct iterator <-1, dummy>
         {
             typedef mask <> type;
+
+            static constexpr bool empty = true;
+            static constexpr bool writable = true;
         };
 
         template <ssize_t index, bool dummy> struct iterator
         {
             typedef typename iterator <index - 1, dummy> :: type :: template append <typename member <index> :: type> :: type type;
+
+            static constexpr bool empty = iterator <index - 1, dummy> :: empty && member <index> :: empty;
+            static constexpr bool writable = iterator <index - 1, dummy> :: writable && member <index> :: writable;
         };
 
     public:
@@ -110,6 +133,11 @@ namespace bytewise :: scanners
         // Typedefs
 
         typedef typename iterator <(ssize_t)(count <target> :: value) - 1, false> :: type type;
+
+        // Static members
+
+        static constexpr bool empty = iterator <(ssize_t)(count <target> :: value) - 1, false> :: empty;
+        static constexpr bool writable = iterator <(ssize_t)(count <target> :: value) - 1, false> :: writable;
     };
 };
 
