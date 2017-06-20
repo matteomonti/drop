@@ -22,7 +22,10 @@ namespace bytewise
 {
     template <typename target, size_t index> class proxy
     {
+        // Friends
+
         template <typename> friend class scanners :: arithmetic;
+        template <typename> friend class scanners :: buffer;
 
         // Typedefs
 

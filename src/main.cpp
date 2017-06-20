@@ -3,32 +3,70 @@
 #include <iostream>
 #include <type_traits>
 
-#include "bytewise/mask.h"
+#include "bytewise/macros.h"
+#include "bytewise/buffer.h"
+#include "bytewise/scanners/buffer.h"
+
+class yetanotherclass
+{
+    // Self
+
+    typedef yetanotherclass self;
+
+    // Members
+
+    const bytewise :: buffer m;
+
+    // Bytewise
+
+    bytewise(m);
+};
+
+class myotherclass
+{
+    // Self
+
+    typedef myotherclass self;
+
+    // Members
+
+    double a;
+    bytewise :: buffer b;
+    const bytewise :: buffer c[10];
+    yetanotherclass d;
+
+    // Bytewise
+
+    bytewise(a);
+    bytewise(b);
+    bytewise(c);
+    bytewise(d);
+};
+
+class myclass
+{
+    // Self
+
+    typedef myclass self;
+
+    // Members
+
+    int x;
+    myotherclass y;
+    bytewise :: buffer z;
+
+    // Bytewise
+
+    bytewise(x);
+    bytewise(y);
+    bytewise(z);
+};
 
 int main()
 {
     using namespace bytewise;
 
-    typedef mask
-    <
-        range <7, 8, true>,
-        range <3, 4, false>,
-        range <14, 16, false>,
-        range <16, 17, true>,
-        range <11, 12, false>,
-        range <2, 3, false>,
-        range <4, 5, true>,
-        range <8, 9, false>,
-        range <12, 14, false>
-    > :: compress :: type type;
-
-    std :: cout << std :: is_same
-    <
-        type,
-        mask <range <2, 4, false>, range <4, 5, true>, range <7, 8, true>, range <8, 9, false>, range <11, 16, false>, range <16, 17, true>>
-    > :: value << std :: endl;
-
-    std :: cout << type :: size << std :: endl;
+    std :: cout << std :: is_same <typename scanners :: buffer <myclass> :: type, map <path <1, 1>, path <1, 2>, path <1, 3, 0>, path <2>>> :: value << std :: endl;
 }
 
 #endif
