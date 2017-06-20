@@ -4,7 +4,23 @@
 #include <type_traits>
 
 #include "bytewise/macros.h"
-#include "bytewise/scanners/arithmetic.h"
+#include "bytewise/buffer.h"
+#include "bytewise/scanners/buffer.h"
+
+class yetanotherclass
+{
+    // Self
+
+    typedef yetanotherclass self;
+
+    // Members
+
+    bytewise :: buffer m;
+
+    // Bytewise
+
+    bytewise(m);
+};
 
 class myotherclass
 {
@@ -14,15 +30,17 @@ class myotherclass
 
     // Members
 
-    int a;
-    int b;
-    const int * c;
+    double a;
+    bytewise :: buffer b;
+    const bytewise :: buffer ** c[10];
+    yetanotherclass d;
 
     // Bytewise
 
-    //bytewise(a);
-    //bytewise(b);
+    bytewise(a);
+    bytewise(b);
     bytewise(c);
+    bytewise(d);
 };
 
 class myclass
@@ -33,23 +51,22 @@ class myclass
 
     // Members
 
-    int x[4];
-    double y;
-    const myotherclass m;
-    char q[16];
+    int x;
+    myotherclass y;
+    bytewise :: buffer z;
 
     // Bytewise
 
     bytewise(x);
     bytewise(y);
-    bytewise(m);
-    bytewise(q);
+    bytewise(z);
 };
 
 int main()
 {
     using namespace bytewise;
-    std :: cout << scanners :: arithmetic <myclass> :: writable << std :: endl;
+
+    std :: cout << scanners :: buffer <myclass> :: writable << std :: endl;
 }
 
 #endif

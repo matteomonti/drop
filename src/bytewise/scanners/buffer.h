@@ -56,19 +56,37 @@ namespace bytewise :: scanners
         template <size_t index> struct member
         {
             typedef typename proxy <target, index> :: type mtype;
-            typedef typename std :: remove_cv <typename std :: remove_all_extents <mtype> :: type> :: type base;
+            typedef typename std :: remove_all_extents <mtype> :: type base;
+            typedef typename std :: remove_cv <base> :: type clean;
 
             typedef typename std :: conditional
             <
                 valid <mtype> :: value,
                 typename std :: conditional
                 <
-                    std :: is_same <base, :: bytewise :: buffer> :: value,
+                    std :: is_same <clean, :: bytewise :: buffer> :: value,
                     map <path <index>>,
                     typename buffer <base> :: type :: template prefix <index> :: type
                 > :: type,
                 map <>
             > :: type type;
+
+            template <bool, bool> struct valid_conditional;
+
+            template <bool dummy> struct valid_conditional <false, dummy>
+            {
+                static constexpr bool empty = true;
+                static constexpr bool writable = true;
+            };
+
+            template <bool dummy> struct valid_conditional <true, dummy>
+            {
+                static constexpr bool empty = !(std :: is_same <clean, :: bytewise :: buffer> :: value) && (buffer <base> :: empty);
+                static constexpr bool writable = (std :: is_same <clean, :: bytewise :: buffer> :: value && !(std :: is_const <base> :: value)) || (!(std :: is_same <clean, :: bytewise :: buffer> :: value) && buffer <base> :: writable && (buffer <base> :: empty || !(std :: is_const <base> :: value)));
+            };
+
+            static constexpr bool empty = valid_conditional <valid <mtype> :: value, false> :: empty;
+            static constexpr bool writable = valid_conditional <valid <mtype> :: value, false> :: writable;
         };
 
         template <ssize_t, bool> struct iterator;
@@ -76,11 +94,17 @@ namespace bytewise :: scanners
         template <bool dummy> struct iterator <-1, dummy>
         {
             typedef map <> type;
+
+            static constexpr bool empty = true;
+            static constexpr bool writable = true;
         };
 
         template <ssize_t index, bool dummy> struct iterator
         {
             typedef typename iterator <index - 1, false> :: type :: template append <typename member <index> :: type> :: type type;
+
+            static constexpr bool empty = iterator <index - 1, false> :: empty && member <index> :: empty;
+            static constexpr bool writable = iterator <index - 1, false> :: writable && member <index> :: writable;
         };
 
     public:
@@ -88,6 +112,11 @@ namespace bytewise :: scanners
         // Typedefs
 
         typedef typename iterator <(ssize_t) (count <target> :: value) - 1, false> :: type type;
+
+        // Static members
+
+        static constexpr bool empty = iterator <(ssize_t) (count <target> :: value) - 1, false> :: empty;
+        static constexpr bool writable = iterator <(ssize_t) (count <target> :: value) - 1, false> :: writable;
     };
 };
 
