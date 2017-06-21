@@ -5,8 +5,17 @@
 #include <string>
 #include <iomanip>
 
+#include "bytewise/block.hpp"
+
+void f(char (&bytes)[12])
+{
+    std :: cout << "Ok" << std :: endl;
+}
+
 int main()
 {
+    bytewise :: block <12> my_block;
+    f(my_block);
 }
 
 #endif

@@ -6,7 +6,9 @@ namespace bytewise
 {
     // Constructors
 
-    buffer :: buffer() : _size(0), _alloc(0) {}
+    buffer :: buffer() : _size(0), _alloc(0)
+    {
+    }
 
     buffer :: buffer(const char * bytes, const size_t & size) : _bytes(new char [size + 1]), _size(size), _alloc(size)
     {
@@ -14,9 +16,13 @@ namespace bytewise
         this->_bytes[this->_alloc] = '\0';
     }
 
-    buffer :: buffer(const char * bytes) : buffer(bytes, strlen(bytes)) {}
+    buffer :: buffer(const char * bytes) : buffer(bytes, strlen(bytes))
+    {
+    }
 
-    buffer :: buffer(const buffer & that) : buffer(that._bytes, that._size) {}
+    buffer :: buffer(const buffer & that) : buffer(that._bytes, that._size)
+    {
+    }
 
     buffer :: buffer(buffer && that) : _bytes(that._bytes), _size(that._size), _alloc(that._alloc)
     {

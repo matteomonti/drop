@@ -128,8 +128,6 @@ namespace bytewise :: scanners
             static constexpr bool writable = iterator <index - 1, dummy> :: writable && member <index> :: writable;
         };
 
-    public:
-
         // Typedefs
 
         typedef typename iterator <(ssize_t)(count <target> :: value) - 1, false> :: type type;
