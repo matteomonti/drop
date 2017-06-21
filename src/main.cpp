@@ -2,17 +2,123 @@
 
 #include <iostream>
 #include <type_traits>
+#include <string>
+#include <iomanip>
 
-#include "bytewise/endianess.hpp"
+#include "bytewise/macros.h"
+#include "bytewise/visitors/arithmetic.hpp"
+
+struct myotherclass
+{
+    // Self
+
+    typedef myotherclass self;
+
+    // Members
+
+    int a;
+    int b;
+
+    // Bytewise
+
+    bytewise(a);
+    bytewise(b);
+};
+
+struct myclass
+{
+    // Self
+
+    typedef myclass self;
+
+    // Members
+
+    int x[4];
+    double y;
+    myotherclass m;
+    char q[16];
+
+    // Bytewise
+
+    bytewise(x);
+    bytewise(y);
+    bytewise(m);
+    bytewise(q);
+};
+
+template <size_t alloc> class myvisitor
+{
+    // Members
+
+    char _bytes[alloc];
+    size_t _read_cursor;
+    size_t _write_cursor;
+
+public:
+
+    myvisitor() : _read_cursor(0), _write_cursor(0)
+    {
+    }
+
+    template <size_t size> void read(const char (&value) [size])
+    {
+        std :: cout << "Received " << size << " bytes." << std :: endl;
+        memcpy(this->_bytes + this->_read_cursor, value, size);
+        this->_read_cursor += size;
+    }
+
+    template <size_t size> void write(char (&value) [size])
+    {
+        std :: cout << "Sending " << size << " bytes." << std :: endl;
+        memcpy(value, this->_bytes + this->_write_cursor, size);
+
+        this->_write_cursor += size;
+    }
+
+    void dump()
+    {
+        for(size_t i = 0; i < alloc; i++)
+        {
+            std :: cout << std :: setw(5) << (unsigned int) (unsigned char) this->_bytes[i];
+            if(i > 0 && i % 16 == 15)
+                std :: cout << std :: endl;
+        }
+
+        std :: cout << std :: endl;
+    }
+};
 
 int main()
 {
-    char x[17] = "yodamamapapadada";
-    char y[17];
-    y[16] = '\0';
+    using namespace bytewise;
 
-    bytewise :: endianess :: translate((char (&)[16]) y, (const char (&)[16])x);
-    std :: cout << y << std :: endl;
+    myclass myobj;
+
+    myobj.x[0] = 0;
+    myobj.x[1] = 1;
+    myobj.x[2] = 2;
+    myobj.x[3] = 3;
+    myobj.y = 4.5;
+    myobj.m.a = 6;
+    myobj.m.b = 7;
+    strcpy(myobj.q, "eight and so on");
+
+    myvisitor <scanners :: arithmetic <myclass> :: type :: size> visitor;
+    visitors :: arithmetic <myclass> :: read(myobj, visitor);
+
+    visitor.dump();
+
+    myclass myotherobj;
+    visitors :: arithmetic <myclass> :: write(myotherobj, visitor);
+
+    std :: cout << myotherobj.x[0] << std :: endl;
+    std :: cout << myotherobj.x[1] << std :: endl;
+    std :: cout << myotherobj.x[2] << std :: endl;
+    std :: cout << myotherobj.x[3] << std :: endl;
+    std :: cout << myotherobj.y << std :: endl;
+    std :: cout << myotherobj.m.a << std :: endl;
+    std :: cout << myotherobj.m.b << std :: endl;
+    std :: cout << myotherobj.q << std :: endl;
 }
 
 #endif

@@ -60,11 +60,19 @@ namespace bytewise :: visitors
             static inline void write(ttype &, vtype &);
         };
 
-        template <typename vtype, size_t beg, size_t end, bool swap, typename... tail> struct iterator <vtype, mask <range <beg, end, swap>, tail...>>
+        template <typename vtype, size_t beg, size_t end, typename... tail> struct iterator <vtype, mask <range <beg, end, true>, tail...>>
         {
             static inline void read(const ttype &, vtype &);
             static inline void write(ttype &, vtype &);
         };
+
+        template <typename vtype, size_t beg, size_t end, typename... tail> struct iterator <vtype, mask <range <beg, end, false>, tail...>>
+        {
+            static inline void read(const ttype &, vtype &);
+            static inline void write(ttype &, vtype &);
+        };
+
+    public: // REMOVE ME
 
         // Static methods
 
