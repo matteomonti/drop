@@ -8,6 +8,11 @@ namespace bytewise
 #if !defined(__forward__) && !defined(__drop__bytewise__endianess__h)
 #define __drop__bytewise__endianess__h
 
+// Libraries
+
+#include <stdint.h>
+#include <type_traits>
+
 namespace bytewise
 {
     class endianess
@@ -106,12 +111,53 @@ namespace bytewise
             #endif
         #endif
 
+    private:
+
+        // Service nested classes
+
+        template <size_t, bool = false> struct int_t;
+
+        template <bool dummy> struct int_t <2, dummy>
+        {
+            typedef int16_t type;
+        };
+
+        template <bool dummy> struct int_t <4, dummy>
+        {
+            typedef int32_t type;
+        };
+
+        template <bool dummy> struct int_t <8, dummy>
+        {
+            typedef int64_t type;
+        };
+
+        template <bool dummy> struct int_t <16, dummy>
+        {
+            struct type
+            {
+                int64_t high;
+                int64_t low;
+            };
+        };
+
+    public:
+
         // Static members
 
         static constexpr type local = __drop__bytewise__endianess__endianess;
         static constexpr type network = little;
 
         static constexpr bool foreign = (local != network);
+
+        // Static methods
+
+        static inline void swap(char (&)[2], const char (&)[2]);
+        static inline void swap(char (&)[4], const char (&)[4]);
+        static inline void swap(char (&)[8], const char (&)[8]);
+        static inline void swap(char (&)[16], const char (&)[16]);
+
+        template <size_t size, typename std :: enable_if <size == 2 || size == 4 || size == 8 || size == 16> :: type * = nullptr> static inline void translate(char (&)[size], const char (&)[size]);
     };
 };
 
