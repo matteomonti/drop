@@ -72,8 +72,6 @@ namespace bytewise :: visitors
             static inline void write(ttype &, vtype &);
         };
 
-    public: // REMOVE ME
-
         // Static methods
 
         template <typename vtype> static inline void read(const ttype &, vtype &);
