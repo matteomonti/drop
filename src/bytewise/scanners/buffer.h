@@ -32,8 +32,6 @@ namespace bytewise :: scanners
 {
     template <typename target> class buffer
     {
-    public: // REMOVE ME
-
         // Service nested classes
 
         template <typename mtype> struct valid

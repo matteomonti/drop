@@ -20,8 +20,6 @@ namespace bytewise :: visitors
 {
     template <typename ttype> class buffer
     {
-    public: // Remove me
-
         // Service nested classes
 
         template <typename, typename> struct resolver;
@@ -55,7 +53,7 @@ namespace bytewise :: visitors
                     template <typename mtype> static inline void read(const mtype &, vtype &);
                     template <typename mtype> static inline void write(mtype &, vtype &);
                 };
-                
+
                 template <typename mtype> static inline void read(const mtype &, vtype &);
                 template <typename mtype> static inline void write(mtype &, vtype &);
             };

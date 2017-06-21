@@ -96,7 +96,7 @@ int main()
     myobj.y.c[3][1] = "myobj.y.c[3][1]";
     myobj.y.c[3][2] = "myobj.y.c[3][2]";
     myobj.y.c[3][3] = "myobj.y.c[3][3]";
-    
+
     myobj.y.d.m = "myobj.y.d.m";
     myobj.z = "myobj.z";
 
