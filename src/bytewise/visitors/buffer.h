@@ -28,6 +28,7 @@ namespace bytewise :: visitors
         {
             template <typename mtype> static inline void read(const mtype &, vtype &);
             template <typename mtype> static inline void write(mtype &, vtype &);
+            template <typename mtype> static inline size_t size(const mtype &);
         };
 
         template <typename vtype, size_t next, size_t... tail> struct resolver <vtype, path <next, tail...>>
@@ -40,26 +41,31 @@ namespace bytewise :: visitors
                 {
                     template <typename mtype> static inline void read(const mtype &, vtype &);
                     template <typename mtype> static inline void write(mtype &, vtype &);
+                    template <typename mtype> static inline size_t size(const mtype &);
                 };
 
                 template <ssize_t index, bool dummy> struct iterator
                 {
                     template <typename mtype> static inline void read(const mtype &, vtype &);
                     template <typename mtype> static inline void write(mtype &, vtype &);
+                    template <typename mtype> static inline size_t size(const mtype &);
                 };
 
                 struct direct
                 {
                     template <typename mtype> static inline void read(const mtype &, vtype &);
                     template <typename mtype> static inline void write(mtype &, vtype &);
+                    template <typename mtype> static inline size_t size(const mtype &);
                 };
 
                 template <typename mtype> static inline void read(const mtype &, vtype &);
                 template <typename mtype> static inline void write(mtype &, vtype &);
+                template <typename mtype> static inline size_t size(const mtype &);
             };
 
             template <typename mtype> static inline void read(const mtype &, vtype &);
             template <typename mtype> static inline void write(mtype &, vtype &);
+            template <typename mtype> static inline size_t size(const mtype &);
         };
 
         template <typename, typename> struct iterator;
@@ -68,18 +74,22 @@ namespace bytewise :: visitors
         {
             static inline void read(const ttype &, vtype &);
             static inline void write(ttype &, vtype &);
+            static inline size_t size(const ttype &);
         };
 
         template <typename vtype, typename next, typename... tail> struct iterator <vtype, map <next, tail...>>
         {
             static inline void read(const ttype &, vtype &);
             static inline void write(ttype &, vtype &);
+            static inline size_t size(const ttype &);
         };
 
         // Static methods
 
         template <typename vtype> static inline void read(const ttype &, vtype &);
         template <typename vtype> static inline void write(ttype &, vtype &);
+
+        static inline size_t size(const ttype &);
     };
 };
 

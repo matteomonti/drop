@@ -100,9 +100,10 @@ int main()
     myobj.y.d.m = "myobj.y.d.m";
     myobj.z = "myobj.z";
 
-    myvisitor visitor;
+    /*myvisitor visitor;
+    visitors :: buffer <myclass> :: read(myobj, visitor);*/
 
-    visitors :: buffer <myclass> :: read(myobj, visitor);
+    std :: cout << visitors :: buffer <myclass> :: size(myobj) << std :: endl;
 }
 
 #endif
