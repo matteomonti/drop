@@ -37,18 +37,6 @@ namespace bytewise
         visitors :: buffer <type> :: read(target, *this);
     }
 
-    template <typename type> void serialize <type> :: dump()
-    {
-        for(size_t i = 0; i < this->_bytes.size(); i++)
-        {
-            std :: cout << std :: setw(5) << (unsigned int) (unsigned char) this->_bytes[i];
-            if(i % 16 == 15)
-                std :: cout << std :: endl;
-        }
-
-        std :: cout << std :: endl;
-    }
-
     // Private methods
 
     template <typename type> template <size_t rsize> void serialize <type> :: read(const char (&bytes)[rsize])
@@ -64,6 +52,13 @@ namespace bytewise
 
         this->_cursor += sizeof(uint32_t);
         memcpy(this->_bytes + this->_cursor, buffer, buffer.size());
+    }
+
+    // Casting
+
+    template <typename type> serialize <type> :: operator const typename std :: conditional <serialize <type> :: fix_alloc, block <serialize <type> :: size>, buffer> :: type & ()
+    {
+        return this->_bytes;
     }
 };
 

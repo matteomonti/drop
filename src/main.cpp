@@ -39,15 +39,13 @@ int main()
     myobj.w = "Hello, world!";
     myobj.x = 3;
     myobj.y = 4.5;
-    
+
     myobj.z[0] = 6;
     myobj.z[1] = 7;
     myobj.z[2] = 8;
     myobj.z[3] = 9;
 
-    bytewise :: serialize <myclass> myserialize(myobj);
-
-    myserialize.dump();
+    bytewise :: buffer serial = bytewise :: serialize <myclass> (myobj);
 }
 
 #endif

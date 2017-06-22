@@ -12,8 +12,6 @@ namespace bytewise
 
 #include <stddef.h>
 #include <stdint.h>
-#include <iostream> // REMOVE ME
-#include <iomanip> // REMOVE ME
 
 // Includes
 
@@ -49,14 +47,18 @@ namespace bytewise
 
         serialize(const type &);
 
-        void dump(); // REMOVE ME
-
     private:
 
         // Private methods
 
         template <size_t rsize> void read(const char (&)[rsize]);
         void read(const buffer &);
+
+    public:
+
+        // Casting
+
+        operator const typename std :: conditional <fix_alloc, block <size>, buffer> :: type & ();
     };
 };
 
