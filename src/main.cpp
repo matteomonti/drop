@@ -5,17 +5,49 @@
 #include <string>
 #include <iomanip>
 
-#include "bytewise/block.hpp"
+#include "bytewise/macros.h"
+#include "bytewise/serialize.hpp"
 
-void f(char (&bytes)[12])
+class myclass
 {
-    std :: cout << "Ok" << std :: endl;
-}
+public:
+
+    // Self
+
+    typedef myclass self;
+
+    // Members
+
+    bytewise :: buffer w;
+
+    int x;
+    double y;
+    char z[4];
+
+    // Bytewise
+
+    bytewise(w);
+
+    bytewise(x);
+    bytewise(y);
+    bytewise(z);
+};
 
 int main()
 {
-    bytewise :: block <12> my_block;
-    f(my_block);
+    myclass myobj;
+    myobj.w = "Hello, world!";
+    myobj.x = 3;
+    myobj.y = 4.5;
+    
+    myobj.z[0] = 6;
+    myobj.z[1] = 7;
+    myobj.z[2] = 8;
+    myobj.z[3] = 9;
+
+    bytewise :: serialize <myclass> myserialize(myobj);
+
+    myserialize.dump();
 }
 
 #endif

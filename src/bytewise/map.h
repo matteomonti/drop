@@ -52,6 +52,10 @@ namespace bytewise
 
             typedef typename iterator <false, paths...> :: type type;
         };
+
+        // Static members
+
+        static constexpr size_t size = sizeof...(paths);
     };
 };
 

@@ -20,6 +20,8 @@ namespace bytewise
 
 #define __forward__
 #include "bytewise/buffer.h"
+#include "bytewise/visitors/buffer.h"
+#include "bytewise/serialize.h"
 #undef __forward__
 
 // Includes
@@ -32,6 +34,12 @@ namespace bytewise :: scanners
 {
     template <typename target> class buffer
     {
+        // Friends
+
+        template <typename> friend class buffer;
+        template <typename> friend class :: bytewise :: visitors :: buffer;
+        template <typename> friend class :: bytewise :: serialize;
+
         // Service nested classes
 
         template <typename mtype> struct valid
@@ -104,7 +112,7 @@ namespace bytewise :: scanners
             static constexpr bool empty = iterator <index - 1, false> :: empty && member <index> :: empty;
             static constexpr bool writable = iterator <index - 1, false> :: writable && member <index> :: writable;
         };
-        
+
         // Typedefs
 
         typedef typename iterator <(ssize_t) (count <target> :: value) - 1, false> :: type type;

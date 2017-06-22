@@ -16,6 +16,12 @@ namespace bytewise
 #include <type_traits>
 #include <stddef.h>
 
+// Forward includes
+
+#define __forward__
+#include "bytewise/serialize.h"
+#undef __forward__
+
 // Includes
 
 #include "bytewise/count.h"
@@ -27,6 +33,11 @@ namespace bytewise :: scanners
 {
     template <typename target> struct arithmetic
     {
+        // Friends
+
+        template <typename> friend class arithmetic;
+        template <typename> friend class :: bytewise :: serialize;
+
         // Service nested classes
 
         template <typename mtype> struct extent

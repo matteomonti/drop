@@ -11,6 +11,12 @@ namespace bytewise
 #if !defined(__forward__) && !defined(__drop__bytewise__visitors__arithmetic__h)
 #define __drop__bytewise__visitors__arithmetic__h
 
+// Forward includes
+
+#define __forward__
+#include "bytewise/serialize.h"
+#undef __forward__
+
 // Includes
 
 #include "bytewise/mask.h"
@@ -20,6 +26,10 @@ namespace bytewise :: visitors
 {
     template <typename ttype> class arithmetic
     {
+        // Friends
+
+        template <typename> friend class :: bytewise :: serialize;
+
         // Service nested classes
 
         template <size_t, size_t, bool> struct selector;
