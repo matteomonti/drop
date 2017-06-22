@@ -46,6 +46,16 @@ int main()
     myobj.z[3] = 9;
 
     auto bytes = bytewise :: serialize(myobj);
+
+    for(size_t i = 0; i < bytes.size(); i++)
+    {
+        std :: cout << std :: setw(5) << (unsigned int) (unsigned char) bytes[i];
+
+        if(i % 16 == 15)
+            std :: cout << std :: endl;
+    }
+
+    std :: cout << std :: endl;
 }
 
 #endif

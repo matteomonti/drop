@@ -7,6 +7,7 @@
 #include "block.hpp"
 #include "visitors/arithmetic.hpp"
 #include "visitors/buffer.hpp"
+#include "bsize.h"
 
 namespace bytewise
 {
@@ -54,11 +55,11 @@ namespace bytewise
 
     template <typename ttype> void serializer <ttype> :: read(const buffer & buffer)
     {
-        uint32_t size = buffer.size();
-        endianess :: translate(reinterpret_cast <char (&)[4]> (*(reinterpret_cast <uint32_t *> (this->_bytes + this->_cursor))), reinterpret_cast <const char (&)[sizeof(uint32_t)]> (size));
+        bsize bsize = buffer.size();
+        this->_cursor += bsize.write(this->_bytes + this->_cursor);
 
-        this->_cursor += sizeof(uint32_t);
         memcpy(this->_bytes + this->_cursor, buffer, buffer.size());
+        this->_cursor += buffer.size();
     }
 
     // Functions

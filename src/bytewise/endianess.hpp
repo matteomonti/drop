@@ -36,7 +36,7 @@ namespace bytewise
         (reinterpret_cast <mask &> (destination)).low = __builtin_bswap64((reinterpret_cast <const mask &> (source)).high);
     }
 
-    template <size_t size, typename std :: enable_if <size == 2 || size == 4 || size == 8 || size == 16> :: type *> inline void endianess :: translate(char (&destination)[size], const char (&source)[size])
+    template <endianess :: type target, size_t size, typename std :: enable_if <size == 2 || size == 4 || size == 8 || size == 16> :: type *> inline void endianess :: to(char (&destination)[size], const char (&source)[size])
     {
         struct yswap
         {
@@ -54,7 +54,12 @@ namespace bytewise
             }
         };
 
-        std :: conditional <endianess :: foreign, yswap, nswap> :: type :: run(destination, source);
+        std :: conditional <target != endianess :: local, yswap, nswap> :: type :: run(destination, source);
+    }
+
+    template <size_t size, typename std :: enable_if <size == 2 || size == 4 || size == 8 || size == 16> :: type *> inline void endianess :: translate(char (&destination)[size], const char (&source)[size])
+    {
+        to <endianess :: network> (destination, source);
     }
 };
 
