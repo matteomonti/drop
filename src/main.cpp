@@ -18,7 +18,8 @@ public:
 
     // Members
 
-    bytewise :: buffer w;
+    bytewise :: buffer w1;
+    bytewise :: buffer w2;
 
     int x;
     double y;
@@ -26,8 +27,9 @@ public:
 
     // Bytewise
 
-    bytewise(w);
-
+    bytewise(w1);
+    bytewise(w2);
+    
     bytewise(x);
     bytewise(y);
     bytewise(z);
@@ -36,7 +38,9 @@ public:
 int main()
 {
     myclass myobj;
-    myobj.w = "Hello, world!";
+    myobj.w1 = "Hello, world!";
+    myobj.w2 = "Repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself.";
+
     myobj.x = 3;
     myobj.y = 4.5;
 
