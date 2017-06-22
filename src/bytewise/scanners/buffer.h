@@ -38,7 +38,7 @@ namespace bytewise :: scanners
 
         template <typename> friend class buffer;
         template <typename> friend class :: bytewise :: visitors :: buffer;
-        template <typename> friend class :: bytewise :: serialize;
+        template <typename> friend class :: bytewise :: serializer;
 
         // Service nested classes
 

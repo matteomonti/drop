@@ -45,7 +45,7 @@ int main()
     myobj.z[2] = 8;
     myobj.z[3] = 9;
 
-    bytewise :: buffer serial = bytewise :: serialize <myclass> (myobj);
+    auto bytes = bytewise :: serialize(myobj);
 }
 
 #endif

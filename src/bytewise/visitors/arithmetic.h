@@ -28,7 +28,7 @@ namespace bytewise :: visitors
     {
         // Friends
 
-        template <typename> friend class :: bytewise :: serialize;
+        template <typename> friend class :: bytewise :: serializer;
 
         // Service nested classes
 

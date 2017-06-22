@@ -12,40 +12,47 @@ namespace bytewise
 {
     // Constructors
 
-    template <typename type> serialize <type> :: serialize(const type & target) : _cursor(0)
+    template <typename ttype> serializer <ttype> :: serializer(const ttype & target) : _cursor(0)
     {
         typedef decltype(this->_bytes) atype;
 
         struct yallocator
         {
-            static inline void run(atype & bytes, const type & target)
+            static inline void run(atype & bytes, const ttype & target)
             {
-                bytes.alloc(scanners :: arithmetic <type> :: type :: size + sizeof(uint32_t) * scanners :: buffer <type> :: type :: size + visitors :: buffer <type> :: size(target));
+                bytes.alloc(scanners :: arithmetic <ttype> :: type :: size + sizeof(uint32_t) * scanners :: buffer <ttype> :: type :: size + visitors :: buffer <ttype> :: size(target));
             }
         };
 
         struct nallocator
         {
-            static inline void run(atype &, const type &)
+            static inline void run(atype &, const ttype &)
             {
             }
         };
 
-        std :: conditional <fix_alloc, nallocator, yallocator> :: type :: run(this->_bytes, target);
+        std :: conditional <(size > 0), nallocator, yallocator> :: type :: run(this->_bytes, target);
 
-        visitors :: arithmetic <type> :: read(target, *this);
-        visitors :: buffer <type> :: read(target, *this);
+        visitors :: arithmetic <ttype> :: read(target, *this);
+        visitors :: buffer <ttype> :: read(target, *this);
     }
 
-    // Private methods
+    // Getters
 
-    template <typename type> template <size_t rsize> void serialize <type> :: read(const char (&bytes)[rsize])
+    template <typename ttype> auto serializer <ttype> :: finalize() const
+    {
+        return this->_bytes;
+    }
+
+    // Methods
+
+    template <typename ttype> template <size_t rsize> void serializer <ttype> :: read(const char (&bytes)[rsize])
     {
         memcpy(this->_bytes + this->_cursor, bytes, rsize);
         this->_cursor += rsize;
     }
 
-    template <typename type> void serialize <type> :: read(const buffer & buffer)
+    template <typename ttype> void serializer <ttype> :: read(const buffer & buffer)
     {
         uint32_t size = buffer.size();
         endianess :: translate(reinterpret_cast <char (&)[4]> (*(reinterpret_cast <uint32_t *> (this->_bytes + this->_cursor))), reinterpret_cast <const char (&)[sizeof(uint32_t)]> (size));
@@ -54,11 +61,11 @@ namespace bytewise
         memcpy(this->_bytes + this->_cursor, buffer, buffer.size());
     }
 
-    // Casting
+    // Functions
 
-    template <typename type> serialize <type> :: operator const typename std :: conditional <serialize <type> :: fix_alloc, block <serialize <type> :: size>, buffer> :: type & ()
+    template <typename type> auto serialize(const type & target)
     {
-        return this->_bytes;
+        return (serializer <type> (target)).finalize();
     }
 };
 
