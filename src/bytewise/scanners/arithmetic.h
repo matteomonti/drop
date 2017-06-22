@@ -20,6 +20,7 @@ namespace bytewise
 
 #define __forward__
 #include "bytewise/serialize.h"
+#include "bytewise/deserialize.h"
 #undef __forward__
 
 // Includes
@@ -37,6 +38,7 @@ namespace bytewise :: scanners
 
         template <typename> friend class arithmetic;
         template <typename> friend class :: bytewise :: serializer;
+        template <typename> friend class :: bytewise :: deserializer;
 
         // Service nested classes
 

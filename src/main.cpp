@@ -7,6 +7,7 @@
 
 #include "bytewise/macros.h"
 #include "bytewise/serialize.hpp"
+#include "bytewise/deserialize.hpp"
 
 class myclass
 {
@@ -29,7 +30,7 @@ public:
 
     bytewise(w1);
     bytewise(w2);
-    
+
     bytewise(x);
     bytewise(y);
     bytewise(z);
@@ -60,6 +61,19 @@ int main()
     }
 
     std :: cout << std :: endl;
+
+    myclass myotherobj = bytewise :: deserialize <myclass> (bytes);
+
+    std :: cout << myotherobj.w1 << std :: endl;
+    std :: cout << myotherobj.w2 << std :: endl;
+
+    std :: cout << myotherobj.x << std :: endl;
+    std :: cout << myotherobj.y << std :: endl;
+
+    std :: cout << (unsigned int) (unsigned char) myotherobj.z[0] << std :: endl;
+    std :: cout << (unsigned int) (unsigned char) myotherobj.z[1] << std :: endl;
+    std :: cout << (unsigned int) (unsigned char) myotherobj.z[2] << std :: endl;
+    std :: cout << (unsigned int) (unsigned char) myotherobj.z[3] << std :: endl;
 }
 
 #endif

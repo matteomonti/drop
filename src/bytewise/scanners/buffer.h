@@ -22,6 +22,7 @@ namespace bytewise
 #include "bytewise/buffer.h"
 #include "bytewise/visitors/buffer.h"
 #include "bytewise/serialize.h"
+#include "bytewise/deserialize.h"
 #undef __forward__
 
 // Includes
@@ -39,6 +40,7 @@ namespace bytewise :: scanners
         template <typename> friend class buffer;
         template <typename> friend class :: bytewise :: visitors :: buffer;
         template <typename> friend class :: bytewise :: serializer;
+        template <typename> friend class :: bytewise :: deserializer;
 
         // Service nested classes
 

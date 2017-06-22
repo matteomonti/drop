@@ -14,9 +14,9 @@ namespace bytewise
     bsize :: bsize(const char * buffer, const size_t & size)
     {
         size_t map[] = {1, 1, 2, 4};
-        size_t length = map[*(reinterpret_cast <const uint8_t *> (buffer))];
+        size_t length = map[(*(reinterpret_cast <const uint8_t *> (buffer))) >> 6];
 
-        if(length < size)
+        if(length > size)
         {
             this->_value = -1;
             return;
@@ -44,6 +44,25 @@ namespace bytewise
                 break;
             }
         }
+    }
+
+    // Getters
+
+    const ssize_t & bsize :: value()
+    {
+        return this->_value;
+    }
+
+    size_t bsize :: bytes()
+    {
+        if(this->_value < 0)
+            return 0;
+        else if(this->_value < 0x80)
+            return 1;
+        else if(this->_value < 0x4000)
+            return 2;
+        else
+            return 4;
     }
 
     // Methods

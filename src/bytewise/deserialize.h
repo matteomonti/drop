@@ -2,11 +2,11 @@
 
 namespace bytewise
 {
-    template <typename> class serializer;
+    template <typename> class deserializer;
 };
 
-#if !defined(__forward__) && !defined(__drop__bytewise__serialize__h)
-#define __drop__bytewise__serialize__h
+#if !defined(__forward__) && !defined(__drop__bytewise__deserialize__h)
+#define __drop__bytewise__deserialize__h
 
 // Libraries
 
@@ -24,7 +24,7 @@ namespace bytewise
 
 namespace bytewise
 {
-    template <typename ttype> class serializer
+    template <typename ttype> class deserializer
     {
         // Friends
 
@@ -41,30 +41,31 @@ namespace bytewise
 
         // Members
 
-        typename std :: conditional <(size > 0), block <size>, buffer> :: type _bytes;
+        ttype _target;
+        const typename std :: conditional <(size > 0), block <size>, buffer> :: type & _bytes;
         size_t _cursor;
 
     public:
 
         // Constructors
 
-        serializer(const ttype &);
+        deserializer(const typename std :: conditional <(size > 0), block <size>, buffer> :: type &);
 
         // Getters
 
-        auto finalize() const;
+        ttype finalize() const;
 
     private:
 
         // Private methods
 
-        template <size_t rsize> void read(const char (&)[rsize]);
-        void read(const buffer &);
+        template <size_t rsize> void write(char (&)[rsize]);
+        void write(buffer &);
     };
 
     // Functions
 
-    template <typename type> auto serialize(const type &);
+    template <typename type> type deserialize(const typename std :: conditional <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> :: type &);
 };
 
 #endif
