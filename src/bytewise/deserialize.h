@@ -12,6 +12,7 @@ namespace bytewise
 
 #include <stddef.h>
 #include <stdint.h>
+#include <exception>
 
 // Includes
 
@@ -33,23 +34,34 @@ namespace bytewise
 
     public:
 
+        // Exceptions
+
+        class overflow : public std :: exception
+        {
+            const char * what() const noexcept;
+        };
+
         // Properties
 
         static constexpr size_t size = scanners :: buffer <ttype> :: empty ? (scanners :: arithmetic <ttype> :: type :: size) : 0;
+
+        // Typedefs
+
+        typedef typename std :: conditional <(size > 0), block <size>, buffer> :: type type;
 
     private:
 
         // Members
 
         ttype _target;
-        const typename std :: conditional <(size > 0), block <size>, buffer> :: type & _bytes;
+        const type & _bytes;
         size_t _cursor;
 
     public:
 
         // Constructors
 
-        deserializer(const typename std :: conditional <(size > 0), block <size>, buffer> :: type &);
+        deserializer(const type &);
 
         // Getters
 

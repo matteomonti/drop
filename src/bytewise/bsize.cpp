@@ -13,6 +13,12 @@ namespace bytewise
 
     bsize :: bsize(const char * buffer, const size_t & size)
     {
+        if(!size)
+        {
+            this->_value = -1;
+            return;
+        }
+        
         size_t map[] = {1, 1, 2, 4};
         size_t length = map[(*(reinterpret_cast <const uint8_t *> (buffer))) >> 6];
 

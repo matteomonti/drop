@@ -26,7 +26,7 @@ namespace bytewise
 
 namespace bytewise
 {
-    template <typename target, size_t index> class proxy // TODO: Find a solution to properly forward calls in the const case
+    template <typename target, size_t index> class proxy
     {
         // Friends
 
