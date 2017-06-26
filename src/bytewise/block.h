@@ -36,6 +36,13 @@ namespace bytewise
         block(const char *);
         block(const block &);
 
+        // Getters
+
+        constexpr size_t size() const
+        {
+            return alloc;
+        }
+
         // Operators
 
         char & operator [] (const size_t &);
@@ -45,10 +52,6 @@ namespace bytewise
 
         operator array & ();
         operator const array & () const;
-
-        // Static members
-
-        static constexpr size_t size = alloc;
     };
 };
 

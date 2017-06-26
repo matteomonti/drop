@@ -52,7 +52,7 @@ int main()
 
     auto bytes = bytewise :: serialize(myobj);
 
-    for(size_t i = 0; i < 16; i++)
+    for(size_t i = 0; i < bytes.size(); i++)
     {
         std :: cout << std :: setw(5) << (unsigned int) (unsigned char) bytes[i];
 

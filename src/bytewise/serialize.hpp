@@ -75,7 +75,7 @@ namespace bytewise
 
     // Functions
 
-    template <typename type> auto serialize(const type & target)
+    template <typename type, typename std :: enable_if <std :: is_constructible <type> :: value> :: type *> auto serialize(const type & target)
     {
         return (serializer <type> (target)).finalize();
     }

@@ -47,7 +47,7 @@ namespace bytewise
 
     // Functions
 
-    template <typename type> type deserialize(const typename std :: conditional <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> :: type & bytes)
+    template <typename type, typename std :: enable_if <std :: is_constructible <type> :: value> :: type *> type deserialize(const typename std :: conditional <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> :: type & bytes)
     {
         return (deserializer <type> (bytes)).finalize();
     }
