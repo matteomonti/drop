@@ -46,9 +46,6 @@ namespace bytewise
         operator array & ();
         operator const array & () const;
 
-        operator char * ();
-        operator const char * () const;
-
         // Static members
 
         static constexpr size_t size = alloc;

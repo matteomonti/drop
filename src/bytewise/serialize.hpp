@@ -11,42 +11,42 @@
 
 namespace bytewise
 {
+    // allocator <true, dummy>
+
+    template <typename ttype> template <bool dummy> void serializer <ttype> :: allocator <true, dummy> :: alloc(type & bytes, const ttype & target)
+    {
+        bytes.alloc(scanners :: arithmetic <ttype> :: type :: size + sizeof(uint32_t) * scanners :: buffer <ttype> :: type :: size + visitors :: buffer <ttype> :: size(target));
+    }
+
+    template <typename ttype> template <bool dummy> void serializer <ttype> :: allocator <true, dummy> :: crop(type & bytes, const size_t & cursor)
+    {
+        bytes.alloc(cursor);
+    }
+
+    // allocator <false, dummy>
+
+    template <typename ttype> template <bool dummy> void serializer <ttype> :: allocator <false, dummy> :: alloc(type &, const ttype &)
+    {
+    }
+
+    template <typename ttype> template <bool dummy> void serializer <ttype> :: allocator <false, dummy> :: crop(type &, const size_t &)
+    {
+    }
+
+    // allocator <false, dummy>
+
+    // serializer
+
     // Constructors
 
     template <typename ttype> serializer <ttype> :: serializer(const ttype & target) : _cursor(0)
     {
-        typedef decltype(this->_bytes) atype;
-
-        struct yallocator
-        {
-            static inline void alloc(atype & bytes, const ttype & target)
-            {
-                bytes.alloc(scanners :: arithmetic <ttype> :: type :: size + sizeof(uint32_t) * scanners :: buffer <ttype> :: type :: size + visitors :: buffer <ttype> :: size(target));
-            }
-
-            static inline void crop(atype & bytes, const size_t & cursor)
-            {
-                bytes.alloc(cursor);
-            }
-        };
-
-        struct nallocator
-        {
-            static inline void alloc(atype &, const ttype &)
-            {
-            }
-
-            static inline void crop(atype &, const size_t &)
-            {
-            }
-        };
-
-        std :: conditional <(size > 0), nallocator, yallocator> :: type :: alloc(this->_bytes, target);
+        allocator <(size == 0), false> :: alloc(this->_bytes, target);
 
         visitors :: arithmetic <ttype> :: read(target, *this);
         visitors :: buffer <ttype> :: read(target, *this);
 
-        std :: conditional <(size > 0), nallocator, yallocator> :: type :: crop(this->_bytes, this->_cursor);
+        allocator <(size == 0), false> :: crop(this->_bytes, this->_cursor);
     }
 
     // Getters
@@ -60,7 +60,7 @@ namespace bytewise
 
     template <typename ttype> template <size_t rsize> void serializer <ttype> :: read(const char (&bytes)[rsize])
     {
-        memcpy(this->_bytes + this->_cursor, bytes, rsize);
+        memcpy(((char *) this->_bytes) + this->_cursor, bytes, rsize);
         this->_cursor += rsize;
     }
 

@@ -15,7 +15,7 @@ namespace bytewise
 
     template <size_t alloc> block <alloc> :: block(const char * bytes)
     {
-        mempcy(this->_bytes, bytes, alloc);
+        memcpy(this->_bytes, bytes, alloc);
     }
 
     template <size_t alloc> block <alloc> :: block(const block & that) : block(that._bytes)
@@ -42,16 +42,6 @@ namespace bytewise
     }
 
     template <size_t alloc> block <alloc> :: operator const array & () const
-    {
-        return this->_bytes;
-    }
-
-    template <size_t alloc> block <alloc> :: operator char * ()
-    {
-        return this->_bytes;
-    }
-
-    template <size_t alloc> block <alloc> :: operator const char * () const
     {
         return this->_bytes;
     }

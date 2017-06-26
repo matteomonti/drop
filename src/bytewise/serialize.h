@@ -37,11 +37,31 @@ namespace bytewise
 
         static constexpr size_t size = scanners :: buffer <ttype> :: empty ? (scanners :: arithmetic <ttype> :: type :: size) : 0;
 
+        // Typedefs
+
+        typedef typename std :: conditional <(size > 0), block <size>, buffer> :: type type;
+
+        // Service nested classes
+
+        template <bool, bool> struct allocator;
+
+        template <bool dummy> struct allocator <true, dummy>
+        {
+            static inline void alloc(type &, const ttype &);
+            static inline void crop(type &, const size_t &);
+        };
+
+        template <bool dummy> struct allocator <false, dummy>
+        {
+            static inline void alloc(type &, const ttype &);
+            static inline void crop(type &, const size_t &);
+        };
+
     private:
 
         // Members
 
-        typename std :: conditional <(size > 0), block <size>, buffer> :: type _bytes;
+        type _bytes;
         size_t _cursor;
 
     public:
