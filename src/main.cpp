@@ -25,18 +25,6 @@ public:
     // Bytewise
 
     bytewise(w);
-
-    // Events
-
-    void on(bytewise :: read)
-    {
-        std :: cout << "Read event triggered in onelastclass!" << std :: endl;
-    }
-
-    void on(bytewise :: write)
-    {
-        std :: cout << "Write event triggered in onelastclass!" << std :: endl;
-    }
 };
 
 class yetanotherclass
@@ -54,18 +42,6 @@ public:
     // Bytewise
 
     bytewise(z);
-
-    // Events
-
-    void on(bytewise :: read)
-    {
-        std :: cout << "Read event triggered in yetanotherclass!" << std :: endl;
-    }
-
-    void on(bytewise :: write)
-    {
-        std :: cout << "Write event triggered in yetanotherclass!" << std :: endl;
-    }
 };
 
 class myotherclass
@@ -89,18 +65,6 @@ public:
     bytewise(h);
     bytewise(n);
     bytewise(q);
-
-    // Events
-
-    void on(bytewise :: read)
-    {
-        std :: cout << "Read event triggered in myotherclass!" << std :: endl;
-    }
-
-    void on(bytewise :: write)
-    {
-        std :: cout << "Write event triggered in myotherclass!" << std :: endl;
-    }
 };
 
 class myclass
@@ -122,25 +86,13 @@ public:
     bytewise(x);
     bytewise(m);
     bytewise(o);
-
-    // Events
-
-    void on(bytewise :: read)
-    {
-        std :: cout << "Read event triggered in myclass!" << std :: endl;
-    }
-
-    void on(bytewise :: write)
-    {
-        std :: cout << "Write event triggered in myclass!" << std :: endl;
-    }
 };
 
 int main()
 {
     myclass myobj;
     auto bytes = bytewise :: serialize(myobj);
-    bytewise :: deserialize <myclass> (bytes);
+    std :: cout << bytes.size() << std :: endl;
 }
 
 #endif

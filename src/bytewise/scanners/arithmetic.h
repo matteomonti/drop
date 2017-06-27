@@ -98,7 +98,7 @@ namespace bytewise :: scanners
                 <
                     std :: is_arithmetic <base> :: value,
                     mask <range <0, sizeof(base), (endianess :: foreign && sizeof(base) > 1)>>,
-                    typename arithmetic <mtype> :: type
+                    typename arithmetic <base> :: type
                 >,
                 mask <>
             > pattern;
