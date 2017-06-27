@@ -6,6 +6,7 @@
 #define __forward__
 #include "exists.h"
 #include "proxy.h"
+#include "on.h"
 #undef __forward__
 
 // Includes
@@ -16,6 +17,7 @@
                                                                     \
 template <typename, size_t> friend class :: bytewise :: exists;     \
 template <typename, size_t> friend class :: bytewise :: proxy;      \
+template <typename, typename> friend class :: bytewise :: on;       \
                                                                     \
 progressive(bytewise)                                               \
 {                                                                   \
