@@ -22,6 +22,7 @@ namespace bytewise
 #include "scanners/buffer.h"
 #include "visitors/arithmetic.h"
 #include "visitors/buffer.h"
+#include "visitors/on.h"
 
 namespace bytewise
 {
@@ -77,7 +78,7 @@ namespace bytewise
 
     // Functions
 
-    template <typename type, std :: enable_if_t <std :: is_constructible <type> :: value> * = nullptr> type deserialize(const std :: conditional_t <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> &);
+    template <typename type, std :: enable_if_t <std :: is_constructible <std :: remove_const_t <std :: remove_reference_t <type>>> :: value> * = nullptr> type deserialize(const std :: conditional_t <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> &);
 };
 
 #endif

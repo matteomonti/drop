@@ -25,7 +25,12 @@ namespace bytewise :: visitors
 {
     class on
     {
-    public: // REMOVE ME
+        // Friends
+
+        template <typename> friend class :: bytewise :: serializer;
+        template <typename> friend class :: bytewise :: deserializer;
+
+        // Service nested classes
 
         template <typename mtype> using clean = std :: remove_const_t <std :: remove_reference_t <mtype>>;
         template <typename mtype> using root = std :: remove_all_extents_t <clean <mtype>>;
@@ -63,6 +68,8 @@ namespace bytewise :: visitors
             template <typename mtype> static inline void read(mtype &&);
             template <typename mtype> static inline void write(mtype &&);
         };
+
+        // Static methods
 
         template <typename mtype> static inline void read(mtype &&);
         template <typename mtype> static inline void write(mtype &&);

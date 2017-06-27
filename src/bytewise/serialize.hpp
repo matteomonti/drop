@@ -7,6 +7,7 @@
 #include "block.hpp"
 #include "visitors/arithmetic.hpp"
 #include "visitors/buffer.hpp"
+#include "visitors/on.hpp"
 #include "bsize.h"
 
 namespace bytewise
@@ -39,14 +40,16 @@ namespace bytewise
 
     // Constructors
 
-    template <typename ttype> serializer <ttype> :: serializer(const ttype & target) : _cursor(0)
+    template <typename ttype> template <typename otype, utils :: enable_in_t <otype, ttype> *> serializer <ttype> :: serializer(otype && target) : _cursor(0)
     {
+        visitors :: on :: read(target);
         allocator <(size == 0), false> :: alloc(this->_bytes, target);
 
         visitors :: arithmetic <ttype> :: read(target, *this);
         visitors :: buffer <ttype> :: read(target, *this);
 
         allocator <(size == 0), false> :: crop(this->_bytes, this->_cursor);
+
     }
 
     // Getters
@@ -75,9 +78,9 @@ namespace bytewise
 
     // Functions
 
-    template <typename type, std :: enable_if_t <std :: is_constructible <type> :: value> *> auto serialize(const type & target)
+    template <typename type, std :: enable_if_t <std :: is_constructible <std :: remove_const_t <std :: remove_reference_t <type>>> :: value> *> auto serialize(type && target)
     {
-        return (serializer <type> (target)).finalize();
+        return (serializer <std :: remove_const_t <std :: remove_reference_t <type>>> (target)).finalize();
     }
 };
 

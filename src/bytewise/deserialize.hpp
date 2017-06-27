@@ -7,6 +7,7 @@
 #include "block.hpp"
 #include "visitors/arithmetic.hpp"
 #include "visitors/buffer.hpp"
+#include "visitors/on.hpp"
 #include "bsize.h"
 
 namespace bytewise
@@ -26,6 +27,7 @@ namespace bytewise
     {
         visitors :: arithmetic <ttype> :: write(this->_target, *this);
         visitors :: buffer <ttype> :: write(this->_target, *this);
+        visitors :: on :: write(this->_target);
     }
 
     // Getters
@@ -80,9 +82,12 @@ namespace bytewise
 
     // Functions
 
-    template <typename type, std :: enable_if_t <std :: is_constructible <type> :: value> *> type deserialize(const std :: conditional_t <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> & bytes)
+    template <typename type, std :: enable_if_t <std :: is_constructible <std :: remove_const_t <std :: remove_reference_t <type>>> :: value> *> type deserialize(const std :: conditional_t <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> & bytes)
     {
-        return (deserializer <type> (bytes)).finalize();
+        type object = (deserializer <std :: remove_const_t <std :: remove_reference_t <type>>> (bytes)).finalize();
+        //visitors :: on :: write(object);
+
+        return object;
     }
 };
 

@@ -21,6 +21,8 @@ namespace bytewise
 #include "scanners/buffer.h"
 #include "visitors/arithmetic.h"
 #include "visitors/buffer.h"
+#include "visitors/on.h"
+#include "utils/template/enable_in.h"
 
 namespace bytewise
 {
@@ -68,7 +70,7 @@ namespace bytewise
 
         // Constructors
 
-        serializer(const ttype &);
+        template <typename otype, utils :: enable_in_t <otype, ttype> * = nullptr> serializer(otype &&);
 
         // Getters
 
@@ -84,7 +86,7 @@ namespace bytewise
 
     // Functions
 
-    template <typename type, std :: enable_if_t <std :: is_constructible <type> :: value> * = nullptr> auto serialize(const type &);
+    template <typename type, std :: enable_if_t <std :: is_constructible <std :: remove_const_t <std :: remove_reference_t <type>>> :: value> * = nullptr> auto serialize(type &&);
 };
 
 #endif

@@ -139,7 +139,8 @@ public:
 int main()
 {
     myclass myobj;
-    bytewise :: visitors :: on :: read(myobj);
+    auto bytes = bytewise :: serialize(myobj);
+    bytewise :: deserialize <myclass> (bytes);
 }
 
 #endif
