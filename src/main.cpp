@@ -25,6 +25,13 @@ public:
     // Bytewise
 
     bytewise(w);
+
+    // Static methods
+
+    void on(bytewise :: read) const
+    {
+        std :: cout << "onelastclass read" << std :: endl;
+    }
 };
 
 class yetanotherclass
@@ -42,6 +49,13 @@ public:
     // Bytewise
 
     bytewise(z);
+
+    // Static methods
+
+    void on(bytewise :: read) const
+    {
+        std :: cout << "yetanotherclass read" << std :: endl;
+    }
 };
 
 class myotherclass
@@ -65,6 +79,13 @@ public:
     bytewise(h);
     bytewise(n);
     bytewise(q);
+
+    // Static methods
+
+    void on(bytewise :: read) const
+    {
+        std :: cout << "myotherclass read" << std :: endl;
+    }
 };
 
 class myclass
@@ -74,6 +95,12 @@ public:
     // Self
 
     typedef myclass self;
+
+    // Constructors
+
+    myclass()
+    {
+    }
 
     // Members
 
@@ -86,6 +113,13 @@ public:
     bytewise(x);
     bytewise(m);
     bytewise(o);
+
+    // Static methods
+
+    void on(bytewise :: read) const
+    {
+        std :: cout << "myclass read" << std :: endl;
+    }
 };
 
 int main()

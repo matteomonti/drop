@@ -29,24 +29,31 @@ namespace bytewise
 
         struct enable
         {
-            template <typename htype, void (htype :: *) (etype)> struct helper {};
-            template <typename htype> static uint8_t sfinae(...);
-            template <typename htype> static uint32_t sfinae(helper <htype, &htype :: on> *);
+            template <typename htype, void (htype :: *) (etype)> struct mhelper {};
+            template <typename htype> static uint8_t msfinae(...);
+            template <typename htype> static uint32_t msfinae(mhelper <htype, &htype :: on> *);
 
-            static constexpr bool has_on = std :: is_same <decltype(sfinae <ttype> (0)), uint32_t> :: value;
-            static constexpr bool value = has_on && (count <ttype> :: value > 0);
+            template <typename htype, void (htype :: *) (etype) const> struct chelper {};
+            template <typename htype> static uint8_t csfinae(...);
+            template <typename htype> static uint32_t csfinae(chelper <htype, &htype :: on> *);
+
+            static constexpr bool mutable_on = std :: is_same <decltype(msfinae <ttype> (0)), uint32_t> :: value;
+            static constexpr bool const_on = std :: is_same <decltype(csfinae <ttype> (0)), uint32_t> :: value;
+
+            static constexpr bool mutable_value = mutable_on && (count <ttype> :: value > 0);
+            static constexpr bool const_value = const_on && (count <ttype> :: value > 0);
         };
 
         template <bool, bool> struct emitter;
 
         template <bool dummy> struct emitter <true, dummy>
         {
-            static inline void emit(ttype &);
+            template <typename otype, utils :: enable_in_t <otype, ttype> * = nullptr> static inline void emit(otype &&);
         };
 
         template <bool dummy> struct emitter <false, dummy>
         {
-            static inline void emit(ttype &);
+            template <typename otype, utils :: enable_in_t <otype, ttype> * = nullptr> static inline void emit(otype &&);
         };
 
     public:

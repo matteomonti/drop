@@ -10,14 +10,14 @@ namespace bytewise
 
     // emitter <true, dummy>
 
-    template <typename ttype, typename etype> template <bool dummy> inline void on <ttype, etype> :: emitter <true, dummy> :: emit(ttype & target)
+    template <typename ttype, typename etype> template <bool dummy> template <typename otype, utils :: enable_in_t <otype, ttype> *> inline void on <ttype, etype> :: emitter <true, dummy> :: emit(otype && target)
     {
         target.on(etype {});
     }
 
     // emitter <false, dummy>
 
-    template <typename ttype, typename etype> template <bool dummy> inline void on <ttype, etype> :: emitter <false, dummy> :: emit(ttype & target)
+    template <typename ttype, typename etype> template <bool dummy> template <typename otype, utils :: enable_in_t <otype, ttype> *> inline void on <ttype, etype> :: emitter <false, dummy> :: emit(otype && target)
     {
     }
 
@@ -27,11 +27,12 @@ namespace bytewise
 
     template <typename ttype, typename etype> inline void on <ttype, etype> :: emit(ttype & target)
     {
-        emitter <enable :: value, false> :: emit(target);
+        emitter <enable :: mutable_value || enable :: const_value, false> :: emit(target);
     }
 
     template <typename ttype, typename etype> inline void on <ttype, etype> :: emit(const ttype & target)
     {
+        emitter <enable :: const_value, false> :: emit(target);
     }
 };
 
