@@ -22,6 +22,7 @@ namespace bytewise
 #include "scanners/arithmetic.h"
 #include "scanners/buffer.h"
 #include "visitors/buffer.h"
+#include "visitors/on.h"
 #undef __forward__
 
 // Includes
@@ -37,6 +38,7 @@ namespace bytewise
         template <typename> friend class scanners :: arithmetic;
         template <typename> friend class scanners :: buffer;
         template <typename> friend class visitors :: buffer;
+        friend class visitors :: on;
 
         // Typedefs
 

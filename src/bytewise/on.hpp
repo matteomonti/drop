@@ -29,6 +29,10 @@ namespace bytewise
     {
         emitter <enable :: value, false> :: emit(target);
     }
+
+    template <typename ttype, typename etype> inline void on <ttype, etype> :: emit(const ttype & target)
+    {
+    }
 };
 
 #endif

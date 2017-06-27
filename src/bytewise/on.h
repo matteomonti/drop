@@ -19,6 +19,7 @@ namespace bytewise
 // Includes
 
 #include "count.h"
+#include "utils/template/enable_in.h"
 
 namespace bytewise
 {
@@ -53,6 +54,7 @@ namespace bytewise
         // Static methods
 
         static inline void emit(ttype &);
+        static inline void emit(const ttype &);
     };
 
     struct read

@@ -8,6 +8,100 @@
 #include "bytewise/macros.h"
 #include "bytewise/serialize.hpp"
 #include "bytewise/deserialize.hpp"
+#include "bytewise/visitors/on.hpp"
+
+class onelastclass
+{
+public:
+
+    // Self
+
+    typedef onelastclass self;
+
+    // Members
+
+    int w;
+
+    // Bytewise
+
+    bytewise(w);
+
+    // Events
+
+    void on(bytewise :: read)
+    {
+        std :: cout << "Read event triggered in onelastclass!" << std :: endl;
+    }
+
+    void on(bytewise :: write)
+    {
+        std :: cout << "Write event triggered in onelastclass!" << std :: endl;
+    }
+};
+
+class yetanotherclass
+{
+public:
+
+    // Self
+
+    typedef yetanotherclass self;
+
+    // Members
+
+    int z;
+
+    // Bytewise
+
+    bytewise(z);
+
+    // Events
+
+    void on(bytewise :: read)
+    {
+        std :: cout << "Read event triggered in yetanotherclass!" << std :: endl;
+    }
+
+    void on(bytewise :: write)
+    {
+        std :: cout << "Write event triggered in yetanotherclass!" << std :: endl;
+    }
+};
+
+class myotherclass
+{
+public:
+
+    // Self
+
+    typedef myotherclass self;
+
+    // Members
+
+    int y;
+    double h[14];
+    yetanotherclass n[2];
+    yetanotherclass * q;
+
+    // Bytewise
+
+    bytewise(y);
+    bytewise(h);
+    bytewise(n);
+    bytewise(q);
+
+    // Events
+
+    void on(bytewise :: read)
+    {
+        std :: cout << "Read event triggered in myotherclass!" << std :: endl;
+    }
+
+    void on(bytewise :: write)
+    {
+        std :: cout << "Write event triggered in myotherclass!" << std :: endl;
+    }
+};
 
 class myclass
 {
@@ -19,61 +113,33 @@ public:
 
     // Members
 
-    bytewise :: buffer w1;
-    bytewise :: buffer w2;
-
     int x;
-    double y;
-    char z[4];
+    myotherclass m[10];
+    onelastclass o;
 
     // Bytewise
 
-    bytewise(w1);
-    bytewise(w2);
-
     bytewise(x);
-    bytewise(y);
-    bytewise(z);
+    bytewise(m);
+    bytewise(o);
+
+    // Events
+
+    void on(bytewise :: read)
+    {
+        std :: cout << "Read event triggered in myclass!" << std :: endl;
+    }
+
+    void on(bytewise :: write)
+    {
+        std :: cout << "Write event triggered in myclass!" << std :: endl;
+    }
 };
 
 int main()
 {
     myclass myobj;
-    myobj.w1 = "Hello, world!";
-    myobj.w2 = "Repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself, repeating myself.";
-
-    myobj.x = 3;
-    myobj.y = 4.5;
-
-    myobj.z[0] = 6;
-    myobj.z[1] = 7;
-    myobj.z[2] = 8;
-    myobj.z[3] = 9;
-
-    auto bytes = bytewise :: serialize(myobj);
-
-    for(size_t i = 0; i < bytes.size(); i++)
-    {
-        std :: cout << std :: setw(5) << (unsigned int) (unsigned char) bytes[i];
-
-        if(i % 16 == 15)
-            std :: cout << std :: endl;
-    }
-
-    std :: cout << std :: endl;
-
-    myclass myotherobj = bytewise :: deserialize <myclass> (bytes);
-
-    std :: cout << myotherobj.w1 << std :: endl;
-    std :: cout << myotherobj.w2 << std :: endl;
-
-    std :: cout << myotherobj.x << std :: endl;
-    std :: cout << myotherobj.y << std :: endl;
-
-    std :: cout << (unsigned int) (unsigned char) myotherobj.z[0] << std :: endl;
-    std :: cout << (unsigned int) (unsigned char) myotherobj.z[1] << std :: endl;
-    std :: cout << (unsigned int) (unsigned char) myotherobj.z[2] << std :: endl;
-    std :: cout << (unsigned int) (unsigned char) myotherobj.z[3] << std :: endl;
+    bytewise :: visitors :: on :: read(myobj);
 }
 
 #endif
