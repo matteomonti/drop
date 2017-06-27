@@ -58,26 +58,26 @@ namespace bytewise :: scanners
                 static constexpr bool value = extent_iterator <dimension - 1, dummy> :: value && std :: extent <mtype, dimension> :: value != 0;
             };
 
-            static constexpr bool value = (std :: is_class <typename std :: remove_all_extents <mtype> :: type> :: value) && (extent_iterator <(ssize_t) (std :: rank <mtype> :: value) - 1, false> :: value);
+            static constexpr bool value = (std :: is_class <std :: remove_all_extents_t <mtype>> :: value) && (extent_iterator <(ssize_t) (std :: rank <mtype> :: value) - 1, false> :: value);
         };
 
         template <size_t index> struct member
         {
             typedef typename proxy <target, index> :: type mtype;
-            typedef typename std :: remove_all_extents <mtype> :: type base;
-            typedef typename std :: remove_cv <base> :: type clean;
+            typedef std :: remove_all_extents_t <mtype> base;
+            typedef std :: remove_cv_t <base> clean;
 
-            typedef typename std :: conditional
+            typedef std :: conditional_t
             <
                 valid <mtype> :: value,
-                typename std :: conditional
+                std :: conditional_t
                 <
                     std :: is_same <clean, :: bytewise :: buffer> :: value,
                     map <path <index>>,
                     typename buffer <base> :: type :: template prefix <index> :: type
-                > :: type,
+                >,
                 map <>
-            > :: type type;
+            > type;
 
             template <bool, bool> struct valid_conditional;
 

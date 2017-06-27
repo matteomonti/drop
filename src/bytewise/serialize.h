@@ -39,7 +39,7 @@ namespace bytewise
 
         // Typedefs
 
-        typedef typename std :: conditional <(size > 0), block <size>, buffer> :: type type;
+        typedef std :: conditional_t <(size > 0), block <size>, buffer> type;
 
         // Service nested classes
 
@@ -84,7 +84,7 @@ namespace bytewise
 
     // Functions
 
-    template <typename type, typename std :: enable_if <std :: is_constructible <type> :: value> :: type * = nullptr> auto serialize(const type &);
+    template <typename type, std :: enable_if_t <std :: is_constructible <type> :: value> * = nullptr> auto serialize(const type &);
 };
 
 #endif

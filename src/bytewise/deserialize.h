@@ -47,7 +47,7 @@ namespace bytewise
 
         // Typedefs
 
-        typedef typename std :: conditional <(size > 0), block <size>, buffer> :: type type;
+        typedef std :: conditional_t <(size > 0), block <size>, buffer> type;
 
     private:
 
@@ -77,7 +77,7 @@ namespace bytewise
 
     // Functions
 
-    template <typename type, typename std :: enable_if <std :: is_constructible <type> :: value> :: type * = nullptr> type deserialize(const typename std :: conditional <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> :: type &);
+    template <typename type, std :: enable_if_t <std :: is_constructible <type> :: value> * = nullptr> type deserialize(const std :: conditional_t <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> &);
 };
 
 #endif

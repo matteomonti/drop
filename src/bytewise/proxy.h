@@ -24,6 +24,10 @@ namespace bytewise
 #include "visitors/buffer.h"
 #undef __forward__
 
+// Includes
+
+#include "utils/template/enable_in.h"
+
 namespace bytewise
 {
     template <typename target, size_t index> class proxy
@@ -44,8 +48,7 @@ namespace bytewise
 
         // Static methods
 
-        static inline auto & get(target &);
-        static inline auto & get(const target &);
+        template <typename otype, utils :: enable_in_t <otype, target> * = nullptr> static inline auto && get(otype &&);
     };
 };
 

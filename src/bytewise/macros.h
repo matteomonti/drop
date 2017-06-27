@@ -12,6 +12,7 @@
 // Includes
 
 #include "progressive/macros.h"
+#include "utils/template/enable_in.h"
 
 #define bytewise_indirect(name)                                     \
                                                                     \
@@ -30,12 +31,9 @@ progressive(__bytewise__)                                           \
         return offsetof(self, name);                                \
     }                                                               \
                                                                     \
-    static inline auto & get(self & parent)                         \
-    {                                                               \
-        return parent.name;                                         \
-    }                                                               \
-                                                                    \
-    static inline const auto & get(const self & parent)             \
+    template <typename __self__, utils :: enable_in_t <__self__,    \
+        self> * = nullptr> static inline auto && get(__self__       \
+            && parent)                                              \
     {                                                               \
         return parent.name;                                         \
     }                                                               \

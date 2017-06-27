@@ -120,24 +120,24 @@ namespace bytewise
 
             template <size_t abeg, size_t aend, bool aswap, size_t bbeg, size_t bend, size_t bswap, typename... tail> struct merge <mask <range <abeg, aend, aswap>, range <bbeg, bend, bswap>, tail...>>
             {
-                typedef typename std :: conditional
+                typedef std :: conditional_t
                 <
                     (!aswap && !bswap && aend == bbeg),
                     typename merge <mask <range <abeg, bend, false>, tail...>> :: type,
                     typename mask <range <abeg, aend, aswap>> :: template append <typename merge <mask <range <bbeg, bend, bswap>, tail...>> :: type> :: type
-                > :: type type;
+                > type;
             };
 
         public:
 
             // Typedefs
 
-            typedef typename std :: conditional
+            typedef std :: conditional_t
             <
                 (sizeof...(ranges) > 0),
                 typename merge <typename sort <sizeof...(ranges) - 1, false> :: type> :: type,
                 mask <>
-            > :: type type;
+            > type;
         };
 
         // Static members

@@ -66,7 +66,7 @@ namespace bytewise :: scanners
 
         template <typename mtype> struct valid
         {
-            static constexpr bool value = (std :: is_class <typename std :: remove_all_extents <mtype> :: type> :: value || std :: is_arithmetic <typename std :: remove_all_extents <mtype> :: type> :: value) && (std :: rank <mtype> :: value == 0 || extent <mtype> :: value != 0);
+            static constexpr bool value = (std :: is_class <std :: remove_all_extents_t <mtype>> :: value || std :: is_arithmetic <std :: remove_all_extents_t <mtype>> :: value) && (std :: rank <mtype> :: value == 0 || extent <mtype> :: value != 0);
         };
 
         template <size_t, size_t, typename, size_t> struct repeat;
@@ -89,19 +89,19 @@ namespace bytewise :: scanners
         template <size_t index> struct member
         {
             typedef typename proxy <target, index> :: type mtype;
-            typedef typename std :: remove_all_extents <mtype> :: type base;
+            typedef std :: remove_all_extents_t <mtype> base;
 
-            typedef typename std :: conditional
+            typedef std :: conditional_t
             <
                 valid <mtype> :: value,
-                typename std :: conditional
+                std :: conditional_t
                 <
                     std :: is_arithmetic <base> :: value,
                     mask <range <0, sizeof(base), (endianess :: foreign && sizeof(base) > 1)>>,
                     typename arithmetic <mtype> :: type
-                > :: type,
+                >,
                 mask <>
-            > :: type pattern;
+            > pattern;
 
             typedef typename repeat <proxy <target, index> :: offset, (std :: is_array <mtype> :: value ? extent <mtype> :: value : 1), pattern, sizeof(base)> :: type type;
 

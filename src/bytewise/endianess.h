@@ -157,8 +157,8 @@ namespace bytewise
         static inline void swap(char (&)[8], const char (&)[8]);
         static inline void swap(char (&)[16], const char (&)[16]);
 
-        template <type target, size_t size, typename std :: enable_if <size == 2 || size == 4 || size == 8 || size == 16> :: type * = nullptr> static inline void to(char (&)[size], const char (&)[size]);
-        template <size_t size, typename std :: enable_if <size == 2 || size == 4 || size == 8 || size == 16> :: type * = nullptr> static inline void translate(char (&)[size], const char (&)[size]);
+        template <type target, size_t size, std :: enable_if_t <size == 2 || size == 4 || size == 8 || size == 16> * = nullptr> static inline void to(char (&)[size], const char (&)[size]);
+        template <size_t size, std :: enable_if_t <size == 2 || size == 4 || size == 8 || size == 16> * = nullptr> static inline void translate(char (&)[size], const char (&)[size]);
     };
 };
 
