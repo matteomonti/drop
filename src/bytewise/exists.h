@@ -25,7 +25,7 @@ namespace bytewise
 
         template <bool exists> struct helper {};
         template <typename etype> static uint8_t sfinae(...);
-        template <typename etype> static uint32_t sfinae(helper <etype :: template bytewise <index, false> :: exists> *);
+        template <typename etype> static uint32_t sfinae(helper <etype :: template __bytewise__ <index, false> :: exists> *);
 
     public:
 

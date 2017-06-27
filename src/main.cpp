@@ -24,7 +24,7 @@ class a
 
     // Methods
 
-    void on(:: bytewise :: read)
+    void on(bytewise :: read)
     {
 
     }

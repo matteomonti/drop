@@ -36,11 +36,11 @@ namespace bytewise
 
         // Typedefs
 
-        typedef typename target :: template bytewise <index, false> :: type type;
+        typedef typename target :: template __bytewise__ <index, false> :: type type;
 
         // Static members
 
-        static constexpr size_t offset = target :: template bytewise <index, false> :: offset();
+        static constexpr size_t offset = target :: template __bytewise__ <index, false> :: offset();
 
         // Static methods
 

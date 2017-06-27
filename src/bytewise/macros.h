@@ -19,7 +19,7 @@ template <typename, size_t> friend class :: bytewise :: exists;     \
 template <typename, size_t> friend class :: bytewise :: proxy;      \
 template <typename, typename> friend class :: bytewise :: on;       \
                                                                     \
-progressive(bytewise)                                               \
+progressive(__bytewise__)                                           \
 {                                                                   \
     template <typename, size_t> friend class :: bytewise :: proxy;  \
                                                                     \
