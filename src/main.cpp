@@ -26,13 +26,14 @@ class a
 
     void on(bytewise :: read)
     {
-
+        std :: cout << "Event read emitted!" << std :: endl;
     }
 };
 
 int main()
 {
-    std :: cout << bytewise :: on <a, bytewise :: read> :: enable :: value << std :: endl;
+    a mya;
+    bytewise :: on <a, bytewise :: read> :: emit(mya);
 }
 
 #endif

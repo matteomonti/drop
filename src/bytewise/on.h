@@ -24,8 +24,6 @@ namespace bytewise
 {
     template <typename ttype, typename etype> class on
     {
-    public: // REMOVE ME
-
         // Service nested classes
 
         struct enable
@@ -37,6 +35,24 @@ namespace bytewise
             static constexpr bool has_on = std :: is_same <decltype(sfinae <ttype> (0)), uint32_t> :: value;
             static constexpr bool value = has_on && (count <ttype> :: value > 0);
         };
+
+        template <bool, bool> struct emitter;
+
+        template <bool dummy> struct emitter <true, dummy>
+        {
+            static inline void emit(ttype &);
+        };
+
+        template <bool dummy> struct emitter <false, dummy>
+        {
+            static inline void emit(ttype &);
+        };
+
+    public:
+
+        // Static methods
+
+        static inline void emit(ttype &);
     };
 
     struct read
