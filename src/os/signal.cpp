@@ -2,7 +2,7 @@
 
 #include "signal.h"
 
-namespace system
+namespace os
 {
     // Constructors
 

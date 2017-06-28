@@ -136,6 +136,8 @@ namespace network
 
         // Casting
 
+        operator bool () const;
+
         operator sockaddr_in & ();
         operator const sockaddr_in & () const;
     };

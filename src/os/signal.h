@@ -1,18 +1,18 @@
 // Forward declarations
 
-namespace system
+namespace os
 {
     class signal;
 };
 
-#if !defined(__forward__) && !defined(__drop__system__signal__h)
-#define __drop__system__signal__h
+#if !defined(__forward__) && !defined(__drop__os__signal__h)
+#define __drop__os__signal__h
 
 // Libraries
 
 #include <signal.h>
 
-namespace system
+namespace os
 {
     class signal
     {

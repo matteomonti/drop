@@ -31,19 +31,19 @@ namespace network :: sockets
 
         virtual ~socket();
 
-        // Settings
+        // Setters
 
-        virtual void receive_timeout(const microtimestamp &) = 0;
         virtual void send_timeout(const microtimestamp &) = 0;
+        virtual void receive_timeout(const microtimestamp &) = 0;
 
         // Getters
 
-        virtual int descriptor() const = 0;
+        virtual const int & descriptor() const = 0;
 
         // Methods
 
         virtual void send(const char *, const size_t &) = 0;
-        virtual void receive(char *, const size_t &) = 0;
+        virtual size_t receive(char *, const size_t &) = 0;
 
         virtual void close() = 0;
     };

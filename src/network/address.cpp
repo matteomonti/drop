@@ -142,6 +142,11 @@ namespace network
 
     // Casting
 
+    address :: operator bool () const
+    {
+        return this->_address.sin_addr.s_addr || this->_address.sin_port;
+    }
+
     address :: operator sockaddr_in & ()
     {
         return this->_address;
