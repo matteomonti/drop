@@ -91,13 +91,15 @@ namespace bytewise :: scanners
             typedef typename proxy <target, index> :: type mtype;
             typedef std :: remove_all_extents_t <mtype> base;
 
+            static constexpr endianess :: type endianess = proxy <target, index> :: endianess;
+
             typedef std :: conditional_t
             <
                 valid <mtype> :: value,
                 std :: conditional_t
                 <
                     std :: is_arithmetic <base> :: value,
-                    mask <range <0, sizeof(base), (endianess :: foreign && sizeof(base) > 1)>>,
+                    mask <range <0, sizeof(base), ((endianess != endianess :: local) && sizeof(base) > 1)>>,
                     typename arithmetic <base> :: type
                 >,
                 mask <>
