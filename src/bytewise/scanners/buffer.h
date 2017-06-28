@@ -72,7 +72,7 @@ namespace bytewise :: scanners
                 valid <mtype> :: value,
                 std :: conditional_t
                 <
-                    std :: is_same <clean, :: bytewise :: buffer> :: value,
+                    std :: is_base_of <:: bytewise :: buffer, clean> :: value,
                     map <path <index>>,
                     typename buffer <base> :: type :: template prefix <index> :: type
                 >,
@@ -89,8 +89,8 @@ namespace bytewise :: scanners
 
             template <bool dummy> struct valid_conditional <true, dummy>
             {
-                static constexpr bool empty = !(std :: is_same <clean, :: bytewise :: buffer> :: value) && (buffer <base> :: empty);
-                static constexpr bool writable = (std :: is_same <clean, :: bytewise :: buffer> :: value && !(std :: is_const <base> :: value)) || (!(std :: is_same <clean, :: bytewise :: buffer> :: value) && buffer <base> :: writable && (buffer <base> :: empty || !(std :: is_const <base> :: value)));
+                static constexpr bool empty = !(std :: is_base_of <:: bytewise :: buffer, clean> :: value) && (buffer <base> :: empty);
+                static constexpr bool writable = (std :: is_base_of <:: bytewise :: buffer, clean> :: value && !(std :: is_const <base> :: value)) || (!(std :: is_base_of <:: bytewise :: buffer, clean> :: value) && buffer <base> :: writable && (buffer <base> :: empty || !(std :: is_const <base> :: value)));
             };
 
             static constexpr bool empty = valid_conditional <valid <mtype> :: value, false> :: empty;

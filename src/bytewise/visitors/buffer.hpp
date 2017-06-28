@@ -12,17 +12,17 @@ namespace bytewise :: visitors
 
     template <typename ttype> template <typename vtype> template <typename mtype> inline void buffer <ttype> :: resolver <vtype, path <>> :: read(const mtype & buffer, vtype & visitor)
     {
-        visitor.read(buffer);
+        visitor.read((const :: bytewise :: buffer &) buffer);
     }
 
     template <typename ttype> template <typename vtype> template <typename mtype> inline void buffer <ttype> :: resolver <vtype, path <>> :: write(mtype & buffer, vtype & visitor)
     {
-        visitor.write(buffer);
+        visitor.write((:: bytewise :: buffer &) buffer);
     }
 
     template <typename ttype> template <typename vtype> template <typename mtype> inline size_t buffer <ttype> :: resolver <vtype, path <>> :: size(const mtype & buffer)
     {
-        return buffer.size();
+        return ((const :: bytewise :: buffer &) buffer).size();
     }
 
     // iterator <-1, dummy>
