@@ -28,6 +28,7 @@ namespace bytewise
 // Includes
 
 #include "utils/template/enable_in.h"
+#include "endianess.h"
 
 namespace bytewise
 {
@@ -47,6 +48,7 @@ namespace bytewise
         // Static members
 
         static constexpr size_t offset = target :: template __bytewise__ <index, false> :: offset();
+        static constexpr endianess :: type endianess = target :: template __bytewise__ <index, false> :: options :: endianess;
 
         // Static methods
 
