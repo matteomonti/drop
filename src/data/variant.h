@@ -32,23 +32,6 @@ namespace data
 
         // Service nested classes
 
-        struct bits
-        {
-            template <size_t, size_t> struct iterator;
-
-            template <size_t bits> struct iterator <0, bits>
-            {
-                static constexpr size_t value = bits;
-            };
-
-            template <size_t number, size_t bits> struct iterator
-            {
-                static constexpr size_t value = iterator <number / 2, bits + 1> :: value;
-            };
-
-            static constexpr size_t value = iterator <sizeof...(types) - 1, 0> :: value;
-        };
-
         template <typename needle> struct id
         {
             template <typename...> struct iterator;
@@ -71,6 +54,43 @@ namespace data
             static constexpr size_t value = iterator <types...> :: value;
         };
 
+        template <size_t index> struct type
+        {
+            template <size_t, typename...> struct iterator;
+
+            template <typename first, typename... tail> struct iterator <0, first, tail...>
+            {
+                typedef first type;
+            };
+
+            template <size_t cursor, typename first, typename... tail> struct iterator <cursor, first, tail...>
+            {
+                typedef typename iterator <cursor - 1, tail...> :: type type;
+            };
+
+            typedef typename iterator <index, types...> :: type vtype;
+        };
+
+        struct visit
+        {
+            template <size_t, bool> struct iterator;
+
+            template <bool dummy> struct iterator <sizeof...(types), dummy>
+            {
+                template <typename lambda> static inline void run(variant <types...> &, lambda &&);
+                template <typename lambda> static inline void run(const variant <types...> &, lambda &&);
+            };
+
+            template <size_t index, bool dummy> struct iterator
+            {
+                template <typename lambda> static inline void run(variant <types...> &, lambda &&);
+                template <typename lambda> static inline void run(const variant <types...> &, lambda &&);
+            };
+
+            template <typename lambda> static inline void run(variant <types...> &, lambda &&);
+            template <typename lambda> static inline void run(const variant <types...> &, lambda &&);
+        };
+
         // Private static members
 
         static constexpr size_t size = utils :: static_max <size_t, sizeof(types)...> :: value;
@@ -79,10 +99,15 @@ namespace data
         // Members
 
         std :: aligned_storage <size, align> _bytes;
+        size_t _typeid;
 
         // Private constructors
 
         variant();
+
+        // Methods
+
+        template <typename lambda> void visit(lambda &&);
 
     public:
 
