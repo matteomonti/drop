@@ -91,6 +91,26 @@ namespace data
             template <typename lambda> static inline void run(const variant <types...> &, lambda &&);
         };
 
+        struct are
+        {
+            template <typename...> struct iterator;
+
+            template <typename first> struct iterator <first>
+            {
+                static constexpr bool move_constructible = std :: is_move_constructible <first> :: value;
+                static constexpr bool copy_constructible = std :: is_copy_constructible <first> :: value;
+            };
+
+            template <typename first, typename next, typename... tail> struct iterator <first, next, tail...>
+            {
+                static constexpr bool move_constructible = std :: is_move_constructible <first> :: value && iterator <next, tail...> :: move_constructible;
+                static constexpr bool copy_constructible = std :: is_copy_constructible <first> :: value && iterator <next, tail...> :: copy_constructible;
+            };
+
+            static constexpr bool move_constructible = iterator <types...> :: move_constructible;
+            static constexpr bool copy_constructible = iterator <types...> :: copy_constructible;
+        };
+
         // Private static members
 
         static constexpr size_t size = utils :: static_max <size_t, sizeof(types)...> :: value;
@@ -105,11 +125,21 @@ namespace data
 
         variant();
 
+    public:
+
+        // Constructors
+
+        variant(variant &&);
+        variant(const variant &);
+
+        // Destructor
+
+        ~variant();
+
         // Methods
 
         template <typename lambda> void visit(lambda &&);
-
-    public:
+        template <typename lambda> void visit(lambda &&) const;
 
         // Static methods
 

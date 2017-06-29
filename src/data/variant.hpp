@@ -55,9 +55,49 @@ namespace data
     {
     }
 
+    // Constructors
+
+    template <typename... types> variant <types...> :: variant(variant && that)
+    {
+        this->_typeid = that._typeid;
+
+        that.visit([&](auto && value)
+        {
+            typedef std :: remove_const_t <std :: remove_reference_t <decltype(value)>> vtype;
+            new (&(this->_bytes)) vtype(std :: move(value));
+        });
+    }
+
+    template <typename... types> variant <types...> :: variant(const variant & that)
+    {
+        this->_typeid = that._typeid;
+
+        that.visit([&](auto && value)
+        {
+            typedef std :: remove_const_t <std :: remove_reference_t <decltype(value)>> vtype;
+            new (&(this->_bytes)) vtype(value);
+        });
+    }
+
+    // Destructor
+
+    template <typename... types> variant <types...> :: ~variant()
+    {
+        this->visit([&](auto && value)
+        {
+            typedef std :: remove_const_t <std :: remove_reference_t <decltype(value)>> vtype;
+            value.~vtype();
+        });
+    }
+
     // Methods
 
     template <typename... types> template <typename lambda> void variant <types...> :: visit(lambda && callback)
+    {
+        visit :: run(*this, callback);
+    }
+
+    template <typename... types> template <typename lambda> void variant <types...> :: visit(lambda && callback) const
     {
         visit :: run(*this, callback);
     }
