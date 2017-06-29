@@ -47,18 +47,21 @@ namespace data
         iterator <0, false> :: run(variant, callback);
     }
 
-    // variant
+    // variant_base
 
     // Private constructors
 
     template <typename... types> variant_base <types...> :: variant_base()
     {
+        std :: cout << "Default constructor" << std :: endl;
     }
 
     // Constructors
 
     template <typename... types> variant_base <types...> :: variant_base(variant_base && that)
     {
+        std :: cout << "Move constructor" << std :: endl;
+
         this->_typeid = that._typeid;
 
         that.visit([&](auto && value)
@@ -70,6 +73,8 @@ namespace data
 
     template <typename... types> variant_base <types...> :: variant_base(const variant_base & that)
     {
+        std :: cout << "Copy constructor" << std :: endl;
+
         this->_typeid = that._typeid;
 
         that.visit([&](auto && value)
@@ -83,6 +88,8 @@ namespace data
 
     template <typename... types> variant_base <types...> :: ~variant_base()
     {
+        std :: cout << "Destructor" << std :: endl;
+        
         this->visit([&](auto && value)
         {
             typedef std :: remove_const_t <std :: remove_reference_t <decltype(value)>> vtype;
@@ -102,12 +109,20 @@ namespace data
         visit :: run(*this, callback);
     }
 
+    // variant
+
+    // Constructors
+
+    template <typename... types> variant <types...> :: variant()
+    {
+    }
+
     // Static methods
 
-    template <typename... types> template <typename vtype, typename... atypes, std :: enable_if_t <utils :: in <vtype, types...> :: value && std :: is_constructible <vtype, atypes...> :: value> *> inline variant_base <types...> variant_base <types...> :: construct(atypes && ... args)
+    template <typename... types> template <typename vtype, typename... atypes, std :: enable_if_t <utils :: in <vtype, types...> :: value && std :: is_constructible <vtype, atypes...> :: value> *> inline variant <types...> variant <types...> :: construct(atypes && ... args)
     {
-        variant_base variant;
-        variant._typeid = id <vtype> :: value;
+        variant variant;
+        variant._typeid = variant_base <types...> :: template id <vtype> :: value;
         new (&(variant._bytes)) vtype(std :: forward <atypes> (args)...);
         return variant;
     }

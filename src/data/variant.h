@@ -3,6 +3,7 @@
 namespace data
 {
     template <typename...> class variant_base;
+    template <typename...> class variant;
 };
 
 #if !defined(__forward__) && !defined(__drop__data__variant__h)
@@ -18,15 +19,18 @@ namespace data
 #include "utils/template/static_max.h"
 #include "utils/template/enable_in.h"
 #include "utils/template/distinct.h"
+#include "utils/misc/copiable.h"
+#include "utils/misc/movable.h"
 
 namespace data
 {
     template <typename... types> class variant_base
     {
-        // Static asserts
+    public: // REMOVE ME
+    
+        // Friends
 
-        static_assert(sizeof...(types) >= 2, "Variant types must have at least two types.");
-        static_assert(utils :: distinct <types...> :: value, "Variant types must be distinct.");
+        template <typename...> friend class variant;
 
         // Service nested classes
 
@@ -138,10 +142,24 @@ namespace data
 
         template <typename lambda> void visit(lambda &&);
         template <typename lambda> void visit(lambda &&) const;
+    };
+
+    template <typename... types> class variant : public variant_base <types...>, public utils :: copiable <variant_base <types...> :: are :: copy_constructible>, public utils :: movable <variant_base <types...> :: are :: move_constructible>
+    {
+        // Static asserts
+
+        static_assert(sizeof...(types) >= 2, "Variant types must have at least two types.");
+        static_assert(utils :: distinct <types...> :: value, "Variant types must be distinct.");
+
+        // Private constructors
+
+        variant();
+
+    public:
 
         // Static methods
 
-        template <typename vtype, typename... atypes, std :: enable_if_t <utils :: in <vtype, types...> :: value && std :: is_constructible <vtype, atypes...> :: value> * = nullptr> static inline variant_base construct(atypes && ...);
+        template <typename vtype, typename... atypes, std :: enable_if_t <utils :: in <vtype, types...> :: value && std :: is_constructible <vtype, atypes...> :: value> * = nullptr> static inline variant construct(atypes && ...);
     };
 };
 

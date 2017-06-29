@@ -7,9 +7,32 @@
 
 #include "data/variant.hpp"
 
-data :: variant_base <int, double> f()
+class unmovable
 {
-    data :: variant_base <int, double> my_variant = data :: variant_base <int, double> :: construct <int> ();
+public:
+
+    unmovable() = default;
+    unmovable(const unmovable &) = default;
+    unmovable(unmovable &&) = delete;
+
+    int x;
+
+    void operator = (int x)
+    {
+        this->x = x;
+    };
+
+    operator int()
+    {
+        return x;
+    }
+};
+
+typedef data :: variant <int, double, unmovable> my_variant_type;
+
+my_variant_type f()
+{
+    my_variant_type my_variant = my_variant_type :: construct <int> ();
 
     my_variant.visit([](auto && value)
     {
@@ -21,19 +44,19 @@ data :: variant_base <int, double> f()
 
 int main()
 {
-    data :: variant_base <int, double> my_variant = f();
+    my_variant_type my_variant = f();
     my_variant.visit([](auto && value)
     {
         std :: cout << value << std :: endl;
     });
 
-    data :: variant_base <int, double> my_other_variant = std :: move(my_variant);
+    my_variant_type my_other_variant = std :: move(my_variant);
     my_other_variant.visit([](auto && value)
     {
         std :: cout << value << std :: endl;
     });
 
-    data :: variant_base <int, double> yet_another_variant = my_other_variant;
+    my_variant_type yet_another_variant = my_other_variant;
     yet_another_variant.visit([](auto && value)
     {
         std :: cout << value << std :: endl;
