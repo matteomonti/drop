@@ -2,7 +2,7 @@
 
 namespace data
 {
-    template <typename...> class variant;
+    template <typename...> class variant_base;
 };
 
 #if !defined(__forward__) && !defined(__drop__data__variant__h)
@@ -21,10 +21,8 @@ namespace data
 
 namespace data
 {
-    template <typename... types> class variant
+    template <typename... types> class variant_base
     {
-    public: // REMOVE ME
-
         // Static asserts
 
         static_assert(sizeof...(types) >= 2, "Variant types must have at least two types.");
@@ -77,18 +75,18 @@ namespace data
 
             template <bool dummy> struct iterator <sizeof...(types), dummy>
             {
-                template <typename lambda> static inline void run(variant <types...> &, lambda &&);
-                template <typename lambda> static inline void run(const variant <types...> &, lambda &&);
+                template <typename lambda> static inline void run(variant_base <types...> &, lambda &&);
+                template <typename lambda> static inline void run(const variant_base <types...> &, lambda &&);
             };
 
             template <size_t index, bool dummy> struct iterator
             {
-                template <typename lambda> static inline void run(variant <types...> &, lambda &&);
-                template <typename lambda> static inline void run(const variant <types...> &, lambda &&);
+                template <typename lambda> static inline void run(variant_base <types...> &, lambda &&);
+                template <typename lambda> static inline void run(const variant_base <types...> &, lambda &&);
             };
 
-            template <typename lambda> static inline void run(variant <types...> &, lambda &&);
-            template <typename lambda> static inline void run(const variant <types...> &, lambda &&);
+            template <typename lambda> static inline void run(variant_base <types...> &, lambda &&);
+            template <typename lambda> static inline void run(const variant_base <types...> &, lambda &&);
         };
 
         struct are
@@ -123,18 +121,18 @@ namespace data
 
         // Private constructors
 
-        variant();
+        variant_base();
 
     public:
 
         // Constructors
 
-        variant(variant &&);
-        variant(const variant &);
+        variant_base(variant_base &&);
+        variant_base(const variant_base &);
 
         // Destructor
 
-        ~variant();
+        ~variant_base();
 
         // Methods
 
@@ -143,7 +141,7 @@ namespace data
 
         // Static methods
 
-        template <typename vtype, typename... atypes, std :: enable_if_t <utils :: in <vtype, types...> :: value && std :: is_constructible <vtype, atypes...> :: value> * = nullptr> static inline variant construct(atypes && ...);
+        template <typename vtype, typename... atypes, std :: enable_if_t <utils :: in <vtype, types...> :: value && std :: is_constructible <vtype, atypes...> :: value> * = nullptr> static inline variant_base construct(atypes && ...);
     };
 };
 
