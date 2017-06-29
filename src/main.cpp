@@ -5,47 +5,26 @@
 #include <string>
 #include <iomanip>
 
-#include "bytewise/macros.h"
-#include "bytewise/serialize.hpp"
-#include "bytewise/deserialize.hpp"
-
-class myclass
-{
-public:
-
-    // Self
-
-    typedef myclass self;
-
-    // Members
-
-    int x;
-
-    // Bytewise
-
-    bytewise(x, endianess :: local);
-};
+#include "network/sockets/tcp.h"
 
 int main()
 {
-    myclass myobj;
-    myobj.x = 4;
+    network :: sockets :: tcp my_tcp_socket;
+    my_tcp_socket.bind(1236);
+    my_tcp_socket.listen();
 
-    auto bytes = bytewise :: serialize(myobj);
+    network :: sockets :: tcp my_connection = my_tcp_socket.accept();
+    my_connection.receive_timeout(5e6);
+    my_connection.send("Hello, World!", 13);
 
-    for(size_t i = 0; i < bytes.size(); i++)
-    {
-        std :: cout << std :: setw(5) << (unsigned int) (unsigned char) bytes[i];
+    char buffer[1024];
+    memset(buffer, '\0', 1024);
+    my_connection.receive(buffer, 1024);
 
-        if(i % 16 == 15)
-            std :: cout << std :: endl;
-    }
+    std :: cout << buffer << std :: endl;
 
-    std :: cout << std :: endl;
-
-    myclass myotherobj = bytewise :: deserialize <myclass> (bytes);
-
-    std :: cout << myotherobj.x << std :: endl;
+    my_connection.close();
+    my_tcp_socket.close();
 }
 
 #endif
