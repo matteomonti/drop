@@ -22,7 +22,6 @@ namespace network
 
 #include "exceptions.h"
 #include "network/address.h"
-#include "socket.h"
 #include "os/signal.h"
 
 namespace network :: sockets
