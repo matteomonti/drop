@@ -19,6 +19,7 @@ namespace data
 #include "utils/template/static_max.h"
 #include "utils/template/enable_in.h"
 #include "utils/template/distinct.h"
+#include "utils/template/all.h"
 #include "utils/misc/copy_constructible.h"
 #include "utils/misc/move_constructible.h"
 
@@ -27,7 +28,7 @@ namespace data
     template <typename... types> class variant_base
     {
     public: // REMOVE ME
-    
+
         // Friends
 
         template <typename...> friend class variant;
@@ -93,26 +94,6 @@ namespace data
             template <typename lambda> static inline void run(const variant_base <types...> &, lambda &&);
         };
 
-        struct are
-        {
-            template <typename...> struct iterator;
-
-            template <typename first> struct iterator <first>
-            {
-                static constexpr bool move_constructible = std :: is_move_constructible <first> :: value;
-                static constexpr bool copy_constructible = std :: is_copy_constructible <first> :: value;
-            };
-
-            template <typename first, typename next, typename... tail> struct iterator <first, next, tail...>
-            {
-                static constexpr bool move_constructible = std :: is_move_constructible <first> :: value && iterator <next, tail...> :: move_constructible;
-                static constexpr bool copy_constructible = std :: is_copy_constructible <first> :: value && iterator <next, tail...> :: copy_constructible;
-            };
-
-            static constexpr bool move_constructible = iterator <types...> :: move_constructible;
-            static constexpr bool copy_constructible = iterator <types...> :: copy_constructible;
-        };
-
         // Private static members
 
         static constexpr size_t size = utils :: static_max <size_t, sizeof(types)...> :: value;
@@ -144,7 +125,7 @@ namespace data
         template <typename lambda> void visit(lambda &&) const;
     };
 
-    template <typename... types> class variant : public variant_base <types...>, public utils :: copy_constructible <variant_base <types...> :: are :: copy_constructible>, public utils :: move_constructible <variant_base <types...> :: are :: move_constructible>
+    template <typename... types> class variant : public variant_base <types...>, public utils :: copy_constructible <utils :: all <std :: is_copy_constructible, types...> :: value>, public utils :: move_constructible <utils :: all <std :: is_move_constructible, types...> :: value>
     {
         // Static asserts
 
