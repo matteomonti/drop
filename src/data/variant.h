@@ -22,6 +22,8 @@ namespace data
 #include "utils/template/all.h"
 #include "utils/misc/copy_constructible.h"
 #include "utils/misc/move_constructible.h"
+#include "utils/misc/copy_assignable.h"
+#include "utils/misc/move_assignable.h"
 
 namespace data
 {
@@ -112,8 +114,8 @@ namespace data
 
         // Constructors
 
-        variant_base(variant_base &&);
         variant_base(const variant_base &);
+        variant_base(variant_base &&);
 
         // Destructor
 
@@ -123,9 +125,18 @@ namespace data
 
         template <typename lambda> void visit(lambda &&);
         template <typename lambda> void visit(lambda &&) const;
+
+        // Operators
+
+        variant_base & operator = (const variant_base &);
+        variant_base & operator = (variant_base &&);
     };
 
-    template <typename... types> class variant : public variant_base <types...>, public utils :: copy_constructible <utils :: all <std :: is_copy_constructible, types...> :: value>, public utils :: move_constructible <utils :: all <std :: is_move_constructible, types...> :: value>
+    template <typename... types> class variant : public variant_base <types...>,
+                                                 public utils :: copy_constructible <utils :: all <std :: is_copy_constructible, types...> :: value>,
+                                                 public utils :: move_constructible <utils :: all <std :: is_move_constructible, types...> :: value>,
+                                                 public utils :: copy_assignable <utils :: all <std :: is_copy_constructible, types...> :: value && utils :: all <std :: is_copy_assignable, types...> :: value>,
+                                                 public utils :: move_assignable <utils :: all <std :: is_move_constructible, types...> :: value && utils :: all <std :: is_move_assignable, types...> :: value>
     {
         // Static asserts
 

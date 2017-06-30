@@ -19,6 +19,11 @@ namespace utils
         copy_constructible() = default;
         copy_constructible(const copy_constructible &) = delete;
         copy_constructible(copy_constructible &&) = default;
+
+        // Operators
+
+        copy_constructible & operator = (const copy_constructible &) = default;
+        copy_constructible & operator = (copy_constructible &&) = default;
     };
 
     template <> class copy_constructible <true>
@@ -30,6 +35,11 @@ namespace utils
         copy_constructible() = default;
         copy_constructible(const copy_constructible &) = default;
         copy_constructible(copy_constructible &&) = default;
+
+        // Operators
+
+        copy_constructible & operator = (const copy_constructible &) = default;
+        copy_constructible & operator = (copy_constructible &&) = default;
     };
 };
 

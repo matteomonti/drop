@@ -19,6 +19,11 @@ namespace utils
         move_constructible() = default;
         move_constructible(const move_constructible &) = default;
         move_constructible(move_constructible &&) = delete;
+
+        // Operators
+
+        move_constructible & operator = (const move_constructible &) = default;
+        move_constructible & operator = (move_constructible &&) = default;
     };
 
     template <> class move_constructible <true>
@@ -30,6 +35,11 @@ namespace utils
         move_constructible() = default;
         move_constructible(const move_constructible &) = default;
         move_constructible(move_constructible &&) = default;
+
+        // Operators
+
+        move_constructible & operator = (const move_constructible &) = default;
+        move_constructible & operator = (move_constructible &&) = default;
     };
 };
 

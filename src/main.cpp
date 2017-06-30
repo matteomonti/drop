@@ -15,6 +15,9 @@ public:
     unmovable(const unmovable &) = default;
     unmovable(unmovable &&) = delete;
 
+    unmovable & operator = (const unmovable &) = default;
+    unmovable & operator = (unmovable &&) = delete;
+
     int x;
 
     void operator = (int x)
@@ -42,6 +45,16 @@ my_variant_type f()
     return my_variant;
 }
 
+my_variant_type g()
+{
+    return my_variant_type :: construct <int> (44);
+}
+
+my_variant_type h()
+{
+    return my_variant_type :: construct <double> (5.59);
+}
+
 int main()
 {
     my_variant_type my_variant = f();
@@ -57,6 +70,31 @@ int main()
     });
 
     my_variant_type yet_another_variant = my_other_variant;
+    yet_another_variant.visit([](auto && value)
+    {
+        std :: cout << value << std :: endl;
+    });
+
+    my_other_variant = g();
+    yet_another_variant = my_other_variant;
+
+    my_other_variant.visit([](auto && value)
+    {
+        std :: cout << value << std :: endl;
+    });
+
+    yet_another_variant.visit([](auto && value)
+    {
+        std :: cout << value << std :: endl;
+    });
+
+    yet_another_variant = my_other_variant = h();
+
+    my_other_variant.visit([](auto && value)
+    {
+        std :: cout << value << std :: endl;
+    });
+
     yet_another_variant.visit([](auto && value)
     {
         std :: cout << value << std :: endl;
