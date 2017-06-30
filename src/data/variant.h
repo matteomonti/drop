@@ -19,8 +19,8 @@ namespace data
 #include "utils/template/static_max.h"
 #include "utils/template/enable_in.h"
 #include "utils/template/distinct.h"
-#include "utils/misc/copiable.h"
-#include "utils/misc/movable.h"
+#include "utils/misc/copy_constructible.h"
+#include "utils/misc/move_constructible.h"
 
 namespace data
 {
@@ -144,7 +144,7 @@ namespace data
         template <typename lambda> void visit(lambda &&) const;
     };
 
-    template <typename... types> class variant : public variant_base <types...>, public utils :: copiable <variant_base <types...> :: are :: copy_constructible>, public utils :: movable <variant_base <types...> :: are :: move_constructible>
+    template <typename... types> class variant : public variant_base <types...>, public utils :: copy_constructible <variant_base <types...> :: are :: copy_constructible>, public utils :: move_constructible <variant_base <types...> :: are :: move_constructible>
     {
         // Static asserts
 
