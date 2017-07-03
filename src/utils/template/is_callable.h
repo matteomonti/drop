@@ -17,8 +17,6 @@ namespace utils
 {
     template <typename functor, typename arg> class is_callable <functor, arg>
     {
-    public: // REMOVE ME
-
         // Service nested classes
 
         typedef std :: remove_const_t <std :: remove_reference_t <arg>> clean;
@@ -67,6 +65,10 @@ namespace utils
 
             static constexpr bool value = std :: is_same <decltype(sfinae <functor> (0)), uint32_t> :: value;
         };
+
+    public:
+
+        // Static methods
 
         static constexpr bool direct = callable_sfinae :: value && (copy_sfinae :: value || const_reference_sfinae :: value || (reference_sfinae :: value && !const_arg));
         static constexpr bool value = callable_sfinae :: value;
