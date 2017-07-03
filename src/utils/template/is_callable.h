@@ -24,10 +24,10 @@ namespace utils
         typedef std :: remove_const_t <std :: remove_reference_t <arg>> clean;
         static constexpr bool const_arg = std :: is_const <std :: remove_reference_t <arg>> :: value;
 
-        template <typename atype = clean> struct copy_sfinae
+        struct copy_sfinae
         {
-            template <typename ftype, void (ftype :: *)(atype)> struct mhelper {};
-            template <typename ftype, void (ftype :: *)(atype) const> struct chelper {};
+            template <typename ftype, void (ftype :: *)(clean)> struct mhelper {};
+            template <typename ftype, void (ftype :: *)(clean) const> struct chelper {};
 
             template <typename ftype> static uint8_t sfinae(...);
             template <typename ftype> static uint32_t sfinae(mhelper <ftype, &ftype :: operator ()> *);
@@ -36,10 +36,10 @@ namespace utils
             static constexpr bool value = std :: is_same <decltype(sfinae <functor> (0)), uint32_t> :: value;
         };
 
-        template <typename atype = clean> struct const_reference_sfinae
+        struct const_reference_sfinae
         {
-            template <typename ftype, void (ftype :: *)(const atype &)> struct mhelper {};
-            template <typename ftype, void (ftype :: *)(const atype &) const> struct chelper {};
+            template <typename ftype, void (ftype :: *)(const clean &)> struct mhelper {};
+            template <typename ftype, void (ftype :: *)(const clean &) const> struct chelper {};
 
             template <typename ftype> static uint8_t sfinae(...);
             template <typename ftype> static uint32_t sfinae(mhelper <ftype, &ftype :: operator ()> *);
@@ -48,10 +48,10 @@ namespace utils
             static constexpr bool value = std :: is_same <decltype(sfinae <functor> (0)), uint32_t> :: value;
         };
 
-        template <typename atype = clean> struct reference_sfinae
+        struct reference_sfinae
         {
-            template <typename ftype, void (ftype :: *)(atype &)> struct mhelper {};
-            template <typename ftype, void (ftype :: *)(atype &) const> struct chelper {};
+            template <typename ftype, void (ftype :: *)(clean &)> struct mhelper {};
+            template <typename ftype, void (ftype :: *)(clean &) const> struct chelper {};
 
             template <typename ftype> static uint8_t sfinae(...);
             template <typename ftype> static uint32_t sfinae(mhelper <ftype, &ftype :: operator ()> *);
@@ -68,10 +68,7 @@ namespace utils
             static constexpr bool value = std :: is_same <decltype(sfinae <functor> (0)), uint32_t> :: value;
         };
 
-        struct hidden {};
-
-        static constexpr bool universal = callable_sfinae :: value && (copy_sfinae <hidden> :: value || const_reference_sfinae <hidden> :: value || (reference_sfinae <hidden> :: value && !const_arg));
-        static constexpr bool direct = callable_sfinae :: value && (copy_sfinae <> :: value || const_reference_sfinae <> :: value || (reference_sfinae <> :: value && !const_arg));
+        static constexpr bool direct = callable_sfinae :: value && (copy_sfinae :: value || const_reference_sfinae :: value || (reference_sfinae :: value && !const_arg));
         static constexpr bool value = callable_sfinae :: value;
     };
 };
