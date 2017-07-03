@@ -9,12 +9,13 @@
 
 int main()
 {
-    auto lambda = [](const auto &)
+    auto lambda = [](auto &&)
     {
     };
 
-    std :: cout << utils :: is_callable <decltype(lambda), const int> :: direct << std :: endl;
-    std :: cout << utils :: is_callable <decltype(lambda), const int> :: value << std :: endl;
+    std :: cout << utils :: is_callable <decltype(lambda), const int &> :: universal << std :: endl;
+    std :: cout << utils :: is_callable <decltype(lambda), const int &> :: direct << std :: endl;
+    std :: cout << utils :: is_callable <decltype(lambda), const int &> :: value << std :: endl;
 }
 
 #endif

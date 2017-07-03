@@ -24,6 +24,7 @@ namespace data
 #include "utils/misc/move_constructible.h"
 #include "utils/misc/copy_assignable.h"
 #include "utils/misc/move_assignable.h"
+#include "utils/template/is_callable.h"
 
 namespace data
 {
