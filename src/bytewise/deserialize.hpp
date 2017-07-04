@@ -89,7 +89,7 @@ namespace bytewise
         return target;
     }
 
-    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> *> type deserialize(const std :: conditional_t <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> & bytes)
+    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> *> type deserialize(const std :: conditional_t <(traits <type> :: size > 0), block <traits <type> :: size>, buffer> & bytes)
     {
         return (deserializer <std :: remove_const_t <std :: remove_reference_t <type>>> (bytes)).finalize();
     }
