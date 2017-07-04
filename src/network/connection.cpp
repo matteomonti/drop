@@ -6,6 +6,16 @@ namespace network
 {
     // arc
 
+    // Destructor
+
+    connection :: arc :: ~arc()
+    {
+        this->_socket.visit([](auto && socket)
+        {
+            socket.close();
+        });
+    }
+
     // Methods
 
     void connection :: arc :: send(const bytewise :: buffer & buffer)

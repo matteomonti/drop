@@ -41,6 +41,14 @@ namespace network
 
             template <typename type> arc(const type &);
 
+        public:
+
+            // Destructor
+
+            ~arc();
+
+        private:
+
             // Methods
 
             void send(const bytewise :: buffer &);
