@@ -53,15 +53,12 @@ namespace data
 
     template <typename... types> variant_base <types...> :: variant_base()
     {
-        std :: cout << "Default constructor" << std :: endl;
     }
 
     // Constructors
 
     template <typename... types> variant_base <types...> :: variant_base(const variant_base & that)
     {
-        std :: cout << "Copy constructor" << std :: endl;
-
         this->_typeid = that._typeid;
 
         that.visit([&](auto && value)
@@ -73,8 +70,6 @@ namespace data
 
     template <typename... types> variant_base <types...> :: variant_base(variant_base && that)
     {
-        std :: cout << "Move constructor" << std :: endl;
-
         this->_typeid = that._typeid;
 
         that.visit([&](auto && value)
@@ -88,8 +83,6 @@ namespace data
 
     template <typename... types> variant_base <types...> :: ~variant_base()
     {
-        std :: cout << "Destructor" << std :: endl;
-
         this->visit([&](auto && value)
         {
             typedef std :: remove_const_t <std :: remove_reference_t <decltype(value)>> vtype;
@@ -113,8 +106,6 @@ namespace data
 
     template <typename... types> variant_base <types...> & variant_base <types...> :: operator = (const variant_base & that)
     {
-        std :: cout << "Copy assignment" << std :: endl;
-
         if(this->_typeid == that._typeid)
         {
             that.visit([&](auto && value)
@@ -145,8 +136,6 @@ namespace data
 
     template <typename... types> variant_base <types...> & variant_base <types...> :: operator = (variant_base && that)
     {
-        std :: cout << "Move assignment" << std :: endl;
-
         if(this->_typeid == that._typeid)
         {
             that.visit([&](auto && value)
