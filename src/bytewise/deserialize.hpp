@@ -57,7 +57,7 @@ namespace bytewise
             }
         };
 
-        std :: conditional <(size == 0), yexcept, nexcept> :: type :: check(this->_bytes, this->_cursor);
+        std :: conditional <(traits <ttype> :: size == 0), yexcept, nexcept> :: type :: check(this->_bytes, this->_cursor);
 
         memcpy(bytes, this->_bytes + this->_cursor, rsize);
         this->_cursor += rsize;
@@ -82,12 +82,16 @@ namespace bytewise
 
     // Functions
 
-    template <typename type, std :: enable_if_t <std :: is_constructible <std :: remove_const_t <std :: remove_reference_t <type>>> :: value> *> type deserialize(const std :: conditional_t <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> & bytes)
+    template <typename type, std :: enable_if_t <traits <type> :: arithmetic> *> type deserialize(const block <sizeof(type)> & bytes)
     {
-        type object = (deserializer <std :: remove_const_t <std :: remove_reference_t <type>>> (bytes)).finalize();
-        //visitors :: on :: write(object);
+        type target;
+        endianess :: translate(reinterpret_cast <char (&)[sizeof(type)]> (target), reinterpret_cast <const char (&)[sizeof(type)]> (bytes));
+        return target;
+    }
 
-        return object;
+    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> *> type deserialize(const std :: conditional_t <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> & bytes)
+    {
+        return (deserializer <std :: remove_const_t <std :: remove_reference_t <type>>> (bytes)).finalize();
     }
 };
 

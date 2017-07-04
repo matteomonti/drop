@@ -9,6 +9,7 @@
 #include "visitors/buffer.hpp"
 #include "visitors/on.hpp"
 #include "bsize.h"
+#include "endianess.hpp"
 
 namespace bytewise
 {
@@ -43,12 +44,12 @@ namespace bytewise
     template <typename ttype> template <typename otype, utils :: enable_in_t <otype, ttype> *> serializer <ttype> :: serializer(otype && target) : _cursor(0)
     {
         visitors :: on :: read(target);
-        allocator <(size == 0), false> :: alloc(this->_bytes, target);
+        allocator <(traits <ttype> :: size == 0), false> :: alloc(this->_bytes, target);
 
         visitors :: arithmetic <ttype> :: read(target, *this);
         visitors :: buffer <ttype> :: read(target, *this);
 
-        allocator <(size == 0), false> :: crop(this->_bytes, this->_cursor);
+        allocator <(traits <ttype> :: size == 0), false> :: crop(this->_bytes, this->_cursor);
 
     }
 
@@ -78,7 +79,16 @@ namespace bytewise
 
     // Functions
 
-    template <typename type, std :: enable_if_t <std :: is_constructible <std :: remove_const_t <std :: remove_reference_t <type>>> :: value> *> auto serialize(type && target)
+    template <typename type, std :: enable_if_t <traits <type> :: arithmetic> *> auto serialize(type && target)
+    {
+        static constexpr size_t size = sizeof(std :: remove_const_t <std :: remove_reference_t <type>>);
+
+        block <size> buffer;
+        endianess :: translate(reinterpret_cast <char (&)[size]> (buffer), reinterpret_cast <const char (&)[size]> (target));
+        return buffer;
+    }
+
+    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> *> auto serialize(type && target)
     {
         return (serializer <std :: remove_const_t <std :: remove_reference_t <type>>> (target)).finalize();
     }
