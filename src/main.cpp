@@ -9,8 +9,6 @@
 
 int main()
 {
-    network :: acceptors :: tcp :: sync my_acceptor(1235);
-    network :: connection my_connection = my_acceptor.accept();
 }
 
 #endif

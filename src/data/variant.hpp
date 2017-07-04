@@ -9,42 +9,42 @@ namespace data
 {
     // caller <false, dummy>
 
-    template <typename... types> template <bool dummy> template <typename dtype, typename lambda, typename... lambdas> void variant_base <types...> :: dispatch :: caller <false, dummy> :: run(dtype && item, lambda && callback, lambdas && ... tail)
+    template <typename... types> template <bool dummy> template <typename dtype, typename lambda, typename... lambdas> inline void variant_base <types...> :: dispatch :: caller <false, dummy> :: run(dtype && item, lambda && callback, lambdas && ... tail)
     {
         dispatch :: run(item, tail...);
     }
 
     // caller <true, dummy>
 
-    template <typename... types> template <bool dummy> template <typename dtype, typename lambda, typename... lambdas> void variant_base <types...> :: dispatch :: caller <true, dummy> :: run(dtype && item, lambda && callback, lambdas && ... tail)
+    template <typename... types> template <bool dummy> template <typename dtype, typename lambda, typename... lambdas> inline void variant_base <types...> :: dispatch :: caller <true, dummy> :: run(dtype && item, lambda && callback, lambdas && ... tail)
     {
         callback(item);
     }
 
     // dispatch
 
-    template <typename... types> template <typename dtype> void variant_base <types...> :: dispatch :: run(dtype && item)
+    template <typename... types> template <typename dtype> inline void variant_base <types...> :: dispatch :: run(dtype && item)
     {
     }
 
-    template <typename... types> template <typename dtype, typename lambda, typename... lambdas> void variant_base <types...> :: dispatch :: run(dtype && item, lambda && callback, lambdas && ... tail)
+    template <typename... types> template <typename dtype, typename lambda, typename... lambdas> inline void variant_base <types...> :: dispatch :: run(dtype && item, lambda && callback, lambdas && ... tail)
     {
         caller <utils :: is_callable <std :: remove_reference_t <lambda>, dtype> :: direct, false> :: run(item, callback, tail...);
     }
 
     // iterator <sizeof...(types), dummy>
 
-    template <typename... types> template <bool dummy> template <typename... lambdas> void variant_base <types...> :: visit :: iterator <sizeof...(types), dummy> :: run(variant_base <types...> &, lambdas && ...)
+    template <typename... types> template <bool dummy> template <typename... lambdas> inline void variant_base <types...> :: visit :: iterator <sizeof...(types), dummy> :: run(variant_base <types...> &, lambdas && ...)
     {
     }
 
-    template <typename... types> template <bool dummy> template <typename... lambdas> void variant_base <types...> :: visit :: iterator <sizeof...(types), dummy> :: run(const variant_base <types...> &, lambdas && ...)
+    template <typename... types> template <bool dummy> template <typename... lambdas> inline void variant_base <types...> :: visit :: iterator <sizeof...(types), dummy> :: run(const variant_base <types...> &, lambdas && ...)
     {
     }
 
     // iterator <index, dummy>
 
-    template <typename... types> template <size_t index, bool dummy> template <typename... lambdas> void variant_base <types...> :: visit :: iterator <index, dummy> :: run(variant_base <types...> & variant, lambdas && ... callbacks)
+    template <typename... types> template <size_t index, bool dummy> template <typename... lambdas> inline void variant_base <types...> :: visit :: iterator <index, dummy> :: run(variant_base <types...> & variant, lambdas && ... callbacks)
     {
         if(index == variant._typeid)
             dispatch :: run(reinterpret_cast <typename type <index> :: vtype &> (variant._bytes), callbacks...);
@@ -52,7 +52,7 @@ namespace data
             iterator <index + 1, dummy> :: run(variant, callbacks...);
     }
 
-    template <typename... types> template <size_t index, bool dummy> template <typename... lambdas> void variant_base <types...> :: visit :: iterator <index, dummy> :: run(const variant_base <types...> & variant, lambdas && ... callbacks)
+    template <typename... types> template <size_t index, bool dummy> template <typename... lambdas> inline void variant_base <types...> :: visit :: iterator <index, dummy> :: run(const variant_base <types...> & variant, lambdas && ... callbacks)
     {
         if(index == variant._typeid)
             dispatch :: run(reinterpret_cast <const typename type <index> :: vtype &> (variant._bytes), callbacks...);
@@ -62,12 +62,12 @@ namespace data
 
     // visit
 
-    template <typename... types> template <typename... lambdas> void variant_base <types...> :: visit :: run(variant_base <types...> & variant, lambdas && ... callbacks)
+    template <typename... types> template <typename... lambdas> inline void variant_base <types...> :: visit :: run(variant_base <types...> & variant, lambdas && ... callbacks)
     {
         iterator <0, false> :: run(variant, callbacks...);
     }
 
-    template <typename... types> template <typename... lambdas> void variant_base <types...> :: visit :: run(const variant_base <types...> & variant, lambdas && ... callbacks)
+    template <typename... types> template <typename... lambdas> inline void variant_base <types...> :: visit :: run(const variant_base <types...> & variant, lambdas && ... callbacks)
     {
         iterator <0, false> :: run(variant, callbacks...);
     }
