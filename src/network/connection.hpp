@@ -15,12 +15,49 @@ namespace network
     {
     }
 
+    // Methods
+
+    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> *> void connection :: arc :: send(const type & target)
+    {
+        auto buffer = bytewise :: serialize(target);
+
+        this->_socket.visit([&](auto && socket)
+        {
+            socket.send(buffer, bytewise :: traits <type> :: size);
+        });
+    }
+
+    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> *> type connection :: arc :: receive()
+    {
+        bytewise :: block <bytewise :: traits <type> :: size> buffer;
+
+        this->_socket.visit([&](sockets :: tcp & socket)
+        {
+            for(char * cursor = buffer; cursor < buffer + bytewise :: traits <type> :: size;)
+                cursor += socket.receive(cursor, buffer + bytewise :: traits <type> :: size - cursor);
+        });
+
+        return bytewise :: deserialize <type> (buffer);
+    }
+
     // connection
 
-    // Private constructors
+    // Constructors
 
     template <typename type, utils :: enable_in_t <type, sockets :: tcp> *> connection :: connection(const type & socket) : _arc(new arc(socket))
     {
+    }
+
+    // Methods
+
+    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled> *> void connection :: send(const type & target)
+    {
+        this->_arc->send(target);
+    }
+
+    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled> *> type connection :: receive()
+    {
+        return this->_arc->receive <type> ();
     }
 }
 

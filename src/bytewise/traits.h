@@ -33,7 +33,7 @@ namespace bytewise
         static constexpr bool enabled = std :: is_constructible <clean> :: value && (std :: is_arithmetic <clean> :: value || count <clean> :: value > 0);
         static constexpr bool arithmetic = std :: is_arithmetic <clean> :: value;
 
-        static constexpr size_t size = scanners :: buffer <type> :: empty ? (scanners :: arithmetic <type> :: type :: size) : 0;
+        static constexpr size_t size = arithmetic ? sizeof(clean) : (scanners :: buffer <type> :: empty ? (scanners :: arithmetic <type> :: type :: size) : 0);
     };
 };
 

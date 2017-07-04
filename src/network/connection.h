@@ -18,6 +18,7 @@ namespace network
 #include "data/variant.hpp"
 #include "sockets/tcp.h"
 #include "utils/template/enable_in.h"
+#include "bytewise/bytewise.h"
 
 namespace network
 {
@@ -38,6 +39,11 @@ namespace network
             // Constructors
 
             template <typename type> arc(const type &);
+
+            // Methods
+
+            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> * = nullptr> void send(const type &);
+            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> * = nullptr> type receive();
         };
 
         // Members
@@ -49,6 +55,11 @@ namespace network
         // Constructors
 
         template <typename type, utils :: enable_in_t <type, sockets :: tcp> * = nullptr> connection(const type &);
+
+        // Methods
+
+        template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled> * = nullptr> void send(const type &);
+        template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled> * = nullptr> type receive();
     };
 };
 
