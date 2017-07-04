@@ -17,6 +17,7 @@ namespace bytewise
 
 #include "block.h"
 #include "buffer.h"
+#include "traits.h"
 #include "scanners/arithmetic.h"
 #include "scanners/buffer.h"
 #include "visitors/arithmetic.h"
@@ -86,7 +87,8 @@ namespace bytewise
 
     // Functions
 
-    template <typename type, std :: enable_if_t <std :: is_constructible <std :: remove_const_t <std :: remove_reference_t <type>>> :: value> * = nullptr> auto serialize(type &&);
+    template <typename type, std :: enable_if_t <traits <type> :: arithmetic> * = nullptr> auto serialize(type &&);
+    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> * = nullptr> auto serialize(type &&);
 };
 
 #endif

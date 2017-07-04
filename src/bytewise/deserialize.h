@@ -18,6 +18,7 @@ namespace bytewise
 
 #include "block.h"
 #include "buffer.h"
+#include "traits.h"
 #include "scanners/arithmetic.h"
 #include "scanners/buffer.h"
 #include "visitors/arithmetic.h"
@@ -78,7 +79,8 @@ namespace bytewise
 
     // Functions
 
-    template <typename type, std :: enable_if_t <std :: is_constructible <std :: remove_const_t <std :: remove_reference_t <type>>> :: value> * = nullptr> type deserialize(const std :: conditional_t <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> &);
+    template <typename type, std :: enable_if_t <traits <type> :: arithmetic> * = nullptr> type deserialize(const block <sizeof(type)> &);
+    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> * = nullptr> type deserialize(const std :: conditional_t <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> &);
 };
 
 #endif
