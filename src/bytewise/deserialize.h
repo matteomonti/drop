@@ -76,7 +76,7 @@ namespace bytewise
     // Functions
 
     template <typename type, std :: enable_if_t <traits <type> :: arithmetic> * = nullptr> type deserialize(const block <sizeof(type)> &);
-    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> * = nullptr> type deserialize(const std :: conditional_t <(deserializer <type> :: size > 0), block <deserializer <type> :: size>, buffer> &);
+    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> * = nullptr> type deserialize(const std :: conditional_t <(traits <type> :: size > 0), block <traits <type> :: size>, buffer> &);
 };
 
 #endif

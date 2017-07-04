@@ -120,7 +120,7 @@ namespace data
 
         // Members
 
-        std :: aligned_storage <size, align> _bytes;
+        std :: aligned_storage_t <size, align> _bytes;
         size_t _typeid;
 
         // Private constructors

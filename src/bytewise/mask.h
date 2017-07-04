@@ -128,16 +128,23 @@ namespace bytewise
                 > type;
             };
 
+            template <bool, bool> struct conditional;
+
+            template <bool dummy> struct conditional <false, dummy>
+            {
+                typedef mask <> type;
+            };
+
+            template <bool dummy> struct conditional <true, dummy>
+            {
+                typedef typename merge <typename sort <sizeof...(ranges) - 1, false> :: type> :: type type;
+            };
+
         public:
 
             // Typedefs
 
-            typedef std :: conditional_t
-            <
-                (sizeof...(ranges) > 0),
-                typename merge <typename sort <sizeof...(ranges) - 1, false> :: type> :: type,
-                mask <>
-            > type;
+            typedef typename conditional <(sizeof...(ranges) > 0), false> :: type type;
         };
 
         // Static members
