@@ -20,6 +20,7 @@ namespace data
 #include "utils/template/enable_in.h"
 #include "utils/template/distinct.h"
 #include "utils/template/all.h"
+#include "utils/template/is_callable.h"
 #include "utils/misc/copy_constructible.h"
 #include "utils/misc/move_constructible.h"
 #include "utils/misc/copy_assignable.h"
@@ -76,24 +77,42 @@ namespace data
             typedef typename iterator <index, types...> :: type vtype;
         };
 
+        struct dispatch
+        {
+            template <bool, bool> struct caller;
+
+            template <bool dummy> struct caller <true, dummy>
+            {
+                template <typename dtype, typename lambda, typename... lambdas> static inline void run(dtype &&, lambda &&, lambdas && ...);
+            };
+
+            template <bool dummy> struct caller <false, dummy>
+            {
+                template <typename dtype, typename lambda, typename... lambdas> static inline void run(dtype &&, lambda &&, lambdas && ...);
+            };
+
+            template <typename dtype> static inline void run(dtype &&);
+            template <typename dtype, typename lambda, typename... lambdas> static inline void run(dtype &&, lambda &&, lambdas && ...);
+        };
+
         struct visit
         {
             template <size_t, bool> struct iterator;
 
             template <bool dummy> struct iterator <sizeof...(types), dummy>
             {
-                template <typename lambda> static inline void run(variant_base <types...> &, lambda &&);
-                template <typename lambda> static inline void run(const variant_base <types...> &, lambda &&);
+                template <typename... lambdas> static inline void run(variant_base <types...> &, lambdas && ...);
+                template <typename... lambdas> static inline void run(const variant_base <types...> &, lambdas && ...);
             };
 
             template <size_t index, bool dummy> struct iterator
             {
-                template <typename lambda> static inline void run(variant_base <types...> &, lambda &&);
-                template <typename lambda> static inline void run(const variant_base <types...> &, lambda &&);
+                template <typename... lambdas> static inline void run(variant_base <types...> &, lambdas && ...);
+                template <typename... lambdas> static inline void run(const variant_base <types...> &, lambdas && ...);
             };
 
-            template <typename lambda> static inline void run(variant_base <types...> &, lambda &&);
-            template <typename lambda> static inline void run(const variant_base <types...> &, lambda &&);
+            template <typename... lambdas> static inline void run(variant_base <types...> &, lambdas && ...);
+            template <typename... lambdas> static inline void run(const variant_base <types...> &, lambdas && ...);
         };
 
         // Private static members
@@ -123,8 +142,8 @@ namespace data
 
         // Methods
 
-        template <typename lambda> void visit(lambda &&);
-        template <typename lambda> void visit(lambda &&) const;
+        template <typename... lambdas> void visit(lambdas && ...);
+        template <typename... lambdas> void visit(lambdas && ...) const;
 
         // Operators
 
