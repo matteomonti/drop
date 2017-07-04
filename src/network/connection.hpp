@@ -27,6 +27,20 @@ namespace network
         });
     }
 
+    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size == 0)> *> void connection :: arc :: send(const type & target)
+    {
+        auto buffer = bytewise :: serialize(target);
+
+        this->_socket.visit([&](auto && socket)
+        {
+            char sbuffer[sizeof(uint32_t)];
+
+            size_t ssize = bytewise :: bsize(buffer.size()).write(sbuffer);
+            socket.send(sbuffer, ssize);
+            socket.send(buffer, buffer.size());
+        });
+    }
+
     template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> *> type connection :: arc :: receive()
     {
         bytewise :: block <bytewise :: traits <type> :: size> buffer;
@@ -35,6 +49,33 @@ namespace network
         {
             for(char * cursor = buffer; cursor < buffer + bytewise :: traits <type> :: size;)
                 cursor += socket.receive(cursor, buffer + bytewise :: traits <type> :: size - cursor);
+        });
+
+        return bytewise :: deserialize <type> (buffer);
+    }
+
+    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size == 0)> *> type connection :: arc :: receive()
+    {
+        bytewise :: buffer buffer;
+
+        this->_socket.visit([&](sockets :: tcp & socket)
+        {
+            char sbuffer[sizeof(uint32_t)];
+            for(char * cursor = sbuffer; cursor < sbuffer + sizeof(uint32_t);)
+            {
+                socket.receive(cursor, 1);
+                cursor++;
+
+                bytewise :: bsize bsize(sbuffer, cursor - sbuffer);
+                if(bsize.value() > -1)
+                {
+                    buffer.alloc(bsize.value());
+                    break;
+                }
+            }
+
+            for(char * cursor = buffer; cursor < buffer + buffer.size();)
+                cursor += socket.receive(cursor, buffer + buffer.size() - cursor);
         });
 
         return bytewise :: deserialize <type> (buffer);

@@ -19,6 +19,7 @@ namespace network
 #include "sockets/tcp.h"
 #include "utils/template/enable_in.h"
 #include "bytewise/bytewise.h"
+#include "bytewise/bsize.h"
 
 namespace network
 {
@@ -43,7 +44,10 @@ namespace network
             // Methods
 
             template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> * = nullptr> void send(const type &);
+            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size == 0)> * = nullptr> void send(const type &);
+
             template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> * = nullptr> type receive();
+            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size == 0)> * = nullptr> type receive();
         };
 
         // Members

@@ -9,19 +9,38 @@
 #include "network/connectors/tcp.h"
 #include "network/acceptors/tcp.h"
 
+class message
+{
+public:
+
+    // Self
+
+    typedef message self;
+
+    // Members
+
+    int i = 0; // REMOVE ME
+    bytewise :: buffer buffer;
+
+    // Bytewise
+
+    bytewise(i);
+    bytewise(buffer);
+};
+
 void server()
 {
-    network :: acceptors :: tcp :: sync my_acceptor(1232);
+    network :: acceptors :: tcp :: sync my_acceptor(1230);
     network :: connection my_connection = my_acceptor.accept();
-    auto value = my_connection.receive <network :: address> ();
+    auto value = my_connection.receive <message> ();
 
-    std :: cout << "Received: " << value << std :: endl;
+    std :: cout << "Received: " << value.buffer << std :: endl;
 }
 
 void client()
 {
-    network :: connection my_connection = network :: connectors :: tcp :: sync :: connect({"localhost", 1232});
-    my_connection.send(network :: address("google.com", 80));
+    network :: connection my_connection = network :: connectors :: tcp :: sync :: connect({"localhost", 1230});
+    my_connection.send(message{.buffer = "Hello World!"});
 }
 
 int main()
