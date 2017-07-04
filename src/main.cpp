@@ -9,29 +9,55 @@
 #include "network/connectors/tcp.h"
 #include "network/acceptors/tcp.h"
 
+network :: connection * the_connection;
+
+void receive()
+{
+    network :: connection & connection = *the_connection;
+    while(true)
+        std :: cout << connection.receive <bytewise :: buffer> () << std :: endl;
+}
+
+void send(network :: connection & connection)
+{
+    while(true)
+    {
+        char buffer[1024];
+        std :: cin.getline(buffer, 1024);
+
+        connection.send(bytewise :: buffer {buffer});
+    }
+}
+
 void server()
 {
     network :: acceptors :: tcp :: sync my_acceptor(1230);
     network :: connection my_connection = my_acceptor.accept();
-    auto value = my_connection.receive <bytewise :: buffer> ();
 
-    std :: cout << "Received: " << value << std :: endl;
+    std :: cout << "Connection received" << std :: endl;
+    the_connection = &my_connection;
+    std :: thread recvthread(receive);
+    send(my_connection);
 }
 
 void client()
 {
     network :: connection my_connection = network :: connectors :: tcp :: sync :: connect({"localhost", 1230});
-    my_connection.send(bytewise :: buffer{"Hello World!"});
+    std :: cout << "Connected" << std :: endl;
+    the_connection = &my_connection;
+    std :: thread recvthread(receive);
+    send(my_connection);
 }
 
-int main()
+int main(int narg, char ** args)
 {
-    std :: thread server_thread(server);
-    usleep(1.e5);
-    std :: thread client_thread(client);
+    if(narg != 2)
+        return -1;
 
-    server_thread.join();
-    client_thread.join();
+    if(!strcmp(args[1], "client"))
+        client();
+    else if(!strcmp(args[1], "server"))
+        server();
 }
 
 #endif
