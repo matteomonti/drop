@@ -11,7 +11,7 @@ class myclass
 {
 public:
 
-    void f() const // REMOVE ME
+    void f()
     {
         std :: cout << "Hello from my class" << std :: endl;
     }
@@ -21,7 +21,7 @@ class myotherclass
 {
 public:
 
-    void f() const // REMOVE ME
+    void f()
     {
         std :: cout << "Hello from my other class" << std :: endl;
     }
