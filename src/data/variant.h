@@ -157,7 +157,6 @@ namespace data
     {
         // Static asserts
 
-        static_assert(sizeof...(types) >= 2, "Variant types must have at least two types.");
         static_assert(utils :: distinct <types...> :: value, "Variant types must be distinct.");
 
         // Private constructors
