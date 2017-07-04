@@ -23,6 +23,7 @@ namespace network
 #include "exceptions.h"
 #include "network/address.h"
 #include "os/signal.h"
+#include "time/time.h"
 
 namespace network :: sockets
 {
