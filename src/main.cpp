@@ -19,12 +19,10 @@ public:
 
     // Members
 
-    int i = 0; // REMOVE ME
     bytewise :: buffer buffer;
 
     // Bytewise
 
-    bytewise(i);
     bytewise(buffer);
 };
 
