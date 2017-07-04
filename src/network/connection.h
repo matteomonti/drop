@@ -44,9 +44,9 @@ namespace network
 
         std :: shared_ptr <arc> _arc;
 
-    public: // REMOVE ME
+    public:
 
-        // Private constructors
+        // Constructors
 
         template <typename type, utils :: enable_in_t <type, sockets :: tcp> * = nullptr> connection(const type &);
     };
