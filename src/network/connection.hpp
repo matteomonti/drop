@@ -17,7 +17,7 @@ namespace network
 
     // Methods
 
-    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> *> void connection :: arc :: send(const type & target)
+    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size > 0)> *> void connection :: arc :: send(const type & target)
     {
         auto buffer = bytewise :: serialize(target);
 
@@ -27,34 +27,13 @@ namespace network
         });
     }
 
-    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size == 0)> *> void connection :: arc :: send(const type & target)
+    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size == 0)> *> void connection :: arc :: send(const type & target)
     {
         auto buffer = bytewise :: serialize(target);
-
-        this->_socket.visit([&](auto && socket)
-        {
-            char sbuffer[sizeof(uint32_t)];
-
-            size_t ssize = bytewise :: bsize(buffer.size()).write(sbuffer);
-            socket.send(sbuffer, ssize);
-            socket.send(buffer, buffer.size());
-        });
+        this->send(buffer);
     }
 
-    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> *> type connection :: arc :: receive()
-    {
-        bytewise :: block <bytewise :: traits <type> :: size> buffer;
-
-        this->_socket.visit([&](sockets :: tcp & socket)
-        {
-            for(char * cursor = buffer; cursor < buffer + bytewise :: traits <type> :: size;)
-                cursor += socket.receive(cursor, buffer + bytewise :: traits <type> :: size - cursor);
-        });
-
-        return bytewise :: deserialize <type> (buffer);
-    }
-
-    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size == 0)> *> type connection :: arc :: receive()
+    template <typename type, std :: enable_if_t <std :: is_same <type, bytewise :: buffer> :: value> *> type connection :: arc :: receive()
     {
         bytewise :: buffer buffer;
 
@@ -78,7 +57,25 @@ namespace network
                 cursor += socket.receive(cursor, buffer + buffer.size() - cursor);
         });
 
+        return buffer;
+    }
+
+    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size > 0)> *> type connection :: arc :: receive()
+    {
+        bytewise :: block <bytewise :: traits <type> :: size> buffer;
+
+        this->_socket.visit([&](sockets :: tcp & socket)
+        {
+            for(char * cursor = buffer; cursor < buffer + bytewise :: traits <type> :: size;)
+                cursor += socket.receive(cursor, buffer + bytewise :: traits <type> :: size - cursor);
+        });
+
         return bytewise :: deserialize <type> (buffer);
+    }
+
+    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size == 0)> *> type connection :: arc :: receive()
+    {
+        return bytewise :: deserialize <type> (this->receive <bytewise :: buffer> ());
     }
 
     // connection
@@ -91,12 +88,12 @@ namespace network
 
     // Methods
 
-    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled> *> void connection :: send(const type & target)
+    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> *> void connection :: send(const type & target)
     {
         this->_arc->send(target);
     }
 
-    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled> *> type connection :: receive()
+    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> *> type connection :: receive()
     {
         return this->_arc->receive <type> ();
     }

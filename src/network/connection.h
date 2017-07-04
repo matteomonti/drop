@@ -43,11 +43,13 @@ namespace network
 
             // Methods
 
-            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> * = nullptr> void send(const type &);
-            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size == 0)> * = nullptr> void send(const type &);
+            void send(const bytewise :: buffer &);
+            template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size > 0)> * = nullptr> void send(const type &);
+            template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size == 0)> * = nullptr> void send(const type &);
 
-            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> * = nullptr> type receive();
-            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size == 0)> * = nullptr> type receive();
+            template <typename type, std :: enable_if_t <std :: is_same <type, bytewise :: buffer> :: value> * = nullptr> type receive();
+            template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size > 0)> * = nullptr> type receive();
+            template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size == 0)> * = nullptr> type receive();
         };
 
         // Members
@@ -62,8 +64,8 @@ namespace network
 
         // Methods
 
-        template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled> * = nullptr> void send(const type &);
-        template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled> * = nullptr> type receive();
+        template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> * = nullptr> void send(const type &);
+        template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> * = nullptr> type receive();
     };
 };
 
