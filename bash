@@ -1,0 +1,10 @@
+LICENSE
+Makefile
+README.md
+bash
+bin
+dep
+docs
+obj
+src
+test

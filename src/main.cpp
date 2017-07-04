@@ -13,7 +13,7 @@ void server()
 {
     network :: acceptors :: tcp :: sync my_acceptor(1232);
     network :: connection my_connection = my_acceptor.accept();
-    int value = my_connection.receive <int> ();
+    auto value = my_connection.receive <network :: address> ();
 
     std :: cout << "Received: " << value << std :: endl;
 }
@@ -21,7 +21,7 @@ void server()
 void client()
 {
     network :: connection my_connection = network :: connectors :: tcp :: sync :: connect({"localhost", 1232});
-    my_connection.send(44);
+    my_connection.send(network :: address("google.com", 80));
 }
 
 int main()
