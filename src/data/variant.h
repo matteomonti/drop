@@ -30,8 +30,6 @@ namespace data
 {
     template <typename... types> class variant_base
     {
-    public: // REMOVE ME
-
         // Friends
 
         template <typename...> friend class variant;
