@@ -57,7 +57,7 @@ namespace bytewise
             }
         };
 
-        std :: conditional <(size == 0), yexcept, nexcept> :: type :: check(this->_bytes, this->_cursor);
+        std :: conditional <(traits <ttype> :: size == 0), yexcept, nexcept> :: type :: check(this->_bytes, this->_cursor);
 
         memcpy(bytes, this->_bytes + this->_cursor, rsize);
         this->_cursor += rsize;

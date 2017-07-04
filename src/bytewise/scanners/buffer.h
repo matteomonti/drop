@@ -41,7 +41,8 @@ namespace bytewise :: scanners
         template <typename> friend class :: bytewise :: visitors :: buffer;
         template <typename> friend class :: bytewise :: serializer;
         template <typename> friend class :: bytewise :: deserializer;
-
+        template <typename> friend class :: bytewise :: traits;
+        
         // Service nested classes
 
         template <typename mtype> struct valid

@@ -36,13 +36,9 @@ namespace bytewise
 
     public:
 
-        // Properties
-
-        static constexpr size_t size = scanners :: buffer <ttype> :: empty ? (scanners :: arithmetic <ttype> :: type :: size) : 0;
-
         // Typedefs
 
-        typedef std :: conditional_t <(size > 0), block <size>, buffer> type;
+        typedef std :: conditional_t <(traits <ttype> :: size > 0), block <traits <ttype> :: size>, buffer> type;
 
         // Service nested classes
 

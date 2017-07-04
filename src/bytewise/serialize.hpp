@@ -44,12 +44,12 @@ namespace bytewise
     template <typename ttype> template <typename otype, utils :: enable_in_t <otype, ttype> *> serializer <ttype> :: serializer(otype && target) : _cursor(0)
     {
         visitors :: on :: read(target);
-        allocator <(size == 0), false> :: alloc(this->_bytes, target);
+        allocator <(traits <ttype> :: size == 0), false> :: alloc(this->_bytes, target);
 
         visitors :: arithmetic <ttype> :: read(target, *this);
         visitors :: buffer <ttype> :: read(target, *this);
 
-        allocator <(size == 0), false> :: crop(this->_bytes, this->_cursor);
+        allocator <(traits <ttype> :: size == 0), false> :: crop(this->_bytes, this->_cursor);
 
     }
 
