@@ -13,27 +13,21 @@ namespace data
 
     template <typename type> optional_base <type> :: optional_base(class null) : _exists(false)
     {
-        std :: cout << "Null constructor" << std :: endl;
     }
 
     template <typename type> template <typename... types, std :: enable_if_t <std :: is_constructible <type, types...> :: value> *> optional_base <type> :: optional_base(types && ... args) : _exists(true)
     {
-        std :: cout << "Parametric constructor" << std :: endl;
         new (&(this->_bytes)) type(std :: forward <types> (args)...);
     }
 
     template <typename type> optional_base <type> :: optional_base(const optional_base & that) : _exists(that._exists)
     {
-        std :: cout << "Copy constructor" << std :: endl;
-
         if(this->_exists)
             new (&(this->_bytes)) type(reinterpret_cast <const type &> (that._bytes));
     }
 
     template <typename type> optional_base <type> :: optional_base(optional_base && that) : _exists(that._exists)
     {
-        std :: cout << "Move constructor" << std :: endl;
-
         if(this->_exists)
             new (&(this->_bytes)) type(std :: move(reinterpret_cast <type &&> (that._bytes)));
     }
@@ -42,8 +36,6 @@ namespace data
 
     template <typename type> optional_base <type> :: ~optional_base()
     {
-        std :: cout << "Destructor" << std :: endl;
-
         if(this->_exists)
             (reinterpret_cast <type &> (this->_bytes)).~type();
     }
@@ -76,8 +68,6 @@ namespace data
 
     template <typename type> optional_base <type> & optional_base <type> :: operator = (const optional_base <type> & that)
     {
-        std :: cout << "Copy assignment" << std :: endl;
-
         if(that._exists)
         {
             if(this->_exists)
@@ -99,8 +89,6 @@ namespace data
 
     template <typename type> optional_base <type> & optional_base <type> :: operator = (optional_base <type> && that)
     {
-        std :: cout << "Move assignment" << std :: endl;
-
         if(that._exists)
         {
             if(this->_exists)
