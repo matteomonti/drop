@@ -19,6 +19,11 @@ int main()
     });
 
     my_promise.resolve(55);
+
+    my_promise.then([](const int & value)
+    {
+        std :: cout << "Late then: " << value << std :: endl;
+    });
 }
 
 #endif

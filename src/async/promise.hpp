@@ -40,14 +40,19 @@ template <typename type> const type & promise <type> :: arc :: value() const
 
 template <typename type> template <typename lambda> void promise <type> :: arc :: then(const lambda & callback)
 {
-    assert(!(this->_callbacks[settings :: callbacks - 1]));
+    if(this->_value)
+        callback(*(this->_value));
+    else
+    {
+        assert(!(this->_callbacks[settings :: callbacks - 1]));
 
-    for(size_t i = 0; i < settings :: callbacks; i++)
-        if(!(this->_callbacks[i]))
-        {
-            this->_callbacks[i] = new promise <type> :: callback <lambda> (callback);
-            break;
-        }
+        for(size_t i = 0; i < settings :: callbacks; i++)
+            if(!(this->_callbacks[i]))
+            {
+                this->_callbacks[i] = new promise <type> :: callback <lambda> (callback);
+                break;
+            }
+    }
 }
 
 template <typename type> void promise <type> :: arc :: resolve(const type & value)
