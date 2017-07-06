@@ -6,15 +6,19 @@
 
 int main()
 {
-    auto lambda = [](const int & value)
-    {
-        std :: cout << "Value: " << value << std :: endl;
-    };
+    promise <int> my_promise;
 
-    promise <int> :: callback <decltype(lambda)> callback(lambda);
-    promise <int> :: arc arc;
-    arc._value = 99;
-    callback.run(arc);
+    my_promise.then([](const int & value)
+    {
+        std :: cout << "Promise solved with " << value << std :: endl;
+    });
+
+    my_promise.then([](const int & value)
+    {
+        std :: cout << "Promise also resolved with " << value << std :: endl;
+    });
+
+    my_promise.resolve(55);
 }
 
 #endif

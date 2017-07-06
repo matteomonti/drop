@@ -13,10 +13,18 @@ template <typename> class promise;
 // Includes
 
 #include "data/optional.hpp"
+#include "utils/template/is_callable.h"
 
 template <typename type> class promise
 {
 public: // REMOVE ME
+
+    // Settings
+
+    struct settings
+    {
+        static constexpr size_t callbacks = 16;
+    };
 
     // Friends
 
@@ -34,7 +42,7 @@ public: // REMOVE ME
     {
     public:
 
-        // Methods
+        // Interface methods
 
         virtual void run(const arc &) = 0;
     };
@@ -58,11 +66,10 @@ public: // REMOVE ME
 
     class arc
     {
-    public: // REMOVE ME
-
         // Members
 
         data :: optional <type> _value;
+        callback_base * _callbacks[settings :: callbacks];
 
     public:
 
@@ -73,6 +80,11 @@ public: // REMOVE ME
         // Getters
 
         const type & value() const;
+
+        // Methods
+
+        template <typename lambda> void then(const lambda &);
+        void resolve(const type &);
     };
 
     // Members
@@ -84,6 +96,11 @@ public:
     // Constructors
 
     promise();
+
+    // Methods
+
+    template <typename lambda, typename std :: enable_if_t <utils :: is_callable <lambda, const type &> :: value> * = nullptr> void then(const lambda &);
+    void resolve(const type &);
 };
 
 #endif

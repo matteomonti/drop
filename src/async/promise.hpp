@@ -24,8 +24,9 @@ template <typename type> template <typename lambda> void promise <type> :: callb
 
 // Constructors
 
-template <typename type> promise <type> :: arc :: arc()
+template <typename type> promise <type> :: arc :: arc() : _value(data :: null)
 {
+    memset(this->_callbacks, '\0', sizeof(void *) * settings :: callbacks);
 }
 
 // Getters
@@ -35,12 +36,47 @@ template <typename type> const type & promise <type> :: arc :: value() const
     return *(this->_value);
 }
 
+// Methods
+
+template <typename type> template <typename lambda> void promise <type> :: arc :: then(const lambda & callback)
+{
+    assert(!(this->_callbacks[settings :: callbacks - 1]));
+
+    for(size_t i = 0; i < settings :: callbacks; i++)
+        if(!(this->_callbacks[i]))
+        {
+            this->_callbacks[i] = new promise <type> :: callback <lambda> (callback);
+            break;
+        }
+}
+
+template <typename type> void promise <type> :: arc :: resolve(const type & value)
+{
+    assert(!(this->_value));
+    this->_value = value;
+
+    for(size_t i = 0; i < settings :: callbacks && this->_callbacks[i]; i++)
+        this->_callbacks[i]->run(*this);
+}
+
 // promise
 
 // Constructors
 
 template <typename type> promise <type> :: promise() : _arc(new arc)
 {
+}
+
+// Methods
+
+template <typename type> template <typename lambda, std :: enable_if_t <utils :: is_callable <lambda, const type &> :: value> *> void promise <type> :: then(const lambda & callback)
+{
+    this->_arc->then(callback);
+}
+
+template <typename type> void promise <type> :: resolve(const type & value)
+{
+    this->_arc->resolve(value);
 }
 
 #endif
