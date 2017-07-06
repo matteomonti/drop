@@ -5,6 +5,12 @@
 
 #include "promise.h"
 
+// callback_base
+
+template <typename type> promise <type> :: callback_base :: ~callback_base()
+{
+}
+
 // callback <lambda, false>
 
 // Constructors
@@ -87,7 +93,10 @@ template <typename type> void promise <type> :: arc :: alias(const promise & tha
     if(that._arc->_value)
     {
         for(size_t i = 0; i < settings :: callbacks && this->_callbacks[i]; i++)
-            this->_callbacks[i]->run(that._arc->_value);
+        {
+            this->_callbacks[i]->run(*(that._arc->_value));
+            delete this->_callbacks[i];
+        }
     }
     else
     {
@@ -112,7 +121,10 @@ template <typename type> void promise <type> :: arc :: resolve(const type & valu
     this->_value = value;
 
     for(size_t i = 0; i < settings :: callbacks && this->_callbacks[i]; i++)
+    {
         this->_callbacks[i]->run(*(this->_value));
+        delete this->_callbacks[i];
+    }
 }
 
 // promise

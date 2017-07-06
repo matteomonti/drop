@@ -53,6 +53,10 @@ public: // REMOVE ME
     {
     public:
 
+        // Destructor
+
+        virtual ~callback_base();
+
         // Interface methods
 
         virtual void run(const type &) = 0;
