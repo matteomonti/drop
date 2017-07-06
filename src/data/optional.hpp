@@ -51,7 +51,7 @@ namespace data
     template <typename type> const type & optional_base <type> :: operator * () const
     {
         assert(this->_exists);
-        return reinterpret_cast <type &> (this->_bytes);
+        return reinterpret_cast <const type &> (this->_bytes);
     }
 
     template <typename type> type * optional_base <type> :: operator -> ()
