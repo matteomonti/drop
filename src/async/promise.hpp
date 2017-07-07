@@ -27,9 +27,9 @@ template <typename type> template <typename lambda> void promise <type> :: callb
 
 // Methods
 
-template <typename type> template <typename lambda> void promise <type> :: callback <lambda, false> :: run(const type & value)
+template <typename type> template <typename lambda> void promise <type> :: callback <lambda, false> :: run(const arc & arc)
 {
-    this->_callback(value);
+    this->_callback(arc.value());
 }
 
 // callback <lambda, true>
@@ -49,9 +49,9 @@ template <typename type> template <typename lambda> typename promise <type> :: t
 
 // Methods
 
-template <typename type> template <typename lambda> void promise <type> :: callback <lambda, true> :: run(const type & value)
+template <typename type> template <typename lambda> void promise <type> :: callback <lambda, true> :: run(const arc & arc)
 {
-    this->_promise.alias(this->_callback(value));
+    this->_promise.alias(this->_callback(arc.value()));
 }
 
 // arc_base <void, dummy>
@@ -68,7 +68,14 @@ template <typename type> template <bool dummy> void promise <type> :: arc_base <
 {
 }
 
+template <typename type> template <bool dummy> const bool & promise <type> :: arc_base <void, dummy> :: resolved() const
+{
+    return this->_resolved;
+}
+
 // arc_base <ptype, dummy>
+
+// Constructors
 
 template <typename type> template <typename ptype, bool dummy> promise <type> :: arc_base <ptype, dummy> :: arc_base() : _value(data :: null)
 {
@@ -79,6 +86,11 @@ template <typename type> template <typename ptype, bool dummy> promise <type> ::
 template <typename type> template <typename ptype, bool dummy> const ptype & promise <type> :: arc_base <ptype, dummy> :: value() const
 {
     return *(this->_value);
+}
+
+template <typename type> template <typename ptype, bool dummy> const bool & promise <type> :: arc_base <ptype, dummy> :: resolved() const
+{
+    return this->_value;
 }
 
 // arc
@@ -98,8 +110,8 @@ template <typename type> template <typename lambda> typename promise <type> :: t
         return this->_alias->then(callback);
     else
     {
-        if(this->_value)
-            return callback(*(this->_value));
+        if(this->resolved())
+            return callback(this->value());
         else
         {
             assert(this->_size < settings :: callbacks);
@@ -113,11 +125,11 @@ template <typename type> template <typename lambda> typename promise <type> :: t
 
 template <typename type> void promise <type> :: arc :: alias(const promise & that)
 {
-    if(that._arc->_value)
+    if(that._arc->resolved())
     {
         for(size_t i = 0; i < settings :: callbacks && this->_callbacks[i]; i++)
         {
-            this->_callbacks[i]->run(*(that._arc->_value));
+            this->_callbacks[i]->run(*(that._arc));
             delete this->_callbacks[i];
         }
     }
@@ -134,12 +146,12 @@ template <typename type> void promise <type> :: arc :: alias(const promise & tha
 
 template <typename type> void promise <type> :: arc :: resolve(const type & value)
 {
-    assert(!(this->_value));
+    assert(!(this->resolved()));
     this->_value = value;
 
     for(size_t i = 0; i < settings :: callbacks && this->_callbacks[i]; i++)
     {
-        this->_callbacks[i]->run(*(this->_value));
+        this->_callbacks[i]->run(*this);
         delete this->_callbacks[i];
     }
 }

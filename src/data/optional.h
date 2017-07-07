@@ -57,7 +57,7 @@ namespace data
 
         // Casting
 
-        operator const bool & ();
+        operator const bool & () const;
     };
 
     template <typename type> class optional : public optional_base <type>,
@@ -67,7 +67,7 @@ namespace data
                                               public utils :: move_assignable <std :: is_move_constructible <type> :: value && std :: is_move_assignable <type> :: value>
     {
     public:
-        
+
         // Constructors
 
         optional(null);

@@ -110,7 +110,7 @@ namespace data
 
     // Casting
 
-    template <typename type> optional_base <type> :: operator const bool & ()
+    template <typename type> optional_base <type> :: operator const bool & () const
     {
         return this->_exists;
     }

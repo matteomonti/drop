@@ -88,7 +88,7 @@ public: // REMOVE ME
 
         // Interface methods
 
-        virtual void run(const type &) = 0;
+        virtual void run(const arc &) = 0;
     };
 
     template <typename lambda, bool = traits <lambda> :: chainable> class callback;
@@ -111,7 +111,7 @@ public: // REMOVE ME
 
         // Methods
 
-        void run(const type &);
+        void run(const arc &);
     };
 
     template <typename lambda> class callback <lambda, true> : public callback_base
@@ -137,7 +137,7 @@ public: // REMOVE ME
 
         // Methods
 
-        void run(const type &);
+        void run(const arc &);
     };
 
     template <bool dummy> class arc_base <void, dummy>
@@ -157,6 +157,7 @@ public: // REMOVE ME
         // Getters
 
         void value() const;
+        const bool & resolved() const;
     };
 
     template <typename ptype, bool dummy> class arc_base
@@ -176,6 +177,7 @@ public: // REMOVE ME
         // Getters
 
         const ptype & value() const;
+        const bool & resolved() const;
     };
 
     class arc : public arc_base <type, false>
