@@ -17,8 +17,6 @@ template <typename> class promise;
 
 template <typename type> class promise
 {
-public: // REMOVE ME
-
     // Settings
 
     struct settings
