@@ -118,7 +118,7 @@ public: // REMOVE ME
     {
         // Typedefs
 
-        typedef std :: result_of_t <lambda(const type &)> chain;
+        typedef typename traits <lambda> :: return_type chain;
 
         // Members
 
@@ -156,8 +156,17 @@ public: // REMOVE ME
 
         // Getters
 
-        void value() const;
         const bool & resolved() const;
+
+        // Methods
+
+        template <typename lambda> auto call(const lambda &) const;
+
+    protected:
+
+        // Private methods
+
+        void resolve();
     };
 
     template <typename ptype, bool dummy> class arc_base
@@ -176,8 +185,17 @@ public: // REMOVE ME
 
         // Getters
 
-        const ptype & value() const;
         const bool & resolved() const;
+
+        // Methods
+
+        template <typename lambda> auto call(const lambda &) const;
+
+    protected:
+
+        // Private methods
+
+        void resolve(const ptype &);
     };
 
     class arc : public arc_base <type, false>
@@ -197,8 +215,8 @@ public: // REMOVE ME
         // Methods
 
         template <typename lambda> typename traits <lambda> :: then_type then(const lambda &);
+        template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> * = nullptr> void resolve(const atypes &...);
         void alias(const promise &);
-        void resolve(const type &);
     };
 
     // Members
@@ -214,7 +232,7 @@ public:
     // Methods
 
     template <typename lambda, typename std :: enable_if_t <traits <lambda> :: valid> * = nullptr> auto then(const lambda &);
-    void resolve(const type &);
+    template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> * = nullptr> void resolve(const atypes &...);
 
 private:
 

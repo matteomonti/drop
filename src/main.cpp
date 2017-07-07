@@ -53,6 +53,28 @@ int main()
     });
 
     my_string_promise.resolve("Hello World!");
+
+
+    promise <void> my_void_promise;
+    promise <void> my_other_void_promise;
+    promise <void> yet_another_void_promise;
+
+    my_void_promise.then([&]()
+    {
+        std :: cout << "Promise solved!" << std :: endl;
+        return my_other_void_promise;
+    }).then([&]()
+    {
+        std :: cout << "Other promise solved!" << std :: endl;
+        return yet_another_void_promise;
+    }).then([]()
+    {
+        std :: cout << "Yet another promise resolved!" << std :: endl;
+    });
+
+    my_void_promise.resolve();
+    my_other_void_promise.resolve();
+    yet_another_void_promise.resolve();
 }
 
 #endif

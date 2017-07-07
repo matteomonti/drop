@@ -29,7 +29,7 @@ template <typename type> template <typename lambda> void promise <type> :: callb
 
 template <typename type> template <typename lambda> void promise <type> :: callback <lambda, false> :: run(const arc & arc)
 {
-    this->_callback(arc.value());
+    arc.call(this->_callback);
 }
 
 // callback <lambda, true>
@@ -51,7 +51,7 @@ template <typename type> template <typename lambda> typename promise <type> :: t
 
 template <typename type> template <typename lambda> void promise <type> :: callback <lambda, true> :: run(const arc & arc)
 {
-    this->_promise.alias(this->_callback(arc.value()));
+    this->_promise.alias(arc.call(this->_callback));
 }
 
 // arc_base <void, dummy>
@@ -64,13 +64,23 @@ template <typename type> template <bool dummy> promise <type> :: arc_base <void,
 
 // Getters
 
-template <typename type> template <bool dummy> void promise <type> :: arc_base <void, dummy> :: value() const
-{
-}
-
 template <typename type> template <bool dummy> const bool & promise <type> :: arc_base <void, dummy> :: resolved() const
 {
     return this->_resolved;
+}
+
+// Methods
+
+template <typename type> template <bool dummy> template <typename lambda> auto promise <type> :: arc_base <void, dummy> :: call(const lambda & callback) const
+{
+    return callback();
+}
+
+// Private methods
+
+template <typename type> template <bool dummy> void promise <type> :: arc_base <void, dummy> :: resolve()
+{
+    this->_resolved = true;
 }
 
 // arc_base <ptype, dummy>
@@ -83,14 +93,23 @@ template <typename type> template <typename ptype, bool dummy> promise <type> ::
 
 // Getters
 
-template <typename type> template <typename ptype, bool dummy> const ptype & promise <type> :: arc_base <ptype, dummy> :: value() const
-{
-    return *(this->_value);
-}
-
 template <typename type> template <typename ptype, bool dummy> const bool & promise <type> :: arc_base <ptype, dummy> :: resolved() const
 {
     return this->_value;
+}
+
+// Methods
+
+template <typename type> template <typename ptype, bool dummy> template <typename lambda> auto promise <type> :: arc_base <ptype, dummy> :: call(const lambda & callback) const
+{
+    return callback(*(this->_value));
+}
+
+// Private methods
+
+template <typename type> template <typename ptype, bool dummy> void promise <type> :: arc_base <ptype, dummy> :: resolve(const ptype & value)
+{
+    this->_value = value;
 }
 
 // arc
@@ -111,7 +130,7 @@ template <typename type> template <typename lambda> typename promise <type> :: t
     else
     {
         if(this->resolved())
-            return callback(this->value());
+            return this->call(callback);
         else
         {
             assert(this->_size < settings :: callbacks);
@@ -120,6 +139,18 @@ template <typename type> template <typename lambda> typename promise <type> :: t
             this->_callbacks[this->_size++] = handle;
             return handle->promise();
         }
+    }
+}
+
+template <typename type> template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> *> void promise <type> :: arc :: resolve(const atypes & ... values)
+{
+    assert(!(this->resolved()));
+    this->arc_base <type, false> :: resolve(values...);
+
+    for(size_t i = 0; i < settings :: callbacks && this->_callbacks[i]; i++)
+    {
+        this->_callbacks[i]->run(*this);
+        delete this->_callbacks[i];
     }
 }
 
@@ -144,18 +175,6 @@ template <typename type> void promise <type> :: arc :: alias(const promise & tha
     this->_alias = that._arc;
 }
 
-template <typename type> void promise <type> :: arc :: resolve(const type & value)
-{
-    assert(!(this->resolved()));
-    this->_value = value;
-
-    for(size_t i = 0; i < settings :: callbacks && this->_callbacks[i]; i++)
-    {
-        this->_callbacks[i]->run(*this);
-        delete this->_callbacks[i];
-    }
-}
-
 // promise
 
 // Constructors
@@ -171,9 +190,9 @@ template <typename type> template <typename lambda, std :: enable_if_t <promise 
     return this->_arc->then(callback);
 }
 
-template <typename type> void promise <type> :: resolve(const type & value)
+template <typename type> template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> *> void promise <type> :: resolve(const atypes & ... values)
 {
-    this->_arc->resolve(value);
+    this->_arc->resolve(values...);
 }
 
 // Private methods
