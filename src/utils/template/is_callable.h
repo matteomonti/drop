@@ -15,6 +15,25 @@ namespace utils
 
 namespace utils
 {
+    template <typename functor, typename... args> class is_callable
+    {
+        // Service nested classes
+
+        template <typename stype> struct callable_sfinae
+        {
+            template <typename ftype> static uint8_t sfinae(...);
+            template <typename ftype> static uint32_t sfinae(std :: result_of_t <ftype(args...)> *);
+
+            static constexpr bool value = std :: is_same <decltype(sfinae <stype> (0)), uint32_t> :: value;
+        };
+
+    public:
+
+        // Static members
+
+        static constexpr bool value = callable_sfinae <functor> :: value;
+    };
+
     template <typename functor, typename arg> class is_callable <functor, arg>
     {
         // Service nested classes

@@ -29,25 +29,19 @@ namespace network
 
         class arc
         {
-            // Friends
-
-            friend class connection;
-
             // Members
 
             data :: variant <sockets :: tcp> _socket;
+
+        public:
 
             // Constructors
 
             template <typename type> arc(const type &);
 
-        public:
-
             // Destructor
 
             ~arc();
-
-        private:
 
             // Methods
 
