@@ -35,6 +35,7 @@ public: // REMOVE ME
     template <typename> struct traits;
     class callback_base;
     template <typename, bool> class callback;
+    template <typename, bool> class arc_base;
     class arc;
 
     // Service nested classes
@@ -139,12 +140,49 @@ public: // REMOVE ME
         void run(const type &);
     };
 
-    class arc
+    template <bool dummy> class arc_base <void, dummy>
+    {
+    protected:
+
+        // Members
+
+        bool _resolved;
+
+    public:
+
+        // Constructors
+
+        arc_base();
+
+        // Getters
+
+        void value() const;
+    };
+
+    template <typename ptype, bool dummy> class arc_base
+    {
+    protected:
+
+        // Members
+
+        data :: optional <type> _value;
+
+    public:
+
+        // Constructors
+
+        arc_base();
+
+        // Getters
+
+        const ptype & value() const;
+    };
+
+    class arc : public arc_base <type, false>
     {
         // Members
 
         std :: shared_ptr <arc> _alias;
-        data :: optional <type> _value;
         callback_base * _callbacks[settings :: callbacks];
         size_t _size;
 

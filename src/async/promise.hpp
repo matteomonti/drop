@@ -54,11 +54,38 @@ template <typename type> template <typename lambda> void promise <type> :: callb
     this->_promise.alias(this->_callback(value));
 }
 
+// arc_base <void, dummy>
+
+// Constructors
+
+template <typename type> template <bool dummy> promise <type> :: arc_base <void, dummy> :: arc_base() : _resolved(false)
+{
+}
+
+// Getters
+
+template <typename type> template <bool dummy> void promise <type> :: arc_base <void, dummy> :: value() const
+{
+}
+
+// arc_base <ptype, dummy>
+
+template <typename type> template <typename ptype, bool dummy> promise <type> :: arc_base <ptype, dummy> :: arc_base() : _value(data :: null)
+{
+}
+
+// Getters
+
+template <typename type> template <typename ptype, bool dummy> const ptype & promise <type> :: arc_base <ptype, dummy> :: value() const
+{
+    return *(this->_value);
+}
+
 // arc
 
 // Constructors
 
-template <typename type> promise <type> :: arc :: arc() : _value(data :: null), _size(0)
+template <typename type> promise <type> :: arc :: arc() : _size(0)
 {
     memset(this->_callbacks, '\0', sizeof(void *) * settings :: callbacks);
 }
