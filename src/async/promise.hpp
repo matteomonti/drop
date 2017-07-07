@@ -65,7 +65,7 @@ template <typename type> promise <type> :: arc :: arc() : _value(data :: null), 
 
 // Methods
 
-template <typename type> template <typename lambda> std :: conditional_t <promise <type> :: template is_promise <std :: result_of_t <lambda(const type &)>> :: value, std :: result_of_t <lambda(const type &)>, void> promise <type> :: arc :: then(const lambda & callback)
+template <typename type> template <typename lambda> typename promise <type> :: template traits <lambda> :: then_type promise <type> :: arc :: then(const lambda & callback)
 {
     if(this->_alias)
         return this->_alias->then(callback);
@@ -127,7 +127,7 @@ template <typename type> promise <type> :: promise() : _arc(new arc)
 
 // Methods
 
-template <typename type> template <typename lambda, std :: enable_if_t <utils :: is_callable <lambda, const type &> :: value> *> auto promise <type> :: then(const lambda & callback)
+template <typename type> template <typename lambda, std :: enable_if_t <promise <type> :: template traits <lambda> :: valid> *> auto promise <type> :: then(const lambda & callback)
 {
     return this->_arc->then(callback);
 }

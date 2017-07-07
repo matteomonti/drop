@@ -32,21 +32,49 @@ public: // REMOVE ME
 
     // Service nested classes forward declarations
 
-    template <typename> struct is_promise;
+    template <typename> struct traits;
     class callback_base;
     template <typename, bool> class callback;
     class arc;
 
     // Service nested classes
 
-    template <typename> struct is_promise
+    template <typename lambda> struct traits
     {
-        static constexpr bool value = false;
-    };
+        template <typename> struct is_promise;
 
-    template <typename ptype> struct is_promise <promise <ptype>>
-    {
-        static constexpr bool value = true;
+        template <typename> struct is_promise
+        {
+            static constexpr bool value = false;
+        };
+
+        template <typename ptype> struct is_promise <promise <ptype>>
+        {
+            static constexpr bool value = true;
+        };
+
+        template <typename, bool> struct pswitch;
+
+        template <bool dummy> struct pswitch <void, dummy>
+        {
+            static constexpr bool valid = utils :: is_callable <lambda> :: value;
+            typedef std :: result_of_t <lambda()> return_type;
+            static constexpr bool chainable = is_promise <return_type> :: value;
+            typedef std :: conditional_t <chainable, return_type, void> then_type;
+        };
+
+        template <typename ptype, bool dummy> struct pswitch
+        {
+            static constexpr bool valid = utils :: is_callable <lambda, const ptype &> :: value;
+            typedef std :: result_of_t <lambda(const ptype &)> return_type;
+            static constexpr bool chainable = is_promise <return_type> :: value;
+            typedef std :: conditional_t <chainable, return_type, void> then_type;
+        };
+
+        static constexpr bool valid = pswitch <type, false> :: valid;
+        typedef typename pswitch <type, false> :: return_type return_type;
+        static constexpr bool chainable = pswitch <type, false> :: chainable;
+        typedef typename pswitch <type, false> :: then_type then_type;
     };
 
     class callback_base
@@ -62,7 +90,7 @@ public: // REMOVE ME
         virtual void run(const type &) = 0;
     };
 
-    template <typename lambda, bool = is_promise <std :: result_of_t <lambda(const type &)>> :: value> class callback;
+    template <typename lambda, bool = traits <lambda> :: chainable> class callback;
 
     template <typename lambda> class callback <lambda, false> : public callback_base
     {
@@ -128,7 +156,7 @@ public: // REMOVE ME
 
         // Methods
 
-        template <typename lambda> std :: conditional_t <is_promise <std :: result_of_t <lambda(const type &)>> :: value, std :: result_of_t <lambda(const type &)>, void> then(const lambda &);
+        template <typename lambda> typename traits <lambda> :: then_type then(const lambda &);
         void alias(const promise &);
         void resolve(const type &);
     };
@@ -145,7 +173,7 @@ public:
 
     // Methods
 
-    template <typename lambda, typename std :: enable_if_t <utils :: is_callable <lambda, const type &> :: value> * = nullptr> auto then(const lambda &);
+    template <typename lambda, typename std :: enable_if_t <traits <lambda> :: valid> * = nullptr> auto then(const lambda &);
     void resolve(const type &);
 
 private:
