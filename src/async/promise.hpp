@@ -58,7 +58,7 @@ template <typename type> template <typename lambda> void promise <type> :: callb
 
 // Constructors
 
-template <typename type> promise <type> :: arc :: arc() : _value(data :: null)
+template <typename type> promise <type> :: arc :: arc() : _value(data :: null), _size(0)
 {
     memset(this->_callbacks, '\0', sizeof(void *) * settings :: callbacks);
 }
@@ -75,15 +75,11 @@ template <typename type> template <typename lambda> std :: conditional_t <promis
             return callback(*(this->_value));
         else
         {
-            assert(!(this->_callbacks[settings :: callbacks - 1]));
+            assert(this->_size < settings :: callbacks);
 
-            for(size_t i = 0; i < settings :: callbacks; i++)
-                if(!(this->_callbacks[i]))
-                {
-                    promise <type> :: callback <lambda> * handle = new promise <type> :: callback <lambda> (callback);
-                    this->_callbacks[i] = handle;
-                    return handle->promise();
-                }
+            promise <type> :: callback <lambda> * handle = new promise <type> :: callback <lambda> (callback);
+            this->_callbacks[this->_size++] = handle;
+            return handle->promise();
         }
     }
 }
@@ -100,16 +96,10 @@ template <typename type> void promise <type> :: arc :: alias(const promise & tha
     }
     else
     {
-        assert(!(that._arc->_callbacks[settings :: callbacks - 1]));
+        assert(that._arc->_size + this->_size <= settings :: callbacks);
 
-        size_t beg = 0;
-        while(that._arc->_callbacks[beg]) beg++;
-
-        for(size_t i = 0; i < settings :: callbacks && this->_callbacks[i]; i++)
-        {
-            assert(!(that._arc->_callbacks[beg + i]));
-            that._arc->_callbacks[beg + i] = this->_callbacks[i];
-        }
+        for(size_t i = 0; i < this->_size; i++)
+            that._arc->_callbacks[that._arc->_size++] = this->_callbacks[i];
     }
 
     this->_alias = that._arc;

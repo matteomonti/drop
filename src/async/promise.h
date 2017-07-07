@@ -115,9 +115,10 @@ public: // REMOVE ME
     {
         // Members
 
+        std :: shared_ptr <arc> _alias;
         data :: optional <type> _value;
         callback_base * _callbacks[settings :: callbacks];
-        std :: shared_ptr <arc> _alias;
+        size_t _size;
 
     public:
 
