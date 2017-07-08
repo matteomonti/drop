@@ -39,9 +39,9 @@ namespace async
         return exit();
     }
 
-    template <typename type, typename lambda> template <typename ptype> typename context <type, lambda> :: exit context <type, lambda> :: leave(const size_t & entrypoint, ptype & target, const class :: promise <ptype> & promise)
+    template <typename type, typename lambda> template <typename ttype> typename context <type, lambda> :: exit context <type, lambda> :: leave(const size_t & entrypoint, ttype & target, const class :: promise <ttype> & promise)
     {
-        promise.then([&, this](const ptype & value)
+        promise.then([&, this](const ttype & value)
         {
             target = value;
             this->run();
