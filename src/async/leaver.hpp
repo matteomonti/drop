@@ -10,7 +10,7 @@ namespace async
 {
     // Constructors
 
-    template <typename type, typename lambda, typename ttype> leaver <type, lambda, ttype> :: leaver(context <type, lambda> & context, const size_t & entrypoint, ttype & target) : _context(context), _entrypoint(entrypoint), _target(target)
+    template <typename type, typename lambda, typename ttype> leaver <type, lambda, ttype> :: leaver(context <type, lambda> & context, const ssize_t & entrypoint, ttype & target) : _context(context), _entrypoint(entrypoint), _target(target)
     {
     }
 
@@ -23,7 +23,7 @@ namespace async
 
     // Functions
 
-    template <typename type, typename lambda, typename ttype> leaver <type, lambda, ttype> leave(context <type, lambda> & context, const size_t & entrypoint, ttype & target)
+    template <typename type, typename lambda, typename ttype> leaver <type, lambda, ttype> leave(context <type, lambda> & context, const ssize_t & entrypoint, ttype & target)
     {
         return leaver <type, lambda, ttype> (context, entrypoint, target);
     }

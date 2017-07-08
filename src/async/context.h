@@ -28,7 +28,7 @@ namespace async
         // Members
 
         lambda _kernel;
-        size_t _entrypoint;
+        ssize_t _entrypoint;
         promise <type> _promise;
 
     public:
@@ -39,13 +39,13 @@ namespace async
 
         // Getters
 
-        const size_t & entrypoint() const;
+        const ssize_t & entrypoint() const;
         const promise <type> & promise() const;
 
         // Methods
 
-        exit leave(const size_t &, const class :: promise <void> &);
-        template <typename ttype> exit leave(const size_t &, ttype &, const class :: promise <ttype> &);
+        exit leave(const ssize_t &, const class :: promise <void> &);
+        template <typename ttype> exit leave(const ssize_t &, ttype &, const class :: promise <ttype> &);
         template <typename... rtypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(rtypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(rtypes) == 1)> * = nullptr> exit resolve(const rtypes & ...);
         void run();
     };

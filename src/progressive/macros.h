@@ -9,12 +9,9 @@
 
 #include "count.h"
 #include "base.h"
+#include "utils/preprocessor/counter.h"
 
 // Macros
-
-#ifdef __COUNTER__
-#define __counter__ __COUNTER__
-#endif
 
 #define progressive_indirect(scope)                                 \
                                                                     \

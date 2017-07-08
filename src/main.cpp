@@ -5,26 +5,20 @@
 
 #include "async/contextualizer.hpp"
 #include "async/leaver.hpp"
+#include "async/macros.h"
 
 promise <int> my_int_promise;
 int my_int;
 
 promise <int> int_tomorrow()
 {
-    return async :: contextualize([&](auto & context)
-    {
-        switch(context.entrypoint())
-        {
-            default:
-                assert(false);
-            case 0:;
-                std :: cout << "First run" << std :: endl;
-                return leave(context, 1, my_int) = my_int_promise;
-            case 1:;
-                std :: cout << "Second run" << std :: endl;
-                return context.resolve(22);
-        };
-    });
+    async
+    (
+        std :: cout << "First run" << std :: endl;
+        await(my_int) = my_int_promise;
+        std :: cout << "Second run" << std :: endl;
+        return context.resolve(22);
+    );
 }
 
 int main()

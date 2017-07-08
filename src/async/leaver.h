@@ -19,14 +19,14 @@ namespace async
         // Members
 
         context <type, lambda> & _context;
-        size_t _entrypoint;
+        ssize_t _entrypoint;
         ttype & _target;
 
     public:
 
         // Constructors
 
-        leaver(context <type, lambda> &, const size_t &, ttype &);
+        leaver(context <type, lambda> &, const ssize_t &, ttype &);
 
         // Operators
 
@@ -35,7 +35,7 @@ namespace async
 
     // Functions
 
-    template <typename type, typename lambda, typename ttype> leaver <type, lambda, ttype> leave(context <type, lambda> &, const size_t &, ttype &);
+    template <typename type, typename lambda, typename ttype> leaver <type, lambda, ttype> leave(context <type, lambda> &, const ssize_t &, ttype &);
 };
 
 #endif

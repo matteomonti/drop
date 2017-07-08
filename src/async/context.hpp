@@ -10,13 +10,13 @@ namespace async
 {
     // Constructors
 
-    template <typename type, typename lambda> context <type, lambda> :: context(const lambda & kernel) : _kernel(kernel), _entrypoint(0)
+    template <typename type, typename lambda> context <type, lambda> :: context(const lambda & kernel) : _kernel(kernel), _entrypoint(-1)
     {
     }
 
     // Getters
 
-    template <typename type, typename lambda> const size_t & context <type, lambda> :: entrypoint() const
+    template <typename type, typename lambda> const ssize_t & context <type, lambda> :: entrypoint() const
     {
         return this->_entrypoint;
     }
@@ -28,7 +28,7 @@ namespace async
 
     // Methods
 
-    template <typename type, typename lambda> typename context <type, lambda> :: exit context <type, lambda> :: leave(const size_t & entrypoint, const class :: promise <void> & promise)
+    template <typename type, typename lambda> typename context <type, lambda> :: exit context <type, lambda> :: leave(const ssize_t & entrypoint, const class :: promise <void> & promise)
     {
         promise.then([this]()
         {
@@ -39,7 +39,7 @@ namespace async
         return exit();
     }
 
-    template <typename type, typename lambda> template <typename ttype> typename context <type, lambda> :: exit context <type, lambda> :: leave(const size_t & entrypoint, ttype & target, const class :: promise <ttype> & promise)
+    template <typename type, typename lambda> template <typename ttype> typename context <type, lambda> :: exit context <type, lambda> :: leave(const ssize_t & entrypoint, ttype & target, const class :: promise <ttype> & promise)
     {
         promise.then([&, this](const ttype & value)
         {
