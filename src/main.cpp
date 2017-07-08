@@ -3,14 +3,14 @@
 #include <iostream>
 #include <math.h>
 
-#include "async/context.hpp"
+#include "async/contextualizer.hpp"
 
-int main()
+promise <int> my_int_promise;
+int my_int;
+
+promise <int> int_tomorrow()
 {
-    promise <int> my_int_promise;
-    int my_int;
-
-    async :: contextualize <void> ([&](auto & context)
+    return async :: contextualize([&](auto & context)
     {
         switch(context.entrypoint())
         {
@@ -21,11 +21,16 @@ int main()
                 return context.leave(1, my_int, my_int_promise);
             case 1:;
                 std :: cout << "Second run" << std :: endl;
-                return context.resolve();
+                return context.resolve(22);
         };
-    }).then([]()
+    });
+}
+
+int main()
+{
+    int_tomorrow().then([](const int & value)
     {
-        std :: cout << "Context resolved." << std :: endl;
+        std :: cout << "Context resolved with " << value << std :: endl;
     });
 
     my_int_promise.resolve(55);
