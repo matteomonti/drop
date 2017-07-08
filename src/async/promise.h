@@ -229,8 +229,8 @@ public:
 
     // Methods
 
-    template <typename lambda, typename std :: enable_if_t <traits <lambda> :: valid> * = nullptr> auto then(const lambda &);
-    template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> * = nullptr> void resolve(const atypes &...);
+    template <typename lambda, typename std :: enable_if_t <traits <lambda> :: valid> * = nullptr> auto then(const lambda &) const;
+    template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> * = nullptr> void resolve(const atypes &...) const;
 
 private:
 

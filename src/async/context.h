@@ -2,7 +2,7 @@
 
 namespace async
 {
-    template <typename> class context;
+    template <typename, typename> class context;
 };
 
 #if !defined(__forward__) && !defined(__drop__async__context__h)
@@ -12,15 +12,24 @@ namespace async
 
 #include "promise.h"
 #include "utils/template/is_callable.h"
-#include "data/optional.h"
 
 namespace async
 {
-    template <typename lambda> class context
+    template <typename type, typename lambda> class context
     {
+        // Service nested classes
+
+        struct exit
+        {
+        };
+
+    private:
+
         // Members
 
         lambda _kernel;
+        size_t _entrypoint;
+        promise <type> _promise;
 
     public:
 
@@ -28,14 +37,21 @@ namespace async
 
         context(const lambda &);
 
+        // Getters
+
+        const size_t & entrypoint() const;
+        const promise <type> & promise() const;
+
         // Methods
 
+        exit leave(const size_t &);
+        exit resolve(const type &);
         void run();
     };
 
     // Functions
 
-    template <typename lambda, std :: enable_if_t <utils :: is_callable <lambda, context <lambda> &> :: value> * = nullptr> context <lambda> * contextualize(const lambda &);
+    template <typename type, typename lambda, std :: enable_if_t <utils :: is_callable <lambda, context <type, lambda> &> :: value> * = nullptr> context <type, lambda> * contextualize(const lambda &);
 };
 
 #endif
