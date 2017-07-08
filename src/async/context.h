@@ -44,14 +44,15 @@ namespace async
 
         // Methods
 
-        exit leave(const size_t &);
-        exit resolve(const type &);
+        exit leave(const size_t &, const class :: promise <void> &);
+        template <typename ptype> exit leave(const size_t &, ptype &, const class :: promise <ptype> &);
+        template <typename... rtypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(rtypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(rtypes) == 1)> * = nullptr> exit resolve(const rtypes & ...);
         void run();
     };
 
     // Functions
 
-    template <typename type, typename lambda, std :: enable_if_t <utils :: is_callable <lambda, context <type, lambda> &> :: value> * = nullptr> context <type, lambda> * contextualize(const lambda &);
+    template <typename type, typename lambda, std :: enable_if_t <utils :: is_callable <lambda, context <type, lambda> &> :: value> * = nullptr> promise <type> contextualize(const lambda &);
 };
 
 #endif

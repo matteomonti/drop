@@ -7,7 +7,10 @@
 
 int main()
 {
-    auto my_context = async :: contextualize <double> ([](auto & context)
+    promise <int> my_int_promise;
+    int my_int;
+
+    async :: contextualize <void> ([&](auto & context)
     {
         switch(context.entrypoint())
         {
@@ -15,20 +18,17 @@ int main()
                 assert(false);
             case 0:;
                 std :: cout << "First run" << std :: endl;
-                return context.leave(1);
+                return context.leave(1, my_int, my_int_promise);
             case 1:;
                 std :: cout << "Second run" << std :: endl;
-                return context.resolve(44.3);
+                return context.resolve();
         };
-    });
-
-    my_context->promise().then([](const double & value)
+    }).then([]()
     {
-        std :: cout << "Context resolved: " << value << std :: endl;
+        std :: cout << "Context resolved." << std :: endl;
     });
 
-    my_context->run();
-    my_context->run();
+    my_int_promise.resolve(55);
 }
 
 #endif

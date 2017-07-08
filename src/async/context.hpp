@@ -28,15 +28,32 @@ namespace async
 
     // Methods
 
-    template <typename type, typename lambda> typename context <type, lambda> :: exit context <type, lambda> :: leave(const size_t & entrypoint)
+    template <typename type, typename lambda> typename context <type, lambda> :: exit context <type, lambda> :: leave(const size_t & entrypoint, const class :: promise <void> & promise)
     {
+        promise.then([this]()
+        {
+            this->run();
+        });
+
         this->_entrypoint = entrypoint;
         return exit();
     }
 
-    template <typename type, typename lambda> typename context <type, lambda> :: exit context <type, lambda> :: resolve(const type & response)
+    template <typename type, typename lambda> template <typename ptype> typename context <type, lambda> :: exit context <type, lambda> :: leave(const size_t & entrypoint, ptype & target, const class :: promise <ptype> & promise)
     {
-        this->_promise.resolve(response);
+        promise.then([&, this](const ptype & value)
+        {
+            target = value;
+            this->run();
+        });
+
+        this->_entrypoint = entrypoint;
+        return exit();
+    }
+
+    template <typename type, typename lambda> template <typename... rtypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(rtypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(rtypes) == 1)> *> typename context <type, lambda> :: exit context <type, lambda> :: resolve(const rtypes & ... response)
+    {
+        this->_promise.resolve(response...);
         delete this;
         return exit();
     }
@@ -48,9 +65,13 @@ namespace async
 
     // Functions
 
-    template <typename type, typename lambda, std :: enable_if_t <utils :: is_callable <lambda, context <type, lambda> &> :: value> *> context <type, lambda> * contextualize(const lambda & kernel)
+    template <typename type, typename lambda, std :: enable_if_t <utils :: is_callable <lambda, context <type, lambda> &> :: value> *> promise <type> contextualize(const lambda & kernel)
     {
-        return new context <type, lambda> (kernel);
+        context <type, lambda> * context = new class :: async :: context <type, lambda> (kernel);
+        promise <type> promise = context->promise();
+        context->run();
+
+        return promise;
     }
 };
 
