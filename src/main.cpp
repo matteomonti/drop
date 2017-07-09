@@ -3,78 +3,30 @@
 #include <iostream>
 #include <math.h>
 
-#include "async/promise.hpp"
+#include "async/async.h"
+
+promise <int> my_int_promise;
+int my_int;
+
+promise <int> int_tomorrow()
+{
+    async
+    (
+        std :: cout << "First run" << std :: endl;
+        await(my_int) = my_int_promise;
+        std :: cout << "Second run" << std :: endl;
+        return context.resolve(22);
+    );
+}
 
 int main()
 {
-    promise <int> my_int_promise;
-    promise <double> my_double_promise;
-    promise <const char *> my_string_promise;
-
-    promise <double> my_pi_promise;
-    my_pi_promise.resolve(M_PI);
-
-    my_double_promise.then([&](const double & value)
+    int_tomorrow().then([](const int & value)
     {
-        std :: cout << "First of all, double promise: " << value << std :: endl;
-        return my_string_promise;
-    }).then([&](const char * value)
-    {
-        std :: cout << "My string promise says: " << value << std :: endl;
-        return my_pi_promise;
-    }).then([](const double & value)
-    {
-        std :: cout << "My pi promise was already solved, but now I can say it: " << value << std :: endl;
-    });
-
-    promise <double> temporary_promise = my_int_promise.then([&](const int & value)
-    {
-        std :: cout << "Int promise solved with " << value << std :: endl;
-
-        my_double_promise.then([](const double & value)
-        {
-            std :: cout << "Partial double promise solved with " << value << std :: endl;
-        });
-
-        return my_double_promise;
-    });
-
-    temporary_promise.then([](const double & value)
-    {
-        std :: cout << "Double promise solved with " << value << std :: endl;
+        std :: cout << "Context resolved with " << value << std :: endl;
     });
 
     my_int_promise.resolve(55);
-    my_double_promise.resolve(32.22);
-
-    temporary_promise.then([](const double & value)
-    {
-        std :: cout << "This is such a dumb callback, but still " << value << std :: endl;
-    });
-
-    my_string_promise.resolve("Hello World!");
-
-
-    promise <void> my_void_promise;
-    promise <void> my_other_void_promise;
-    promise <void> yet_another_void_promise;
-
-    my_void_promise.then([&]()
-    {
-        std :: cout << "Promise solved!" << std :: endl;
-        return my_other_void_promise;
-    }).then([&]()
-    {
-        std :: cout << "Other promise solved!" << std :: endl;
-        return yet_another_void_promise;
-    }).then([]()
-    {
-        std :: cout << "Yet another promise resolved!" << std :: endl;
-    });
-
-    my_void_promise.resolve();
-    my_other_void_promise.resolve();
-    yet_another_void_promise.resolve();
 }
 
 #endif

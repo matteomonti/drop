@@ -1,3 +1,6 @@
+#if !defined(__forward__) && !defined(__drop__utils__preprocessor__each__h)
+#define __drop__utils__preprocessor__each__h
+
 #define utils_reverse 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
 #define utils_count_extract(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, N, ...) N
 
@@ -26,3 +29,5 @@
 #define utils_each_16(operation, suffix, ...) operation(suffix), utils_each_15(operation, __VA_ARGS__)
 
 #define utils_each(operation, ...) utils_concat(utils_each_, utils_nargs(__VA_ARGS__))(operation, __VA_ARGS__)
+
+#endif

@@ -27,11 +27,24 @@ namespace utils
             static constexpr bool value = std :: is_same <decltype(sfinae <stype> (0)), uint32_t> :: value;
         };
 
+        template <bool, bool> struct return_conditional;
+
+        template <bool dummy> struct return_conditional <true, dummy>
+        {
+            typedef std :: result_of_t <functor(args...)> type;
+        };
+
+        template <bool dummy> struct return_conditional <false, dummy>
+        {
+            typedef void type;
+        };
+
     public:
 
         // Static members
 
         static constexpr bool value = callable_sfinae <functor> :: value;
+        typedef typename return_conditional <value, false> :: type return_type;
     };
 
     template <typename functor, typename arg> class is_callable <functor, arg>
