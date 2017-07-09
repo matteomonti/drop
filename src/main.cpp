@@ -3,9 +3,7 @@
 #include <iostream>
 #include <math.h>
 
-#include "async/contextualizer.hpp"
-#include "async/leaver.hpp"
-#include "async/macros.h"
+#include "async/async.h"
 
 promise <int> my_int_promise;
 int my_int;
