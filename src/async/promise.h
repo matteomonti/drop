@@ -9,6 +9,7 @@ template <typename> class promise;
 
 #include <memory>
 #include <type_traits>
+#include <exception>
 
 // Includes
 
@@ -33,6 +34,8 @@ template <typename type> class promise
     template <typename> struct traits;
     class resolve_callback_base;
     template <typename, bool> class resolve_callback;
+    class reject_callback_base;
+    template <typename> class reject_callback;
     template <typename, bool> class arc_base;
     class arc;
 
@@ -95,7 +98,7 @@ template <typename type> class promise
     {
         // Members
 
-        lambda _resolve_callback;
+        lambda _callback;
 
     public:
 
@@ -120,7 +123,7 @@ template <typename type> class promise
 
         // Members
 
-        lambda _resolve_callback;
+        lambda _callback;
         chain _promise;
 
     public:
@@ -136,6 +139,36 @@ template <typename type> class promise
         // Methods
 
         void run(const arc &);
+    };
+
+    class reject_callback_base
+    {
+    public:
+
+        // Destructor
+
+        virtual ~reject_callback_base();
+
+        // Methods
+
+        virtual void run(const std :: exception_ptr &) = 0;
+    };
+
+    template <typename lambda> class reject_callback : public reject_callback_base
+    {
+        // Members
+
+        lambda _callback;
+
+    public:
+
+        // Constructors
+
+        reject_callback(const lambda &);
+
+        // Methods
+
+        void run(const std :: exception_ptr &);
     };
 
     template <bool dummy> class arc_base <void, dummy>
@@ -202,6 +235,7 @@ template <typename type> class promise
 
         std :: shared_ptr <arc> _alias;
         resolve_callback_base * _resolve_callbacks[settings :: resolve_callbacks];
+        reject_callback_base * _reject_callback;
         size_t _size;
 
     public:

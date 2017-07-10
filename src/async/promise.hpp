@@ -15,7 +15,7 @@ template <typename type> promise <type> :: resolve_callback_base :: ~resolve_cal
 
 // Constructors
 
-template <typename type> template <typename lambda> promise <type> :: resolve_callback <lambda, false> :: resolve_callback(const lambda & resolve_callback) : _resolve_callback(resolve_callback)
+template <typename type> template <typename lambda> promise <type> :: resolve_callback <lambda, false> :: resolve_callback(const lambda & callback) : _callback(callback)
 {
 }
 
@@ -29,14 +29,14 @@ template <typename type> template <typename lambda> void promise <type> :: resol
 
 template <typename type> template <typename lambda> void promise <type> :: resolve_callback <lambda, false> :: run(const arc & arc)
 {
-    arc.call(this->_resolve_callback);
+    arc.call(this->_callback);
 }
 
 // resolve_callback <lambda, true>
 
 // Constructors
 
-template <typename type> template <typename lambda> promise <type> :: resolve_callback <lambda, true> :: resolve_callback(const lambda & resolve_callback) : _resolve_callback(resolve_callback)
+template <typename type> template <typename lambda> promise <type> :: resolve_callback <lambda, true> :: resolve_callback(const lambda & callback) : _callback(callback)
 {
 }
 
@@ -51,7 +51,22 @@ template <typename type> template <typename lambda> typename promise <type> :: t
 
 template <typename type> template <typename lambda> void promise <type> :: resolve_callback <lambda, true> :: run(const arc & arc)
 {
-    this->_promise.alias(arc.call(this->_resolve_callback));
+    this->_promise.alias(arc.call(this->_callback));
+}
+
+// reject_callback
+
+// Constructors
+
+template <typename type> template <typename lambda> promise <type> :: reject_callback <lambda> :: reject_callback(const lambda & callback) : _callback(callback)
+{
+}
+
+// Methods
+
+template <typename type> template <typename lambda> void promise <type> :: reject_callback <lambda> :: run(const std :: exception_ptr & value)
+{
+    this->_callback(value);
 }
 
 // arc_base <void, dummy>
@@ -116,7 +131,7 @@ template <typename type> template <typename ptype, bool dummy> void promise <typ
 
 // Constructors
 
-template <typename type> promise <type> :: arc :: arc() : _size(0)
+template <typename type> promise <type> :: arc :: arc() : _size(0), _reject_callback(nullptr)
 {
     memset(this->_resolve_callbacks, '\0', sizeof(void *) * settings :: resolve_callbacks);
 }
