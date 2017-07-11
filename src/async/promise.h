@@ -90,6 +90,7 @@ template <typename type> class promise
         // Interface methods
 
         virtual void run(const arc &) = 0;
+        virtual bool reject(const std :: exception_ptr &) = 0;
     };
 
     template <typename lambda, bool = traits <lambda> :: chainable> class resolve_callback;
@@ -113,6 +114,7 @@ template <typename type> class promise
         // Methods
 
         void run(const arc &);
+        bool reject(const std :: exception_ptr &);
     };
 
     template <typename lambda> class resolve_callback <lambda, true> : public resolve_callback_base
@@ -139,6 +141,7 @@ template <typename type> class promise
         // Methods
 
         void run(const arc &);
+        bool reject(const std :: exception_ptr &);
     };
 
     class reject_callback_base
@@ -234,9 +237,12 @@ template <typename type> class promise
         // Members
 
         std :: shared_ptr <arc> _alias;
+
         resolve_callback_base * _resolve_callbacks[settings :: resolve_callbacks];
-        reject_callback_base * _reject_callback;
         size_t _size;
+
+        std :: exception_ptr _exception;
+        reject_callback_base * _reject_callback;
 
     public:
 
@@ -244,10 +250,17 @@ template <typename type> class promise
 
         arc();
 
+        // Destructor
+
+        ~arc();
+
         // Methods
 
         template <typename lambda> typename traits <lambda> :: then_type then(const lambda &);
+        template <typename lambda> void except(const lambda &);
         template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> * = nullptr> void resolve(const atypes &...);
+        template <typename rtype> void reject(const rtype &);
+        void reject(const std :: exception_ptr &);
         void alias(const promise &);
     };
 
@@ -264,7 +277,9 @@ public:
     // Methods
 
     template <typename lambda, typename std :: enable_if_t <traits <lambda> :: valid> * = nullptr> auto then(const lambda &) const;
-    template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> * = nullptr> void resolve(const atypes &...) const;
+    template <typename lambda, std :: enable_if_t <utils :: is_callable <lambda, const std :: exception_ptr &> :: value> * = nullptr> void except(const lambda &) const;
+    template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> * = nullptr> void resolve(const atypes &...) const; // TODO: Check accepted type
+    template <typename rtype> void reject(const rtype &);
 
 private:
 

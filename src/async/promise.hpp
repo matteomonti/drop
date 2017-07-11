@@ -7,6 +7,8 @@
 
 // resolve_callback_base
 
+// Destructor
+
 template <typename type> promise <type> :: resolve_callback_base :: ~resolve_callback_base()
 {
 }
@@ -32,6 +34,11 @@ template <typename type> template <typename lambda> void promise <type> :: resol
     arc.call(this->_callback);
 }
 
+template <typename type> template <typename lambda> bool promise <type> :: resolve_callback <lambda, false> :: reject(const std :: exception_ptr & exception)
+{
+    return false;
+}
+
 // resolve_callback <lambda, true>
 
 // Constructors
@@ -52,6 +59,20 @@ template <typename type> template <typename lambda> typename promise <type> :: t
 template <typename type> template <typename lambda> void promise <type> :: resolve_callback <lambda, true> :: run(const arc & arc)
 {
     this->_promise.alias(arc.call(this->_callback));
+}
+
+template <typename type> template <typename lambda> bool promise <type> :: resolve_callback <lambda, true> :: reject(const std :: exception_ptr & exception)
+{
+    this->_promise.reject(exception);
+    return true;
+}
+
+// reject_callback_base
+
+// Destructor
+
+template <typename type> promise <type> :: reject_callback_base :: ~reject_callback_base()
+{
 }
 
 // reject_callback
@@ -133,7 +154,36 @@ template <typename type> template <typename ptype, bool dummy> void promise <typ
 
 template <typename type> promise <type> :: arc :: arc() : _size(0), _reject_callback(nullptr)
 {
-    memset(this->_resolve_callbacks, '\0', sizeof(void *) * settings :: resolve_callbacks);
+}
+
+// Destructor
+
+template <typename type> promise <type> :: arc :: ~arc()
+{
+    if(!(this->_alias))
+    {
+        if(this->_exception)
+        {
+            if(this->_reject_callback)
+                this->_reject_callback->run(this->_exception);
+            else
+            {
+                bool forwarded = false;
+
+                for(size_t i = 0; i < this->_size; i++)
+                    forwarded |= this->_resolve_callbacks[i]->reject(this->_exception);
+
+                assert(forwarded);
+            }
+        }
+
+        if(!(this->resolved()))
+            for(size_t i = 0; i < this->_size; i++)
+                delete this->_resolve_callbacks[i];
+
+        if(this->_reject_callback)
+            delete this->_reject_callback;
+    }
 }
 
 // Methods
@@ -157,34 +207,67 @@ template <typename type> template <typename lambda> typename promise <type> :: t
     }
 }
 
+template <typename type> template <typename lambda> void promise <type> :: arc :: except(const lambda & reject_callback)
+{
+    if(!(this->_reject_callback))
+        this->_reject_callback = new promise <type> :: reject_callback <lambda> (reject_callback);
+}
+
 template <typename type> template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> *> void promise <type> :: arc :: resolve(const atypes & ... values)
 {
-    assert(!(this->resolved()));
+    assert(!(this->resolved()) && !(this->_exception));
     this->arc_base <type, false> :: resolve(values...);
 
-    for(size_t i = 0; i < settings :: resolve_callbacks && this->_resolve_callbacks[i]; i++)
+    for(size_t i = 0; i < this->_size; i++)
     {
         this->_resolve_callbacks[i]->run(*this);
         delete this->_resolve_callbacks[i];
     }
 }
 
+template <typename type> template <typename rtype> void promise <type> :: arc :: reject(const rtype & exception)
+{
+    this->reject(std :: make_exception_ptr(exception));
+}
+
+template <typename type> void promise <type> :: arc :: reject(const std :: exception_ptr & exception)
+{
+    assert(!(this->resolved()) && !(this->_exception));
+    this->_exception = exception;
+}
+
 template <typename type> void promise <type> :: arc :: alias(const promise & that)
 {
+    assert(!(this->resolved()) && !(this->_exception));
+
     if(that._arc->resolved())
     {
-        for(size_t i = 0; i < settings :: resolve_callbacks && this->_resolve_callbacks[i]; i++)
+        for(size_t i = 0; i < this->_size; i++)
         {
             this->_resolve_callbacks[i]->run(*(that._arc));
             delete this->_resolve_callbacks[i];
         }
+
+        if(this->_reject_callback)
+            delete this->_reject_callback;
     }
     else
     {
-        assert(that._arc->_size + this->_size <= settings :: resolve_callbacks);
+        if(!(that._arc->_reject_callback))
+            that._arc->_reject_callback = this->_reject_callback;
+        else if(this->_reject_callback)
+            delete this->_reject_callback;
 
-        for(size_t i = 0; i < this->_size; i++)
-            that._arc->_resolve_callbacks[that._arc->_size++] = this->_resolve_callbacks[i];
+        if(that._arc->_exception && !(that._arc->_reject_callback))
+            for(size_t i = 0; i < this->_size; i++)
+                delete this->_resolve_callbacks[i];
+        else
+        {
+            assert(that._arc->_size + this->_size <= settings :: resolve_callbacks);
+
+            for(size_t i = 0; i < this->_size; i++)
+                that._arc->_resolve_callbacks[that._arc->_size++] = this->_resolve_callbacks[i];
+        }
     }
 
     this->_alias = that._arc;
@@ -202,12 +285,39 @@ template <typename type> promise <type> :: promise() : _arc(new arc)
 
 template <typename type> template <typename lambda, std :: enable_if_t <promise <type> :: template traits <lambda> :: valid> *> auto promise <type> :: then(const lambda & resolve_callback) const
 {
-    return this->_arc->then(resolve_callback);
+    struct ychain
+    {
+        static inline auto run(const promise & promise, const lambda & resolve_callback)
+        {
+            return promise._arc->then(resolve_callback);
+        }
+    };
+
+    struct nchain
+    {
+        static inline auto run(const promise & promise, const lambda & resolve_callback)
+        {
+            promise._arc->then(resolve_callback);
+            return promise;
+        }
+    };
+
+    return std :: conditional_t <traits <lambda> :: chainable, ychain, nchain> :: run(*this, resolve_callback);
+}
+
+template <typename type> template <typename lambda, std :: enable_if_t <utils :: is_callable <lambda, const std :: exception_ptr &> :: value> *> void promise <type> :: except(const lambda & reject_callback) const
+{
+    this->_arc->except(reject_callback);
 }
 
 template <typename type> template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> *> void promise <type> :: resolve(const atypes & ... values) const
 {
     this->_arc->resolve(values...);
+}
+
+template <typename type> template <typename rtype> void promise <type> :: reject(const rtype & exception)
+{
+    this->_arc->reject(exception);
 }
 
 // Private methods

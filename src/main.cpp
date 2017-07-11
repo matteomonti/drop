@@ -3,17 +3,31 @@
 #include <iostream>
 #include <math.h>
 
-#include "async/async.h"
+#include "async/promise.hpp"
 
 int main()
 {
-    promise <int> my_promise;
-    my_promise.then([](const int & value)
+    promise <double> my_double_promise;
+
+    my_double_promise.then([](const double & value)
     {
-        std :: cout << value << std :: endl;
+        std :: cout << "Resolved with: " << value << std :: endl;
+    }).except([](const std :: exception_ptr & exception)
+    {
+        std :: cout << "Rejected with error: ";
+
+        try
+        {
+            std :: rethrow_exception(exception);
+        }
+        catch(const char * error)
+        {
+            std :: cout << error << std :: endl;
+        }
     });
 
-    my_promise.resolve(559);
+    // my_double_promise.resolve(4.44);
+    my_double_promise.reject("Something went wrong.");
 }
 
 #endif
