@@ -9,6 +9,7 @@ template <typename> class promise;
 
 #include <memory>
 #include <type_traits>
+#include <exception>
 
 // Includes
 
@@ -21,7 +22,7 @@ template <typename type> class promise
 
     struct settings
     {
-        static constexpr size_t callbacks = 16;
+        static constexpr size_t resolve_callbacks = 16;
     };
 
     // Friends
@@ -31,8 +32,10 @@ template <typename type> class promise
     // Service nested classes forward declarations
 
     template <typename> struct traits;
-    class callback_base;
-    template <typename, bool> class callback;
+    class resolve_callback_base;
+    template <typename, bool> class resolve_callback;
+    class reject_callback_base;
+    template <typename> class reject_callback;
     template <typename, bool> class arc_base;
     class arc;
 
@@ -76,22 +79,23 @@ template <typename type> class promise
         typedef typename pswitch <type, false> :: then_type then_type;
     };
 
-    class callback_base
+    class resolve_callback_base
     {
     public:
 
         // Destructor
 
-        virtual ~callback_base();
+        virtual ~resolve_callback_base();
 
         // Interface methods
 
         virtual void run(const arc &) = 0;
+        virtual bool reject(const std :: exception_ptr &) = 0;
     };
 
-    template <typename lambda, bool = traits <lambda> :: chainable> class callback;
+    template <typename lambda, bool = traits <lambda> :: chainable> class resolve_callback;
 
-    template <typename lambda> class callback <lambda, false> : public callback_base
+    template <typename lambda> class resolve_callback <lambda, false> : public resolve_callback_base
     {
         // Members
 
@@ -101,7 +105,7 @@ template <typename type> class promise
 
         // Constructors
 
-        callback(const lambda &);
+        resolve_callback(const lambda &);
 
         // Getters
 
@@ -110,9 +114,10 @@ template <typename type> class promise
         // Methods
 
         void run(const arc &);
+        bool reject(const std :: exception_ptr &);
     };
 
-    template <typename lambda> class callback <lambda, true> : public callback_base
+    template <typename lambda> class resolve_callback <lambda, true> : public resolve_callback_base
     {
         // Typedefs
 
@@ -127,7 +132,7 @@ template <typename type> class promise
 
         // Constructors
 
-        callback(const lambda &);
+        resolve_callback(const lambda &);
 
         // Getters
 
@@ -136,6 +141,37 @@ template <typename type> class promise
         // Methods
 
         void run(const arc &);
+        bool reject(const std :: exception_ptr &);
+    };
+
+    class reject_callback_base
+    {
+    public:
+
+        // Destructor
+
+        virtual ~reject_callback_base();
+
+        // Methods
+
+        virtual void run(const std :: exception_ptr &) = 0;
+    };
+
+    template <typename lambda> class reject_callback : public reject_callback_base
+    {
+        // Members
+
+        lambda _callback;
+
+    public:
+
+        // Constructors
+
+        reject_callback(const lambda &);
+
+        // Methods
+
+        void run(const std :: exception_ptr &);
     };
 
     template <bool dummy> class arc_base <void, dummy>
@@ -201,8 +237,12 @@ template <typename type> class promise
         // Members
 
         std :: shared_ptr <arc> _alias;
-        callback_base * _callbacks[settings :: callbacks];
+
+        resolve_callback_base * _resolve_callbacks[settings :: resolve_callbacks];
         size_t _size;
+
+        std :: exception_ptr _exception;
+        reject_callback_base * _reject_callback;
 
     public:
 
@@ -210,10 +250,17 @@ template <typename type> class promise
 
         arc();
 
+        // Destructor
+
+        ~arc();
+
         // Methods
 
         template <typename lambda> typename traits <lambda> :: then_type then(const lambda &);
+        template <typename lambda> void except(const lambda &);
         template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> * = nullptr> void resolve(const atypes &...);
+        template <typename rtype> void reject(const rtype &);
+        void reject(const std :: exception_ptr &);
         void alias(const promise &);
     };
 
@@ -230,7 +277,9 @@ public:
     // Methods
 
     template <typename lambda, typename std :: enable_if_t <traits <lambda> :: valid> * = nullptr> auto then(const lambda &) const;
-    template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> * = nullptr> void resolve(const atypes &...) const;
+    template <typename lambda, std :: enable_if_t <utils :: is_callable <lambda, const std :: exception_ptr &> :: value> * = nullptr> void except(const lambda &) const;
+    template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> * = nullptr> void resolve(const atypes &...) const; // TODO: Check accepted type
+    template <typename rtype> void reject(const rtype &);
 
 private:
 
