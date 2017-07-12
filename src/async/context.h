@@ -33,6 +33,10 @@ namespace async
 
     public:
 
+        // Public members
+
+        bool flag;
+
         // Constructors
 
         context(const lambda &);

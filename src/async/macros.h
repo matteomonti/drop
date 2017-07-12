@@ -13,7 +13,7 @@
                                                                     \
 return :: async :: contextualize([=](auto & context) mutable        \
 {                                                                   \
-    bool __return__ = false;                                        \
+    context.flag = false;                                           \
                                                                     \
     switch(context.entrypoint())                                    \
     {                                                               \
@@ -28,9 +28,9 @@ return :: async :: contextualize([=](auto & context) mutable        \
 
 #define await_indirect(target, entrypoint)                          \
                                                                     \
-__return__ = true;                                                  \
+context.flag = true;                                                \
 case entrypoint:;                                                   \
-if(__return__)                                                      \
+if(context.flag)                                                    \
     return leave(context, entrypoint, target)
 
 #define await(target) await_indirect(target, __counter__)
