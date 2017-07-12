@@ -20,7 +20,7 @@ promise <void> f()
 
     async
     (
-        try
+        async_try
         ({
             for(i = 0; i < 1000; i++)
             {
