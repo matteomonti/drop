@@ -22,20 +22,35 @@ namespace async
 {
     template <typename type, typename lambda> class context
     {
+    public:
+
+        // Settings
+
+        struct settings
+        {
+            static constexpr size_t handlers = 16;
+        };
+
+    private:
+
         // Service nested classes
 
         struct exit
         {
         };
 
-    private:
-
         // Members
 
         lambda _kernel;
         ssize_t _entrypoint;
         promise <type> _promise;
-        data :: optional <ssize_t> _handler;
+
+        struct
+        {
+            ssize_t entrypoints[settings :: handlers];
+            size_t size;
+        } _handlers;
+
         std :: exception_ptr _exception;
 
     public:

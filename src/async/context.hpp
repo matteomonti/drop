@@ -10,7 +10,7 @@ namespace async
 {
     // Constructors
 
-    template <typename type, typename lambda> context <type, lambda> :: context(const lambda & kernel) : _kernel(kernel), _entrypoint(-1), _handler(data :: null)
+    template <typename type, typename lambda> context <type, lambda> :: context(const lambda & kernel) : _kernel(kernel), _entrypoint(-1), _handlers{.size = 0}
     {
     }
 
@@ -30,12 +30,14 @@ namespace async
 
     template <typename type, typename lambda> void context <type, lambda> :: handler()
     {
-        this->_handler = data :: null;
+        assert(this->_handlers.size);
+        this->_handlers.size--;
     }
 
     template <typename type, typename lambda> void context <type, lambda> :: handler(const ssize_t & entrypoint)
     {
-        this->_handler = entrypoint;
+        assert(this->_handlers.size < settings :: handlers);
+        this->_handlers.entrypoints[this->_handlers.size++] = entrypoint;
     }
 
     template <typename type, typename lambda> void context <type, lambda> :: rethrow()
@@ -83,14 +85,13 @@ namespace async
 
     template <typename type, typename lambda> void context <type, lambda> :: run()
     {
-        bool threw = false;
-
         if(this->_exception)
         {
-            threw = true;
-
-            if(this->_handler)
-                this->_entrypoint = *(this->_handler);
+            if(this->_handlers.size)
+            {
+                this->_entrypoint = this->_handlers.entrypoints[this->_handlers.size - 1];
+                this->_handlers.size--;
+            }
             else
             {
                 this->_promise.reject(this->_exception);
@@ -105,17 +106,8 @@ namespace async
         }
         catch(...)
         {
-            if(threw)
-            {
-                this->_promise.reject(std :: current_exception());
-                delete this;
-                return;
-            }
-            else
-            {
-                this->_exception = std :: current_exception();
-                this->run();
-            }
+            this->_exception = std :: current_exception();
+            this->run();
         }
     }
 

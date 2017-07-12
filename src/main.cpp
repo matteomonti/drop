@@ -22,19 +22,34 @@ promise <void> f()
     (
         async_try
         ({
-            for(i = 0; i < 1000; i++)
-            {
-                await(j) = get_rand();
-                std :: cout << j << std :: endl;
+            async_try
+            ({
+                for(i = 0; i < 1000; i++)
+                {
+                    await(j) = get_rand();
+                    std :: cout << j << std :: endl;
 
-                if(i == 5)
-                    throw "Throwing from within";
-            }
+                    if(i == 5)
+                        throw 666; // throw "Throwing from within";
+                }
+            },
+            catch(const char * message)
+            {
+                std :: cout << "Exception: " << message << std :: endl;
+            });
+        }, catch(...)
+        {
+            std :: cout << "External, generic catch" << std :: endl;
+        });
+
+        async_try
+        ({
+            throw "Yet another exception";
         },
         catch(const char * message)
         {
-            std :: cout << "Exception: " << message << std :: endl;
-        })
+            std :: cout << "And from the external catch I still get: " << message << std :: endl;
+        });
 
         std :: cout << "Seppuku now!" << std :: endl;
         throw "Goodbye cruel world";

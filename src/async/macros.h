@@ -41,6 +41,7 @@ context.handler(entrypoint);                                        \
 {                                                                   \
     body                                                            \
 }                                                                   \
+context.handler();                                                  \
 if(false)                                                           \
 {                                                                   \
     case entrypoint:;                                               \
@@ -49,8 +50,7 @@ if(false)                                                           \
         context.rethrow();                                          \
     }                                                               \
     handlers                                                        \
-}                                                                   \
-context.handler();
+}
 
 #define async_try(body, handlers) async_try_indirect(body, handlers, __counter__)
 
