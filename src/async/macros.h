@@ -13,7 +13,7 @@
                                                                     \
 return :: async :: contextualize([=](auto & context) mutable        \
 {                                                                   \
-    bool __return__ = false;                                        \
+    context.flag = false;                                           \
                                                                     \
     switch(context.entrypoint())                                    \
     {                                                               \
@@ -28,11 +28,30 @@ return :: async :: contextualize([=](auto & context) mutable        \
 
 #define await_indirect(target, entrypoint)                          \
                                                                     \
-__return__ = true;                                                  \
+context.flag = true;                                                \
 case entrypoint:;                                                   \
-if(__return__)                                                      \
+if(context.flag)                                                    \
     return leave(context, entrypoint, target)
 
 #define await(target) await_indirect(target, __counter__)
+
+#define async_try_indirect(body, handlers, entrypoint)              \
+                                                                    \
+context.handler(entrypoint);                                        \
+{                                                                   \
+    body                                                            \
+}                                                                   \
+context.handler();                                                  \
+if(false)                                                           \
+{                                                                   \
+    case entrypoint:;                                               \
+    try                                                             \
+    {                                                               \
+        context.rethrow();                                          \
+    }                                                               \
+    handlers                                                        \
+}
+
+#define async_try(body, handlers) async_try_indirect(body, handlers, __counter__)
 
 #endif
