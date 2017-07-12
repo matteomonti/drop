@@ -8,10 +8,15 @@ namespace async
 #if !defined(__forward__) && !defined(__drop__async__context__h)
 #define __drop__async__context__h
 
+// Libraries
+
+#include <exception>
+
 // Includes
 
 #include "promise.h"
 #include "utils/template/is_callable.h"
+#include "data/optional.hpp"
 
 namespace async
 {
@@ -30,6 +35,8 @@ namespace async
         lambda _kernel;
         ssize_t _entrypoint;
         promise <type> _promise;
+        data :: optional <ssize_t> _handler;
+        std :: exception_ptr _exception;
 
     public:
 
@@ -48,8 +55,14 @@ namespace async
 
         // Methods
 
+        void handler();
+        void handler(const ssize_t &);
+
+        void rethrow();
+
         exit leave(const ssize_t &, const class :: promise <void> &);
         template <typename ttype> exit leave(const ssize_t &, ttype &, const class :: promise <ttype> &);
+
         template <typename... rtypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(rtypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(rtypes) == 1)> * = nullptr> exit resolve(const rtypes & ...);
         void run();
     };

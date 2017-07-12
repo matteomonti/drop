@@ -35,4 +35,23 @@ if(context.flag)                                                    \
 
 #define await(target) await_indirect(target, __counter__)
 
+#define try_indirect(body, handlers, entrypoint)                    \
+                                                                    \
+context.handler(entrypoint);                                        \
+{                                                                   \
+    body                                                            \
+}                                                                   \
+if(false)                                                           \
+{                                                                   \
+    case entrypoint:;                                               \
+    try                                                             \
+    {                                                               \
+        context.rethrow();                                          \
+    }                                                               \
+    handlers                                                        \
+}                                                                   \
+context.handler();
+
+#define try(body, handlers) try_indirect(body, handlers, __counter__)
+
 #endif

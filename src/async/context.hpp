@@ -10,7 +10,7 @@ namespace async
 {
     // Constructors
 
-    template <typename type, typename lambda> context <type, lambda> :: context(const lambda & kernel) : _kernel(kernel), _entrypoint(-1)
+    template <typename type, typename lambda> context <type, lambda> :: context(const lambda & kernel) : _kernel(kernel), _entrypoint(-1), _handler(data :: null)
     {
     }
 
@@ -28,10 +28,29 @@ namespace async
 
     // Methods
 
+    template <typename type, typename lambda> void context <type, lambda> :: handler()
+    {
+        this->_handler = data :: null;
+    }
+
+    template <typename type, typename lambda> void context <type, lambda> :: handler(const ssize_t & entrypoint)
+    {
+        this->_handler = entrypoint;
+    }
+
+    template <typename type, typename lambda> void context <type, lambda> :: rethrow()
+    {
+        std :: rethrow_exception(this->_exception);
+    }
+
     template <typename type, typename lambda> typename context <type, lambda> :: exit context <type, lambda> :: leave(const ssize_t & entrypoint, const class :: promise <void> & promise)
     {
         promise.then([this]()
         {
+            this->run();
+        }).except([this](const std :: exception_ptr & exception)
+        {
+            this->_exception = exception;
             this->run();
         });
 
@@ -44,6 +63,10 @@ namespace async
         promise.then([&, this](const ttype & value)
         {
             target = value;
+            this->run();
+        }).except([this](const std :: exception_ptr & exception)
+        {
+            this->_exception = exception;
             this->run();
         });
 
@@ -60,7 +83,40 @@ namespace async
 
     template <typename type, typename lambda> void context <type, lambda> :: run()
     {
-        this->_kernel(*this);
+        bool threw = false;
+
+        if(this->_exception)
+        {
+            threw = true;
+
+            if(this->_handler)
+                this->_entrypoint = *(this->_handler);
+            else
+            {
+                this->_promise.reject(this->_exception);
+                delete this;
+                return;
+            }
+        }
+
+        try
+        {
+            this->_kernel(*this);
+        }
+        catch(...)
+        {
+            if(threw)
+            {
+                this->_promise.reject(std :: current_exception());
+                delete this;
+                return;
+            }
+            else
+            {
+                this->_exception = std :: current_exception();
+                this->run();
+            }
+        }
     }
 
     // Functions
