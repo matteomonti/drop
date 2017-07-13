@@ -273,6 +273,16 @@ template <typename type> void promise <type> :: arc :: alias(const promise & tha
     this->_alias = that._arc;
 }
 
+template <typename type> void promise <type> :: arc :: lock()
+{
+    this->_mutex.lock();
+}
+
+template <typename type> void promise <type> :: arc :: unlock()
+{
+    this->_mutex.unlock();
+}
+
 // promise
 
 // Constructors
@@ -283,48 +293,56 @@ template <typename type> promise <type> :: promise() : _arc(new arc)
 
 // Methods
 
-template <typename type> template <typename lambda, std :: enable_if_t <promise <type> :: template traits <lambda> :: valid> *> auto promise <type> :: then(const lambda & resolve_callback) const
+template <typename type> template <typename lambda, std :: enable_if_t <promise <type> :: template traits <lambda> :: valid && promise <type> :: template traits <lambda> :: chainable> *> auto promise <type> :: then(const lambda & resolve_callback) const
 {
-    struct ychain
-    {
-        static inline auto run(const promise & promise, const lambda & resolve_callback)
-        {
-            return promise._arc->then(resolve_callback);
-        }
-    };
+    this->_arc->lock();
+    auto chain = this->_arc->then(resolve_callback);
+    this->_arc->unlock();
 
-    struct nchain
-    {
-        static inline auto run(const promise & promise, const lambda & resolve_callback)
-        {
-            promise._arc->then(resolve_callback);
-            return promise;
-        }
-    };
+    return chain;
+}
 
-    return std :: conditional_t <traits <lambda> :: chainable, ychain, nchain> :: run(*this, resolve_callback);
+template <typename type> template <typename lambda, std :: enable_if_t <promise <type> :: template traits <lambda> :: valid && !(promise <type> :: template traits <lambda> :: chainable)> *> auto promise <type> :: then(const lambda & resolve_callback) const
+{
+    this->_arc->lock();
+    this->_arc->then(resolve_callback);
+    this->_arc->unlock();
+
+    return (*this);
 }
 
 template <typename type> template <typename lambda, std :: enable_if_t <utils :: is_callable <lambda, const std :: exception_ptr &> :: value> *> void promise <type> :: except(const lambda & reject_callback) const
 {
+    this->_arc->lock();
     this->_arc->except(reject_callback);
+    this->_arc->unlock();
 }
 
 template <typename type> template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> *> void promise <type> :: resolve(const atypes & ... values) const
 {
+    this->_arc->lock();
     this->_arc->resolve(values...);
+    this->_arc->unlock();
 }
 
 template <typename type> template <typename rtype> void promise <type> :: reject(const rtype & exception)
 {
+    this->_arc->lock();
     this->_arc->reject(exception);
+    this->_arc->unlock();
 }
 
 // Private methods
 
 template <typename type> void promise <type> :: alias(const promise & that)
 {
+    this->_arc->lock();
+    that._arc->lock();
+
     this->_arc->alias(that);
+
+    that._arc->unlock();
+    this->_arc->unlock();
 }
 
 #endif
