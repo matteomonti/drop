@@ -21,6 +21,12 @@ int main()
 
     for(size_t i = 0; i < events; i++)
         std :: cout << my_queue[i] << std :: endl;
+
+    std :: cout << "Removing and selecting" << std :: endl;
+    my_queue.remove <network :: queue :: write> (my_socket.descriptor());
+    events = my_queue.select(10e6);
+
+    std :: cout << "Events: " << events << std :: endl;
 }
 
 #endif

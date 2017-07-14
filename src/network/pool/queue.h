@@ -79,6 +79,9 @@ namespace network
         template <type filter, std :: enable_if_t <filter == read> * = nullptr> void add(const int &);
         template <type filter, std :: enable_if_t <filter == write> * = nullptr> void add(const int &);
 
+        template <type filter, std :: enable_if_t <filter == read> * = nullptr> void remove(const int &);
+        template <type filter, std :: enable_if_t <filter == write> * = nullptr> void remove(const int &);
+
         size_t select(const microtimestamp & = 0);
 
         // Operators
