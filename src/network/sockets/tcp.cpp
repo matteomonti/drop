@@ -6,7 +6,7 @@ namespace network :: sockets
 {
     // Constructors
 
-    tcp :: tcp()
+    tcp :: tcp() : _blocking(true)
     {
         this->_descriptor = :: socket(PF_INET, SOCK_STREAM, 0);
 
@@ -17,7 +17,7 @@ namespace network :: sockets
 
     // Private constructors
 
-    tcp :: tcp(const int & descriptor, const class address :: port & port, const address & remote) : _descriptor(descriptor), _port(port), _remote(remote)
+    tcp :: tcp(const int & descriptor, const class address :: port & port, const address & remote) : _descriptor(descriptor), _port(port), _remote(remote), _blocking(true)
     {
     }
 
@@ -64,6 +64,18 @@ namespace network :: sockets
             throw setsockopt_failed();
     }
 
+    void tcp :: block(const bool & value)
+    {
+        int flags = fcntl(this->_descriptor, F_GETFL, 0);
+
+        if(!value)
+            fcntl(this->_descriptor, F_SETFL, flags | O_NONBLOCK);
+        else
+            fcntl(this->_descriptor, F_SETFL, flags & (!O_NONBLOCK));
+
+        this->_blocking = value;
+    }
+
     // Methods
 
     void tcp :: bind(const class address :: port & port)
@@ -84,7 +96,9 @@ namespace network :: sockets
         if(this->_descriptor < 0)
             throw socket_closed();
 
-        if(:: connect(this->_descriptor, (const sockaddr *) &(const sockaddr_in &) remote, sizeof(sockaddr_in)))
+        int status = :: connect(this->_descriptor, (const sockaddr *) &(const sockaddr_in &) remote, sizeof(sockaddr_in));
+
+        if(status && (this->_blocking || errno != EINPROGRESS))
             throw connect_failed();
 
         this->_remote = remote;

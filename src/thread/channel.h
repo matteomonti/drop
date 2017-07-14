@@ -28,7 +28,7 @@ namespace thread
         {
             static constexpr size_t base_chunk_size = 1024;
         };
-        
+
         // Service nested classes
 
         class chunk
@@ -52,6 +52,10 @@ namespace thread
             // Constructors
 
             chunk(const size_t &);
+
+            // Destructors
+
+            ~chunk();
 
             // Methods
 

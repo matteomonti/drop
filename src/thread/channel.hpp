@@ -15,6 +15,13 @@ namespace thread
     {
     }
 
+    // Destructors
+
+    template <typename type> channel <type> :: chunk :: ~chunk()
+    {
+        delete [] this->_buffer;
+    }
+
     // Methods
 
     template <typename type> void channel <type> :: chunk :: push(const type & item)
