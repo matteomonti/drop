@@ -15,12 +15,24 @@ namespace network
 
     // Getters
 
-    #ifdef __APPLE__
     int queue :: event :: descriptor() const
     {
+        #ifdef __APPLE__
         return this->ident;
+        #endif
     }
-    #endif
+
+    queue :: type queue :: event :: type() const
+    {
+        #ifdef __APPLE__
+        if(this->filter == EVFILT_WRITE)
+            return write;
+        else if(this->filter == EVFILT_READ)
+            return read;
+        else
+            assert(false);
+        #endif
+    }
 
     // queue
 
@@ -44,6 +56,7 @@ namespace network
 
     size_t queue :: select(const microtimestamp & timeout)
     {
+        #ifdef __APPLE__
         int count;
 
         if(timeout)
@@ -60,12 +73,13 @@ namespace network
             count = kevent(this->_descriptor, 0, 0, this->_events, (int) settings :: buffer_size, nullptr);
 
         return count;
+        #endif
     }
 
     // Operators
 
-    int queue :: operator [] (const size_t & index) const
+    const queue :: event & queue :: operator [] (const size_t & index) const
     {
-        return this->_events[index].descriptor();
+        return this->_events[index];
     }
 };

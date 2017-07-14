@@ -14,19 +14,15 @@ int main()
 
     my_socket.block(false);
     my_queue.add <network :: queue :: write> (my_socket.descriptor());
+    my_queue.add <network :: queue :: read> (my_socket.descriptor());
+
     my_socket.connect({"google.com", 80});
 
     size_t events = my_queue.select();
     std :: cout << "Events (" << events << "):" << std :: endl;
 
     for(size_t i = 0; i < events; i++)
-        std :: cout << my_queue[i] << std :: endl;
-
-    std :: cout << "Removing and selecting" << std :: endl;
-    my_queue.remove <network :: queue :: write> (my_socket.descriptor());
-    events = my_queue.select(10e6);
-
-    std :: cout << "Events: " << events << std :: endl;
+        std :: cout << my_queue[i].descriptor() << " (" << (my_queue[i].type() == network :: queue :: write ? "write" : "read") << ")" << std :: endl;
 }
 
 #endif

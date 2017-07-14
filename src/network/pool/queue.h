@@ -16,6 +16,7 @@ namespace network
 #include <sys/event.h>
 #include <sys/time.h>
 #include <exception>
+#include <assert.h>
 
 // Includes
 
@@ -54,6 +55,7 @@ namespace network
             // Getters
 
             int descriptor() const;
+            type type() const;
         };
         #endif
 
@@ -86,7 +88,7 @@ namespace network
 
         // Operators
 
-        int operator [] (const size_t &) const;
+        const event & operator [] (const size_t &) const;
     };
 };
 
