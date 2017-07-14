@@ -17,6 +17,8 @@ namespace network
 #include <unistd.h>
 #include <stddef.h>
 #include <assert.h>
+#include <fcntl.h>
+#include <errno.h>
 
 // Includes
 
@@ -44,6 +46,7 @@ namespace network :: sockets
         int _descriptor;
         class address :: port _port;
         address _remote;
+        bool _blocking;
 
     public:
 
@@ -68,6 +71,8 @@ namespace network :: sockets
 
         void send_timeout(const microtimestamp &);
         void receive_timeout(const microtimestamp &);
+
+        void block(const bool &);
 
         // Methods
 
