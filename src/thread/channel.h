@@ -17,6 +17,7 @@ namespace thread
 // Includes
 
 #include "data/optional.hpp"
+#include "utils/misc/pnew.h"
 
 namespace thread
 {
@@ -26,7 +27,7 @@ namespace thread
 
         struct settings
         {
-            static constexpr size_t base_chunk_size = 1024;
+            static constexpr size_t base_chunk_alloc = 1024;
         };
 
         // Service nested classes
@@ -35,7 +36,7 @@ namespace thread
         {
             // Members
 
-            volatile std :: aligned_storage_t <sizeof(type), alignof(type)> * _buffer;
+            data :: optional <type> * _buffer;
             size_t _size;
 
             struct
