@@ -20,13 +20,13 @@ namespace thread
 
 namespace thread
 {
-    template <typename type> class channel
+    template <typename type> class channel // TODO: Manage constructors for _buffer entries! Otherwise objects that were never instantiated will be assigned with undefined behavior.
     {
         // Settings
 
         struct settings
         {
-            static constexpr size_t base_chunk_size = 1024;
+            static constexpr size_t base_chunk_alloc = 1024;
         };
 
         // Service nested classes

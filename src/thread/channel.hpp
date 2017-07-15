@@ -58,7 +58,7 @@ namespace thread
 
     template <typename type> channel <type> :: channel()
     {
-        this->_read = this->_write = new chunk(settings :: base_chunk_size);
+        this->_read = this->_write = new chunk(settings :: base_chunk_alloc);
     }
 
     // Methods
