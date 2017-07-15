@@ -5,25 +5,21 @@
 
 #include "hashtable.h"
 #include "optional.hpp"
+#include "utils/misc/pnew.hpp"
 
 namespace data
 {
     // Constructors
 
-    template <typename ktype, typename vtype> hashtable <ktype, vtype> :: hashtable() : _entries(new std :: aligned_storage_t <sizeof(optional <entry>), alignof(optional <entry>)> [settings :: base_alloc]), _size(0), _alloc(settings :: base_alloc)
+    template <typename ktype, typename vtype> hashtable <ktype, vtype> :: hashtable() : _entries(utils :: pnew <optional <entry>> :: uniform [settings :: base_alloc] (null)), _size(0), _alloc(settings :: base_alloc)
     {
-        for(size_t i = 0; i < this->_alloc; i++)
-            new (&(this->_entries[i])) optional <entry> (null);
     }
 
     // Destructor
 
     template <typename ktype, typename vtype> hashtable <ktype, vtype> :: ~hashtable()
     {
-        for(size_t i = 0; i < this->_alloc; i++)
-            reinterpret_cast <optional <entry> &> (this->_entries[i]).~optional();
-
-        delete [] this->_entries;
+        utils :: pdelete(this->_entries, this->_alloc);
     }
 
     // Methods
@@ -35,20 +31,24 @@ namespace data
 
         size_t index = hash(key) % this->_alloc;
 
-        while(reinterpret_cast <optional <entry> &> (this->_entries[index]))
+        while(this->_entries[index])
             index = (index + 1) % this->_alloc;
 
-        reinterpret_cast <optional <entry> &> (this->_entries[index]) = {.key = key, .value = value};
+        this->_entries[index] = entry{.key = key, .value = value};
         this->_size++;
     }
 
     template <typename ktype, typename vtype> void hashtable <ktype, vtype> :: remove(const ktype & key)
     {
-        size_t i = this->slot(key);
+        optional <size_t> si = this->slot(key);
+        if(!si)
+            return;
+
+        size_t i = *si;
 
         if(this->_alloc / (this->_size + 1) > settings :: contract_threshold && this->_alloc > settings :: base_alloc)
         {
-            reinterpret_cast <optional <entry> &> (this->_entries[i]) = null;
+            this->_entries[i] = null;
             this->realloc(this->_alloc / 2);
         }
         else
@@ -58,25 +58,74 @@ namespace data
 
             while(true)
             {
-                reinterpret_cast <optional <entry> &> (this->_entries[i]) = null;
+                this->_entries[i] = null;
 
                 do
                 {
                     j = (j + 1) % this->_alloc;
 
-                    if(!reinterpret_cast <optional <entry> &> (this->_entries[j]))
+                    if(!(this->_entries[j]))
                         goto end;
 
-                    k = hash(reinterpret_cast <optional <entry> &> (this->_entries[j])->key) % this->_alloc;
+                    k = hash(this->_entries[j]->key) % this->_alloc;
                 } while((i <= j) ? ((i < k) && (k <= j)) : ((i < k) || (k <= j)));
 
-                reinterpret_cast <optional <entry> &> (this->_items[i]) = reinterpret_cast <optional <entry> &> (this->_items[j]);
+                this->_entries[i] = this->_entries[j];
                 i = j;
             }
 
             end:;
             this->_size--;
         }
+    }
+
+    template <typename ktype, typename vtype> template <typename lambda, std :: enable_if_t <utils :: is_callable <lambda, const ktype &, const vtype &> :: value> *> void hashtable <ktype, vtype> :: each(const lambda & callback)
+    {
+        for(size_t i = 0; i < this->_alloc; i++)
+            if(this->_entries[i])
+                callback(this->_entries[i]->key, this->_entries[i]->value);
+    }
+
+    // Private methods
+
+    template <typename ktype, typename vtype> optional <size_t> hashtable <ktype, vtype> :: slot(const ktype & key) const
+    {
+        for(size_t index = hash(key) % this->_alloc;; index = (index + 1) % this->_alloc)
+        {
+            if(!(this->_entries[index]))
+                return null;
+
+            if(this->_entries[index]->key == key)
+                return index;
+        }
+    }
+
+    template <typename ktype, typename vtype> void hashtable <ktype, vtype> :: realloc(const size_t & alloc)
+    {
+        optional <entry> * old = this->_entries;
+
+        size_t old_alloc = this->_alloc;
+        this->_alloc = alloc;
+
+        this->_size = 0;
+        this->_entries = utils :: pnew <optional <entry>> :: uniform [this->_alloc] (null);
+
+        for(size_t i = 0; i < old_alloc; i++)
+            if(old[i])
+                this->add(old[i]->key, old[i]->value);
+
+        utils :: pdelete(old, old_alloc);
+    }
+
+    // Operators
+
+    template <typename ktype, typename vtype> optional <vtype> hashtable <ktype, vtype> :: operator [] (const ktype & key) const
+    {
+        optional <size_t> si = this->slot(key);
+        if(!si)
+            return null;
+
+        return this->_entries[*si]->value;
     }
 
     // Private static methods

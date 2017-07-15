@@ -18,6 +18,7 @@ namespace data
 
 #include "optional.h"
 #include "utils/template/is_callable.h"
+#include "utils/misc/pnew.h"
 
 namespace data
 {
@@ -34,7 +35,7 @@ namespace data
 
         // Service nested classes
 
-        class entry
+        struct entry
         {
             ktype key;
             vtype value;
@@ -42,7 +43,7 @@ namespace data
 
         // Members
 
-        std :: aligned_storage_t <sizeof(optional <entry>), alignof(optional <entry>)> * _entries;
+        optional <entry> * _entries;
         size_t _size;
         size_t _alloc;
 
@@ -67,7 +68,7 @@ namespace data
 
         // Private methods
 
-        size_t slot(const ktype &) const;
+        optional <size_t> slot(const ktype &) const;
         void realloc(const size_t &);
 
     public:

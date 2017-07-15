@@ -73,12 +73,22 @@ namespace utils
 
     template <typename type> pnew <type> :: operator type * () const
     {
-        return reinterpret_cast <type *> (this->_items);
+        return (type *) this->_items;
     }
 
     // Static members declarations
 
     template <typename type>  typename pnew <type> :: factories :: uniform pnew <type> :: uniform;
+
+    // Functions
+
+    template <typename type> void pdelete(type * array, const size_t & size)
+    {
+        for(size_t i = 0; i < size; i++)
+            array[i].~type();
+
+        delete [] reinterpret_cast <std :: aligned_storage_t <sizeof(type), alignof(type)> *> (array);
+    }
 };
 
 #endif

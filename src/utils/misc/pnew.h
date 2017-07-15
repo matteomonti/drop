@@ -30,7 +30,7 @@ namespace utils
                     // Friends
 
                     friend class uniform;
-                    
+
                     // Constructors
 
                     pnew _pnew;
@@ -108,6 +108,10 @@ namespace utils
 
         static typename factories :: uniform uniform;
     };
+
+    // Functions
+
+    template <typename type> void pdelete(type *, const size_t &);
 };
 
 #endif
