@@ -17,6 +17,48 @@ namespace utils
 {
     template <typename type> class pnew
     {
+        // Service nested classes
+
+        struct factories
+        {
+            class uniform
+            {
+                // Service nested classes
+
+                class iterator
+                {
+                    // Friends
+
+                    friend class uniform;
+                    
+                    // Constructors
+
+                    pnew _pnew;
+                    size_t _size;
+
+                    // Constructors
+
+                    iterator(const size_t &);
+
+                public:
+
+                    // Operators
+
+                    template <typename... atypes, std :: enable_if_t <std :: is_constructible <type, atypes...> :: value> * = nullptr> const iterator & operator () (atypes && ...) const;
+
+                    // Casting
+
+                    operator type * () const;
+                };
+
+            public:
+
+                // Operators
+
+                iterator operator [] (const size_t &);
+            };
+        };
+
     public:
 
         // Nested classes
@@ -39,7 +81,7 @@ namespace utils
 
             // Operators
 
-            template <typename... atypes, std :: enable_if_t <std :: is_constructible <type, atypes...> :: value> * = nullptr> void operator () (atypes && ...);
+            template <typename... atypes, std :: enable_if_t <std :: is_constructible <type, atypes...> :: value> * = nullptr> void operator () (atypes && ...) const;
         };
 
     private:
@@ -56,11 +98,15 @@ namespace utils
 
         // Operators
 
-        item operator [] (const size_t &);
+        item operator [] (const size_t &) const;
 
         // Casting
 
-        operator type * ();
+        operator type * () const;
+
+        // Static members
+
+        static typename factories :: uniform uniform;
     };
 };
 

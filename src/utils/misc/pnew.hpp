@@ -7,6 +7,38 @@
 
 namespace utils
 {
+    // iterator
+
+    // Constructors
+
+    template <typename type> pnew <type> :: factories :: uniform :: iterator :: iterator(const size_t & size) : _pnew(size), _size(size)
+    {
+    }
+
+    // Operators
+
+    template <typename type> template <typename... atypes, std :: enable_if_t <std :: is_constructible <type, atypes...> :: value> *> const typename pnew <type> :: factories :: uniform :: iterator & pnew <type> :: factories :: uniform :: iterator :: operator () (atypes && ... args) const
+    {
+        for(size_t i = 0; i < this->_size; i++)
+            this->_pnew[i](std :: forward <atypes> (args)...);
+
+        return (*this);
+    }
+
+    // Casting
+
+    template <typename type> pnew <type> :: factories :: uniform :: iterator :: operator type * () const
+    {
+        return (type *) (this->_pnew);
+    }
+
+    // uniform
+
+    template <typename type> typename pnew <type> :: factories :: uniform :: iterator pnew <type> :: factories :: uniform :: operator [] (const size_t & size)
+    {
+        return iterator(size);
+    }
+
     // item
 
     // Constructors
@@ -17,7 +49,7 @@ namespace utils
 
     // Operators
 
-    template <typename type> template <typename... atypes, std :: enable_if_t <std :: is_constructible <type, atypes...> :: value> *> void pnew <type> :: item :: operator () (atypes && ... args)
+    template <typename type> template <typename... atypes, std :: enable_if_t <std :: is_constructible <type, atypes...> :: value> *> void pnew <type> :: item :: operator () (atypes && ... args) const
     {
         new (this->_item) type(std :: forward <atypes> (args)...);
     }
@@ -32,17 +64,21 @@ namespace utils
 
     // Operators
 
-    template <typename type> typename pnew <type> :: item pnew <type> :: operator [] (const size_t & index)
+    template <typename type> typename pnew <type> :: item pnew <type> :: operator [] (const size_t & index) const
     {
         return item(this->_items[index]);
     }
 
     // Casting
 
-    template <typename type> pnew <type> :: operator type * ()
+    template <typename type> pnew <type> :: operator type * () const
     {
         return reinterpret_cast <type *> (this->_items);
     }
+
+    // Static members declarations
+
+    template <typename type>  typename pnew <type> :: factories :: uniform pnew <type> :: uniform;
 };
 
 #endif

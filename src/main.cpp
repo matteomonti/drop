@@ -17,12 +17,7 @@ public:
 
 int main()
 {
-    utils :: pnew <no_default_constructor> x(1024);
-
-    for(size_t i = 0; i < 1024; i++)
-        x[i](i);
-
-    no_default_constructor * v = x;
+    no_default_constructor * v = utils :: pnew <no_default_constructor> :: uniform [1024] (333);
 
     for(size_t i = 0; i < 1024; i++)
         std :: cout << v[i].i << std :: endl;
