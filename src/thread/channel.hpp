@@ -4,6 +4,7 @@
 // Includes
 
 #include "channel.h"
+#include "utils/misc/pnew.hpp"
 
 namespace thread
 {
@@ -11,7 +12,7 @@ namespace thread
 
     // Constructors
 
-    template <typename type> channel <type> :: chunk :: chunk(const size_t & size) : _buffer(new std :: aligned_storage_t <sizeof(type), alignof(type)> [size]), _size(size), _cursor{.write = 0, .read = 0}, _next(nullptr), _last(-1)
+    template <typename type> channel <type> :: chunk :: chunk(const size_t & size) : _buffer(utils :: pnew <data :: optional <type>> :: uniform [size] (data :: null)), _size(size), _cursor{.write = 0, .read = 0}, _next(nullptr), _last(-1)
     {
     }
 
@@ -19,7 +20,7 @@ namespace thread
 
     template <typename type> channel <type> :: chunk :: ~chunk()
     {
-        delete [] this->_buffer;
+        utils :: pdelete(this->_buffer, this->_size);
     }
 
     // Methods
@@ -29,12 +30,12 @@ namespace thread
         if(this->_cursor.write == this->_cursor.read + this->_size)
         {
             this->_next = new chunk(this->_size * 2);
-            this->_last = this->_cursor.write - 1;
+            this->_last = this->_cursor.write;
 
             throw const_cast <chunk *> (this->_next);
         }
 
-        reinterpret_cast <volatile type &> (this->_buffer[(this->_cursor.write++) % this->_size]) = item;
+        this->_buffer[(this->_cursor.write++) % this->_size] = item;
     }
 
     template <typename type> data :: optional <type> channel <type> :: chunk :: pop()
@@ -47,7 +48,12 @@ namespace thread
         }
 
         if(this->_cursor.read < this->_cursor.write)
-            return reinterpret_cast <volatile type &> (this->_buffer[(this->_cursor.read++) % this->_size]);
+        {
+            type value = *(this->_buffer[(this->_cursor.read) % this->_size]);
+            this->_buffer[(this->_cursor.read++) % this->_size] = data :: null;
+
+            return value;
+        }
         else
             return data :: null;
     }

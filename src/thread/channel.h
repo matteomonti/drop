@@ -17,6 +17,7 @@ namespace thread
 // Includes
 
 #include "data/optional.hpp"
+#include "utils/misc/pnew.h"
 
 namespace thread
 {
@@ -35,7 +36,7 @@ namespace thread
         {
             // Members
 
-            volatile std :: aligned_storage_t <sizeof(type), alignof(type)> * _buffer;
+            data :: optional <type> * _buffer;
             size_t _size;
 
             struct
