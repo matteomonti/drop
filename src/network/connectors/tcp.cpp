@@ -77,8 +77,6 @@ namespace network :: connectors
             {
                 if(this->_queue[i].type() == queue :: read)
                 {
-                    std :: cout << "Wake" << std :: endl;
-
                     char buffer[1];
                     read(this->_wake.read, buffer, 1);
                 }
@@ -90,13 +88,20 @@ namespace network :: connectors
                     this->_pending.remove(this->_queue[i].descriptor());
                     this->_queue.remove <queue :: write> (this->_queue[i].descriptor());
 
-                    request->promise.resolve(connection(request->socket));
+                    try
+                    {
+                        request->socket.rethrow();
+                        request->promise.resolve(connection(request->socket));
+                    }
+                    catch(...)
+                    {
+                        request->promise.reject(std :: current_exception());
+                    }
                 }
             }
 
             while(data :: optional <request> request = this->_new.pop())
             {
-                std :: cout << "Adding " << request->socket.descriptor() << std :: endl;
                 this->_queue.add <queue :: write> (request->socket.descriptor());
                 this->_pending.add(request->socket.descriptor(), *request);
             }

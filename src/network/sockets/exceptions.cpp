@@ -6,6 +6,13 @@ namespace network :: sockets
 {
     // setsockopt_failed
 
+    const char * getsockopt_failed :: what() const noexcept
+    {
+        return "Getsockopt failed.";
+    }
+
+    // setsockopt_failed
+
     const char * setsockopt_failed :: what() const noexcept
     {
         return "Setsockopt failed.";
