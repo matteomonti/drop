@@ -25,6 +25,7 @@ namespace network
 #include "network/pool/queue.hpp"
 #include "async/promise.hpp"
 #include "thread/channel.hpp"
+#include "chrono/timelock.hpp"
 
 namespace network :: connectors
 {
@@ -45,12 +46,29 @@ namespace network :: connectors
 
         class async
         {
+        public:
+
+            struct settings
+            {
+                static constexpr microtimestamp timeout = 10e6;
+                static constexpr microtimestamp interval = 1e6;
+            };
+
+        private:
+
             // Service nested classes
 
             struct request
             {
                 sockets :: tcp socket;
                 promise <connection> promise;
+                size_t version;
+            };
+
+            struct timeout
+            {
+                int descriptor;
+                size_t version;
             };
 
             // Members
@@ -58,8 +76,11 @@ namespace network :: connectors
             queue _queue;
 
             volatile bool _alive;
+
             thread :: channel <request> _new;
             data :: hashtable <int, request> _pending;
+
+            chrono :: timelock <timeout> _timeouts;
 
             struct
             {
@@ -90,6 +111,10 @@ namespace network :: connectors
 
             void run();
             void wake();
+
+            // Static members
+
+            static size_t version;
         };
     };
 };
