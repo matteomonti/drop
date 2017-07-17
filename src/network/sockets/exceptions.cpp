@@ -73,4 +73,11 @@ namespace network :: sockets
     {
         return "Receive failed.";
     }
+
+    // connect_timeout
+
+    const char * connect_timeout :: what() const noexcept
+    {
+        return "Connect timeout.";
+    }
 };

@@ -66,6 +66,11 @@ namespace network :: sockets
     {
         const char * what() const noexcept;
     };
+
+    class connect_timeout : public std :: exception
+    {
+        const char * what() const noexcept;
+    };
 }
 
 #endif

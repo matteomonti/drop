@@ -21,6 +21,9 @@ namespace network :: connectors
     {
         request request;
         request.socket.block(false);
+
+        this->_mutex.lock();
+
         try
         {
             request.socket.connect(remote);
@@ -32,6 +35,7 @@ namespace network :: connectors
             request.promise.reject(std :: current_exception());
         }
 
+        this->_mutex.unlock();
         return request.promise;
     }
 
@@ -68,7 +72,7 @@ namespace network :: connectors
     {
         while(true)
         {
-            size_t count = this->_queue.select();
+            size_t count = this->_queue.select(settings :: interval);
 
             if(!(this->_alive))
                 break;
@@ -100,10 +104,27 @@ namespace network :: connectors
                 }
             }
 
+            while(data :: optional <timeout> timeout = this->_timeouts.pop())
+            {
+                data :: optional <request> request = this->_pending[timeout->descriptor];
+
+                if(request && request->version == timeout->version)
+                {
+                    this->_pending.remove(timeout->descriptor);
+                    this->_queue.remove <queue :: write> (timeout->descriptor);
+
+                    request->socket.close();
+                    request->promise.reject(sockets :: connect_timeout());
+                }
+            }
+
             while(data :: optional <request> request = this->_new.pop())
             {
                 this->_queue.add <queue :: write> (request->socket.descriptor());
+
+                request->version = version++;
                 this->_pending.add(request->socket.descriptor(), *request);
+                this->_timeouts.push({.descriptor = request->socket.descriptor(), .version = request->version}, microtime() + settings :: timeout);
             }
         }
     }
@@ -113,4 +134,8 @@ namespace network :: connectors
         char buffer[] = {'\0'};
         write(this->_wake.write, buffer, 1);
     }
+
+    // Static members
+
+    size_t tcp :: async :: version = 0;
 };
