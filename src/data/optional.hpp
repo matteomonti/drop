@@ -15,7 +15,7 @@ namespace data
     {
     }
 
-    template <typename type> template <typename... types, std :: enable_if_t <std :: is_constructible <type, types...> :: value> *> optional_base <type> :: optional_base(types && ... args) : _exists(true)
+    template <typename type> template <typename... types, std :: enable_if_t <!(optional_base <type> :: template are_optional <types...> :: value) && (std :: is_constructible <type, types...> :: value)> *> optional_base <type> :: optional_base(types && ... args) : _exists(true)
     {
         new (&(this->_bytes)) type(std :: forward <types> (args)...);
     }
