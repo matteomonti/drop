@@ -26,6 +26,20 @@ namespace data
 {
     template <typename type> class optional_base
     {
+        // Service nested classes
+
+        template <typename...> struct are_optional;
+
+        template <typename otype> struct are_optional <otype>
+        {
+            static constexpr bool value = std :: is_same <std :: remove_const_t <std :: remove_reference_t <otype>>, optional <type>> :: value;
+        };
+
+        template <typename...> struct are_optional
+        {
+            static constexpr bool value = false;
+        };
+
         // Members
 
         bool _exists;
@@ -36,7 +50,7 @@ namespace data
         // Constructors
 
         optional_base(null);
-        template <typename... types, std :: enable_if_t <std :: is_constructible <type, types...> :: value> * = nullptr> optional_base(types && ...);
+        template <typename... types, std :: enable_if_t <!(are_optional <types...> :: value) && (std :: is_constructible <type, types...> :: value)> * = nullptr> optional_base(types && ...);
         optional_base(const optional_base &);
         optional_base(optional_base &&);
 

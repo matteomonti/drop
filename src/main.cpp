@@ -4,31 +4,17 @@
 #include <unistd.h>
 #include <thread>
 
-#include "network/connectors/tcp.h"
+#include "data/heap.hpp"
 
 int main()
 {
-    network :: connectors :: tcp :: async my_connector;
+    data :: heap <size_t> my_heap;
 
-    usleep(1.e5);
+    for(size_t i = 0; i < 1048576; i++)
+        my_heap.push(rand());
 
-    my_connector.connect({"google.it", 80}).then([](const network :: connection & connection)
-    {
-        std :: cout << "Connected." << std :: endl;
-    }).except([](std :: exception_ptr exception)
-    {
-        try
-        {
-            std :: rethrow_exception(exception);
-        }
-        catch(const std :: exception & exception)
-        {
-            std :: cout << "Exception: " << exception.what() << std :: endl;
-        }
-    });
-
-    while(true)
-        usleep(1.e6);
+    for(size_t i = 0; i < 1048576; i++)
+        std :: cout << my_heap.pop() << std :: endl;
 }
 
 #endif
