@@ -24,7 +24,7 @@ namespace network
 
 #include "exceptions.h"
 #include "network/address.h"
-#include "time/time.h"
+#include "chrono/time.h"
 
 namespace network :: sockets
 {
@@ -84,6 +84,8 @@ namespace network :: sockets
 
         void send(const char *, const size_t &);
         size_t receive(char *, const size_t &);
+
+        void rethrow();
 
         void close();
     };

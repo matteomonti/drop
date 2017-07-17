@@ -17,6 +17,11 @@ namespace network
 
 namespace network :: sockets
 {
+    class getsockopt_failed : public std :: exception
+    {
+        const char * what() const noexcept;
+    };
+
     class setsockopt_failed : public std :: exception
     {
         const char * what() const noexcept;

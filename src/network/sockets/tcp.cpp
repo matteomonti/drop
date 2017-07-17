@@ -156,6 +156,18 @@ namespace network :: sockets
         return (size_t) res;
     }
 
+    void tcp :: rethrow()
+    {
+        int error;
+        socklen_t len = sizeof(int);
+
+        if(:: getsockopt(this->_descriptor, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
+            throw getsockopt_failed();
+
+        if(error)
+            throw connect_failed();
+    }
+
     void tcp :: close()
     {
         if(this->_descriptor < 0)
