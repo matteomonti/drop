@@ -33,6 +33,25 @@ namespace network
 
             data :: variant <sockets :: tcp> _socket;
 
+            struct
+            {
+                bytewise :: buffer buffer;
+                size_t size;
+                size_t cursor;
+            } _write;
+
+            struct
+            {
+                struct
+                {
+                    char size[sizeof(uint32_t)];
+                    bytewise :: buffer data;
+                } buffer;
+
+                size_t size;
+                size_t cursor;
+            } _read;
+
         public:
 
             // Constructors
@@ -52,6 +71,15 @@ namespace network
             template <typename type, std :: enable_if_t <std :: is_same <type, bytewise :: buffer> :: value> * = nullptr> type receive();
             template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size > 0)> * = nullptr> type receive();
             template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size == 0)> * = nullptr> type receive();
+
+        private:
+
+            // Private methods
+
+            void receive_setup(const size_t & = 0);
+            bool receive_step();
+            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> * = nullptr> type receive_finalize();
+            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size == 0)> *  = nullptr> type receive_finalize();
         };
 
         // Members

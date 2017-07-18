@@ -35,47 +35,35 @@ namespace network
 
     template <typename type, std :: enable_if_t <std :: is_same <type, bytewise :: buffer> :: value> *> type connection :: arc :: receive()
     {
-        bytewise :: buffer buffer;
-
-        this->_socket.visit([&](auto && socket)
-        {
-            char sbuffer[sizeof(uint32_t)];
-            for(char * cursor = sbuffer; cursor < sbuffer + sizeof(uint32_t);)
-            {
-                socket.receive(cursor, 1);
-                cursor++;
-
-                bytewise :: bsize bsize(sbuffer, cursor - sbuffer);
-                if(bsize.value() > -1)
-                {
-                    buffer.alloc(bsize.value());
-                    break;
-                }
-            }
-
-            for(char * cursor = buffer; cursor < buffer + buffer.size();)
-                cursor += socket.receive(cursor, buffer + buffer.size() - cursor);
-        });
-
-        return buffer;
+        this->receive_setup();
+        while(!(this->receive_step()));
+        return this->_read.buffer.data;
     }
 
     template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size > 0)> *> type connection :: arc :: receive()
     {
-        bytewise :: block <bytewise :: traits <type> :: size> buffer;
-
-        this->_socket.visit([&](auto && socket)
-        {
-            for(char * cursor = buffer; cursor < buffer + bytewise :: traits <type> :: size;)
-                cursor += socket.receive(cursor, buffer + bytewise :: traits <type> :: size - cursor);
-        });
-
-        return bytewise :: deserialize <type> (buffer);
+        this->receive_setup(bytewise :: traits <type> :: size);
+        while(!(this->receive_step()));
+        return this->receive_finalize <type> ();
     }
 
     template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size == 0)> *> type connection :: arc :: receive()
     {
-        return bytewise :: deserialize <type> (this->receive <bytewise :: buffer> ());
+        this->receive_setup();
+        while(!(this->receive_step()));
+        return this->receive_finalize <type> ();
+    }
+
+    // Private methods
+
+    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> *> type connection :: arc :: receive_finalize()
+    {
+        return bytewise :: deserialize <type> (reinterpret_cast <bytewise :: block <bytewise :: traits <type> :: size> &> (* (char *)(this->_read.buffer.data)));
+    }
+
+    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size == 0)> *> type connection :: arc :: receive_finalize()
+    {
+        return bytewise :: deserialize <type> (this->_read.buffer.data);
     }
 
     // connection
