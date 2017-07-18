@@ -7,34 +7,19 @@
 #include "network/acceptors/tcp.h"
 #include "network/connectors/tcp.h"
 
-struct myclass
-{
-    // Self
-
-    typedef myclass self;
-
-    // Members
-
-    bytewise :: buffer buffer;
-
-    // Bytewise
-
-    bytewise(buffer);
-};
-
 void server()
 {
     network :: acceptors :: tcp :: sync my_acceptor(1234);
     network :: connection my_connection = my_acceptor.accept();
-    myclass value = my_connection.receive <myclass> ();
+    bytewise :: buffer value = my_connection.receive <bytewise :: buffer> ();
 
-    std :: cout << "Value: " << value.buffer << std :: endl;
+    std :: cout << "Value: " << value << std :: endl;
 }
 
 void client()
 {
     network :: connection my_connection = network :: connectors :: tcp :: sync :: connect({"localhost", 1234});
-    my_connection.send <myclass> ({.buffer = "Hello World!!"});
+    my_connection.send <bytewise :: buffer> ("Hello, world?");
 }
 
 int main()

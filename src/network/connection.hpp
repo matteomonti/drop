@@ -33,35 +33,26 @@ namespace network
         this->send(buffer);
     }
 
-    template <typename type, std :: enable_if_t <std :: is_same <type, bytewise :: buffer> :: value> *> type connection :: arc :: receive()
-    {
-        this->receive_setup();
-        while(!(this->receive_step()));
-        return this->_read.buffer.data;
-    }
-
-    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size > 0)> *> type connection :: arc :: receive()
+    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> *> type connection :: arc :: receive()
     {
         this->receive_setup(bytewise :: traits <type> :: size);
         while(!(this->receive_step()));
         return this->receive_finalize <type> ();
     }
 
-    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size == 0)> *> type connection :: arc :: receive()
-    {
-        this->receive_setup();
-        while(!(this->receive_step()));
-        return this->receive_finalize <type> ();
-    }
-
     // Private methods
 
-    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> *> type connection :: arc :: receive_finalize()
+    template <typename type, std :: enable_if_t <std :: is_same <type, bytewise :: buffer> :: value> *> type connection :: arc :: receive_finalize()
+    {
+        return this->_read.buffer.data;
+    }
+
+    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size > 0)> *> type connection :: arc :: receive_finalize()
     {
         return bytewise :: deserialize <type> (reinterpret_cast <bytewise :: block <bytewise :: traits <type> :: size> &> (* (char *)(this->_read.buffer.data)));
     }
 
-    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size == 0)> *> type connection :: arc :: receive_finalize()
+    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size == 0)> *> type connection :: arc :: receive_finalize()
     {
         return bytewise :: deserialize <type> (this->_read.buffer.data);
     }

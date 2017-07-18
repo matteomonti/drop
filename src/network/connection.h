@@ -68,9 +68,7 @@ namespace network
             template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size > 0)> * = nullptr> void send(const type &);
             template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size == 0)> * = nullptr> void send(const type &);
 
-            template <typename type, std :: enable_if_t <std :: is_same <type, bytewise :: buffer> :: value> * = nullptr> type receive();
-            template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size > 0)> * = nullptr> type receive();
-            template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size == 0)> * = nullptr> type receive();
+            template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> * = nullptr> type receive();
 
         private:
 
@@ -78,8 +76,10 @@ namespace network
 
             void receive_setup(const size_t & = 0);
             bool receive_step();
-            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size > 0)> * = nullptr> type receive_finalize();
-            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: size == 0)> *  = nullptr> type receive_finalize();
+            
+            template <typename type, std :: enable_if_t <std :: is_same <type, bytewise :: buffer> :: value> * = nullptr> type receive_finalize();
+            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size > 0)> * = nullptr> type receive_finalize();
+            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size == 0)> *  = nullptr> type receive_finalize();
         };
 
         // Members
