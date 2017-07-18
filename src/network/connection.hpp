@@ -20,13 +20,13 @@ namespace network
     template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> *> void connection :: arc :: send(const type & target)
     {
         this->send_setup(target);
-        while(!(this->send_step()));
+        while(this->send_step() != completed);
     }
 
     template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> *> type connection :: arc :: receive()
     {
         this->receive_setup(bytewise :: traits <type> :: size);
-        while(!(this->receive_step()));
+        while(this->receive_step() != completed);
         return this->receive_finalize <type> ();
     }
 

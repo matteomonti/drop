@@ -25,9 +25,9 @@ namespace network
         this->_write.cursor = 0;
     }
 
-    bool connection :: arc :: send_step()
+    connection :: step connection :: arc :: send_step()
     {
-        bool completed;
+        step status;
 
         this->_socket.visit([&](auto && socket)
         {
@@ -36,16 +36,18 @@ namespace network
                 socket.send(this->_write.buffer.size, this->_write.ssize);
                 this->_write.ssize = 0;
 
-                completed = false;
+                status = more;
             }
             else
             {
-                this->_write.cursor += socket.send((char *) (this->_write.buffer.data) + this->_write.cursor, this->_write.buffer.data.size() - this->_write.cursor);
-                completed = (this->_write.cursor == this->_write.buffer.data.size());
+                size_t sent = socket.send((char *) (this->_write.buffer.data) + this->_write.cursor, this->_write.buffer.data.size() - this->_write.cursor);
+                this->_write.cursor += sent;
+
+                status = ((this->_write.cursor == this->_write.buffer.data.size()) ? completed : (sent ? more : wait));
             }
         });
 
-        return completed;
+        return status;
     }
 
     void connection :: arc :: receive_setup(const size_t & size)
@@ -57,29 +59,31 @@ namespace network
             this->_read.buffer.data.alloc(this->_read.size);
     }
 
-    bool connection :: arc :: receive_step()
+    connection :: step connection :: arc :: receive_step()
     {
-        bool completed;
+        step status;
 
         this->_socket.visit([&](auto && socket)
         {
             if(!(this->_read.size))
             {
-                socket.receive((char *) (this->_read.buffer.size) + (this->_read.cursor)++, 1);
+                size_t received = socket.receive((char *) (this->_read.buffer.size) + (this->_read.cursor)++, 1);
                 bytewise :: bsize bsize(this->_read.buffer.size, this->_read.cursor);
 
                 if(bsize.value() > -1)
                     this->receive_setup(bsize.value());
 
-                completed = false;
+                status = (received ? more : wait);
             }
             else
             {
-                this->_read.cursor += socket.receive((char *) (this->_read.buffer.data) + this->_read.cursor, this->_read.size - this->_read.cursor);
-                completed = (this->_read.cursor == this->_read.size);
+                size_t received = socket.receive((char *) (this->_read.buffer.data) + this->_read.cursor, this->_read.size - this->_read.cursor);
+                this->_read.cursor += received;
+
+                status = ((this->_read.cursor == this->_read.size) ? completed : (received ? more : wait));
             }
         });
 
-        return completed;
+        return status;
     }
 }

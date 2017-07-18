@@ -25,6 +25,10 @@ namespace network
 {
     class connection
     {
+        // Service nested enums
+
+        enum step {more, wait, completed};
+
         // Service nested classes
 
         class arc
@@ -80,10 +84,10 @@ namespace network
             template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size > 0)> * = nullptr> void send_setup(const type &);
             template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size == 0)> *  = nullptr> void send_setup(const type &);
 
-            bool send_step();
+            step send_step();
 
             void receive_setup(const size_t & = 0);
-            bool receive_step();
+            step receive_step();
 
             template <typename type, std :: enable_if_t <std :: is_same <type, bytewise :: buffer> :: value> * = nullptr> type receive_finalize();
             template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size > 0)> * = nullptr> type receive_finalize();

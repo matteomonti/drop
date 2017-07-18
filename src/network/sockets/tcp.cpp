@@ -137,7 +137,12 @@ namespace network :: sockets
         ssize_t res = :: send(this->_descriptor, message, size, 0);
 
         if(res < 0)
-            throw send_failed();
+        {
+            if(this->_blocking && errno == EWOULDBLOCK)
+                return 0;
+            else
+                throw send_failed();
+        }
 
         return (size_t) res;
     }
@@ -151,6 +156,9 @@ namespace network :: sockets
 
         if(res < 0)
         {
+            if(this->_blocking && errno == EWOULDBLOCK)
+                return 0;
+
             if(errno == EAGAIN)
                 throw :: network :: sockets :: receive_timeout();
             else
