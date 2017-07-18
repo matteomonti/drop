@@ -71,6 +71,11 @@ namespace network :: sockets
     {
         const char * what() const noexcept;
     };
+
+    class connection_closed : public std :: exception
+    {
+        const char * what() const noexcept;
+    };
 }
 
 #endif

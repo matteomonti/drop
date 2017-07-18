@@ -80,4 +80,11 @@ namespace network :: sockets
     {
         return "Connect timeout.";
     }
+
+    // connection_closed
+
+    const char * connection_closed :: what() const noexcept
+    {
+        return "Connection closed by remote endpoint.";
+    }
 };

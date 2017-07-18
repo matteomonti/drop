@@ -156,6 +156,8 @@ namespace network :: sockets
             else
                 throw receive_failed();
         }
+        else if(res == 0)
+            throw connection_closed();
 
         return (size_t) res;
     }
