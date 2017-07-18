@@ -14,6 +14,12 @@ namespace network
 #include <type_traits>
 #include <mutex>
 
+// Forward includes
+
+#define __forward__
+#include "pool/pool.h"
+#undef __forward__
+
 // Includes
 
 #include "data/variant.hpp"
@@ -26,6 +32,10 @@ namespace network
 {
     class connection
     {
+        // Friends
+
+        friend class pool;
+
         // Service nested enums
 
         enum step {more, wait, completed};
@@ -34,6 +44,10 @@ namespace network
 
         class arc
         {
+            // Friends
+
+            friend class pool;
+
             // Members
 
             data :: variant <sockets :: tcp> _socket;
