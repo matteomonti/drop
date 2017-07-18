@@ -147,7 +147,7 @@ namespace network :: sockets
         if(this->_descriptor < 0)
             throw socket_closed();
 
-        ssize_t res = :: read(this->_descriptor, message, size);
+        ssize_t res = :: recv(this->_descriptor, message, size, 0);
 
         if(res < 0)
         {

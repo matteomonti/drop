@@ -11,8 +11,15 @@ void server()
 {
     network :: acceptors :: tcp :: sync my_acceptor(1234);
     network :: connection my_connection = my_acceptor.accept();
-    bytewise :: buffer value = my_connection.receive <bytewise :: buffer> ();
-    std :: cout << "Received " << value.size() << " bytes" << std :: endl;
+
+    size_t total = 0;
+
+    while(true)
+    {
+        bytewise :: buffer value = my_connection.receive <bytewise :: buffer> ();
+        total += value.size();
+        std :: cout << "Received " << total << " bytes" << std :: endl;
+    }
 }
 
 void client()
@@ -23,7 +30,8 @@ void client()
     huge_payload.alloc(200 * 1048576);
     memset(huge_payload, 'x', 200 * 1048576);
 
-    my_connection.send <bytewise :: buffer> (huge_payload);
+    while(true)
+        my_connection.send <bytewise :: buffer> (huge_payload);
 }
 
 int main()
