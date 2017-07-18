@@ -20,12 +20,8 @@ namespace network
 
     void connection :: arc :: send_setup(const bytewise :: buffer & buffer)
     {
-        this->_write.buffer.alloc(buffer.size() + sizeof(uint32_t));
-
-        size_t ssize = bytewise :: bsize(buffer.size()).write(this->_write.buffer);
-        memcpy((char *) (this->_write.buffer) + ssize, buffer, buffer.size());
-
-        this->_write.buffer.alloc(buffer.size() + ssize);
+        this->_write.buffer.data = buffer;
+        this->_write.ssize = bytewise :: bsize(buffer.size()).write(this->_write.buffer.size);
         this->_write.cursor = 0;
     }
 
@@ -35,8 +31,18 @@ namespace network
 
         this->_socket.visit([&](auto && socket)
         {
-            this->_write.cursor += socket.send((char *) (this->_write.buffer) + this->_write.cursor, this->_write.buffer.size() - this->_write.cursor);
-            completed = (this->_write.cursor == this->_write.buffer.size());
+            if(this->_write.ssize)
+            {
+                socket.send(this->_write.buffer.size, this->_write.ssize);
+                this->_write.ssize = 0;
+
+                completed = false;
+            }
+            else
+            {
+                this->_write.cursor += socket.send((char *) (this->_write.buffer.data) + this->_write.cursor, this->_write.buffer.data.size() - this->_write.cursor);
+                completed = (this->_write.cursor == this->_write.buffer.data.size());
+            }
         });
 
         return completed;

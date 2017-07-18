@@ -34,7 +34,8 @@ namespace network
 
     template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size > 0)> *> void connection :: arc :: send_setup(const type & target)
     {
-        this->_write.buffer = bytewise :: buffer((const char *) bytewise :: serialize(target), bytewise :: traits <type> :: size);
+        this->_write.buffer.data = bytewise :: buffer((const char *) bytewise :: serialize(target), bytewise :: traits <type> :: size);
+        this->_write.ssize = 0;
         this->_write.cursor = 0;
     }
 

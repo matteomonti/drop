@@ -35,7 +35,13 @@ namespace network
 
             struct
             {
-                bytewise :: buffer buffer;
+                struct
+                {
+                    char size[sizeof(uint32_t)];
+                    bytewise :: buffer data;
+                } buffer;
+
+                size_t ssize;
                 size_t cursor;
             } _write;
 
