@@ -62,9 +62,9 @@ namespace network :: sockets
 
     // timeout
 
-    const char * timeout :: what() const noexcept
+    const char * receive_timeout :: what() const noexcept
     {
-        return "Timeout.";
+        return "Receive timeout.";
     }
 
     // receive_failed

@@ -129,13 +129,17 @@ namespace network :: sockets
         return tcp(descriptor, this->_port, remote);
     }
 
-    void tcp :: send(const char * message, const size_t & size)
+    size_t tcp :: send(const char * message, const size_t & size)
     {
         if(this->_descriptor < 0)
             throw socket_closed();
 
-        if(:: write(this->_descriptor, message, size) < 0)
+        ssize_t res = :: send(this->_descriptor, message, size, 0);
+
+        if(res < 0)
             throw send_failed();
+
+        return (size_t) res;
     }
 
     size_t tcp :: receive(char * message, const size_t & size)
@@ -148,7 +152,7 @@ namespace network :: sockets
         if(res < 0)
         {
             if(errno == EAGAIN)
-                throw timeout();
+                throw :: network :: sockets :: receive_timeout();
             else
                 throw receive_failed();
         }

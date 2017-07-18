@@ -17,20 +17,10 @@ namespace network
 
     // Methods
 
-    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size > 0)> *> void connection :: arc :: send(const type & target)
+    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> *> void connection :: arc :: send(const type & target)
     {
-        auto buffer = bytewise :: serialize(target);
-
-        this->_socket.visit([&](auto && socket)
-        {
-            socket.send(buffer, bytewise :: traits <type> :: size);
-        });
-    }
-
-    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size == 0)> *> void connection :: arc :: send(const type & target)
-    {
-        auto buffer = bytewise :: serialize(target);
-        this->send(buffer);
+        this->send_setup(target);
+        while(!(this->send_step()));
     }
 
     template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> *> type connection :: arc :: receive()
@@ -41,6 +31,17 @@ namespace network
     }
 
     // Private methods
+
+    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size > 0)> *> void connection :: arc :: send_setup(const type & target)
+    {
+        this->_write.buffer = bytewise :: buffer((const char *) bytewise :: serialize(target), bytewise :: traits <type> :: size);
+        this->_write.cursor = 0;
+    }
+
+    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size == 0)> *> void connection :: arc :: send_setup(const type & target)
+    {
+        this->send_setup(bytewise :: serialize(target));
+    }
 
     template <typename type, std :: enable_if_t <std :: is_same <type, bytewise :: buffer> :: value> *> type connection :: arc :: receive_finalize()
     {

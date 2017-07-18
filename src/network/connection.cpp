@@ -16,21 +16,31 @@ namespace network
         });
     }
 
-    // Methods
+    // Private methods
 
-    void connection :: arc :: send(const bytewise :: buffer & buffer)
+    void connection :: arc :: send_setup(const bytewise :: buffer & buffer)
     {
-        this->_socket.visit([&](auto && socket)
-        {
-            char sbuffer[sizeof(uint32_t)];
+        this->_write.buffer.alloc(buffer.size() + sizeof(uint32_t));
 
-            size_t ssize = bytewise :: bsize(buffer.size()).write(sbuffer);
-            socket.send(sbuffer, ssize);
-            socket.send(buffer, buffer.size());
-        });
+        size_t ssize = bytewise :: bsize(buffer.size()).write(this->_write.buffer);
+        memcpy((char *) (this->_write.buffer) + ssize, buffer, buffer.size());
+
+        this->_write.buffer.alloc(buffer.size() + ssize);
+        this->_write.cursor = 0;
     }
 
-    // Private methods
+    bool connection :: arc :: send_step()
+    {
+        bool completed;
+
+        this->_socket.visit([&](auto && socket)
+        {
+            this->_write.cursor += socket.send((char *) (this->_write.buffer) + this->_write.cursor, this->_write.buffer.size() - this->_write.cursor);
+            completed = (this->_write.cursor == this->_write.buffer.size());
+        });
+
+        return completed;
+    }
 
     void connection :: arc :: receive_setup(const size_t & size)
     {
@@ -59,7 +69,7 @@ namespace network
             }
             else
             {
-                this->_read.cursor += socket.receive((char * ) (this->_read.buffer.data) + this->_read.cursor, this->_read.size - this->_read.cursor);
+                this->_read.cursor += socket.receive((char *) (this->_read.buffer.data) + this->_read.cursor, this->_read.size - this->_read.cursor);
                 completed = (this->_read.cursor == this->_read.size);
             }
         });

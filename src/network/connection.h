@@ -36,7 +36,6 @@ namespace network
             struct
             {
                 bytewise :: buffer buffer;
-                size_t size;
                 size_t cursor;
             } _write;
 
@@ -64,19 +63,22 @@ namespace network
 
             // Methods
 
-            void send(const bytewise :: buffer &);
-            template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size > 0)> * = nullptr> void send(const type &);
-            template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size == 0)> * = nullptr> void send(const type &);
-
+            template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> * = nullptr> void send(const type &);
             template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> * = nullptr> type receive();
 
         private:
 
             // Private methods
 
+            void send_setup(const bytewise :: buffer &);
+            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size > 0)> * = nullptr> void send_setup(const type &);
+            template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size == 0)> *  = nullptr> void send_setup(const type &);
+
+            bool send_step();
+
             void receive_setup(const size_t & = 0);
             bool receive_step();
-            
+
             template <typename type, std :: enable_if_t <std :: is_same <type, bytewise :: buffer> :: value> * = nullptr> type receive_finalize();
             template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size > 0)> * = nullptr> type receive_finalize();
             template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size == 0)> *  = nullptr> type receive_finalize();
