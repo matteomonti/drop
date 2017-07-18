@@ -33,10 +33,16 @@ namespace network
         {
             if(this->_write.ssize)
             {
-                socket.send(this->_write.buffer.size, this->_write.ssize);
-                this->_write.ssize = 0;
+                size_t sent = socket.send((char *) this->_write.buffer.size + this->_write.cursor, this->_write.ssize - this->_write.cursor);
+                this->_write.cursor += sent;
 
-                status = more;
+                if(this->_write.cursor == this->_write.ssize)
+                {
+                    this->_write.cursor = 0;
+                    this->_write.ssize = 0;
+                }
+
+                status = (sent ? more : wait);
             }
             else
             {
