@@ -14,10 +14,7 @@ namespace network
         this->_connection->_mutex.receive.lock();
 
         this->_connection->_locked = true;
-        this->_connection->_socket.visit([](auto && socket)
-        {
-            socket.block(false);
-        });
+        this->_connection->block(false);
 
         this->_connection->_mutex.send.unlock();
         this->_connection->_mutex.receive.unlock();
@@ -31,10 +28,7 @@ namespace network
         this->_connection->_mutex.receive.lock();
 
         this->_connection->_locked = false;
-        this->_connection->_socket.visit([](auto && socket)
-        {
-            socket.block(true);
-        });
+        this->_connection->block(true);
 
         this->_connection->_mutex.send.unlock();
         this->_connection->_mutex.receive.unlock();

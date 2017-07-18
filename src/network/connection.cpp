@@ -30,6 +30,16 @@ namespace network
         return descriptor;
     }
 
+    // Setters
+
+    void connection :: arc :: block(const bool & value)
+    {
+        this->_socket.visit([&](auto && socket)
+        {
+            socket.block(value);
+        });
+    }
+
     // Private methods
 
     void connection :: arc :: send_setup(const bytewise :: buffer & buffer)

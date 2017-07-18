@@ -98,6 +98,10 @@ namespace network
 
             int descriptor() const;
 
+            // Setters
+
+            void block(const bool &);
+
             // Methods
 
             template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> * = nullptr> void send(const type &);
