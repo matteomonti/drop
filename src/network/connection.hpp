@@ -11,71 +11,79 @@ namespace network
 
     // Constructors
 
-    template <typename type> connection :: arc :: arc(const type & socket) : _socket(decltype(_socket) :: construct <type> (socket))
+    template <typename type> connection :: arc :: arc(const type & socket) : _socket(decltype(_socket) :: construct <type> (socket)), _locked(false)
     {
     }
 
     // Methods
 
-    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size > 0)> *> void connection :: arc :: send(const type & target)
+    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> *> void connection :: arc :: send(const type & target)
     {
-        auto buffer = bytewise :: serialize(target);
-
-        this->_socket.visit([&](auto && socket)
+        try
         {
-            socket.send(buffer, bytewise :: traits <type> :: size);
-        });
-    }
+            this->_mutex.send.lock();
+            assert(!(this->_locked));
 
-    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size == 0)> *> void connection :: arc :: send(const type & target)
-    {
-        auto buffer = bytewise :: serialize(target);
-        this->send(buffer);
-    }
+            this->send_setup(target);
+            while(this->send_step() != completed);
 
-    template <typename type, std :: enable_if_t <std :: is_same <type, bytewise :: buffer> :: value> *> type connection :: arc :: receive()
-    {
-        bytewise :: buffer buffer;
-
-        this->_socket.visit([&](auto && socket)
+            this->_mutex.send.unlock();
+        }
+        catch(const std :: exception & exception)
         {
-            char sbuffer[sizeof(uint32_t)];
-            for(char * cursor = sbuffer; cursor < sbuffer + sizeof(uint32_t);)
-            {
-                socket.receive(cursor, 1);
-                cursor++;
-
-                bytewise :: bsize bsize(sbuffer, cursor - sbuffer);
-                if(bsize.value() > -1)
-                {
-                    buffer.alloc(bsize.value());
-                    break;
-                }
-            }
-
-            for(char * cursor = buffer; cursor < buffer + buffer.size();)
-                cursor += socket.receive(cursor, buffer + buffer.size() - cursor);
-        });
-
-        return buffer;
+            this->_mutex.send.unlock();
+            std :: rethrow_exception(std :: current_exception());
+        }
     }
 
-    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size > 0)> *> type connection :: arc :: receive()
+    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> *> type connection :: arc :: receive()
     {
-        bytewise :: block <bytewise :: traits <type> :: size> buffer;
-
-        this->_socket.visit([&](auto && socket)
+        try
         {
-            for(char * cursor = buffer; cursor < buffer + bytewise :: traits <type> :: size;)
-                cursor += socket.receive(cursor, buffer + bytewise :: traits <type> :: size - cursor);
-        });
+            this->_mutex.receive.lock();
+            assert(!(this->_locked));
 
-        return bytewise :: deserialize <type> (buffer);
+            this->receive_setup(bytewise :: traits <type> :: size);
+            while(this->receive_step() != completed);
+            type value = this->receive_finalize <type> ();
+
+            this->_mutex.receive.unlock();
+            return value;
+        }
+        catch(const std :: exception & exception)
+        {
+            this->_mutex.receive.unlock();
+            std :: rethrow_exception(std :: current_exception());
+        }
     }
 
-    template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled && (bytewise :: traits <type> :: size == 0)> *> type connection :: arc :: receive()
+    // Private methods
+
+    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size > 0)> *> void connection :: arc :: send_setup(const type & target)
     {
-        return bytewise :: deserialize <type> (this->receive <bytewise :: buffer> ());
+        this->_write.buffer.data = bytewise :: buffer((const char *) bytewise :: serialize(target), bytewise :: traits <type> :: size);
+        this->_write.ssize = 0;
+        this->_write.cursor = 0;
+    }
+
+    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size == 0)> *> void connection :: arc :: send_setup(const type & target)
+    {
+        this->send_setup(bytewise :: serialize(target));
+    }
+
+    template <typename type, std :: enable_if_t <std :: is_same <type, bytewise :: buffer> :: value> *> type connection :: arc :: receive_finalize()
+    {
+        return this->_read.buffer.data;
+    }
+
+    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size > 0)> *> type connection :: arc :: receive_finalize()
+    {
+        return bytewise :: deserialize <type> (reinterpret_cast <bytewise :: block <bytewise :: traits <type> :: size> &> (* (char *)(this->_read.buffer.data)));
+    }
+
+    template <typename type, std :: enable_if_t <(bytewise :: traits <type> :: enabled && bytewise :: traits <type> :: size == 0)> *> type connection :: arc :: receive_finalize()
+    {
+        return bytewise :: deserialize <type> (this->_read.buffer.data);
     }
 
     // connection

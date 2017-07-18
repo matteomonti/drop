@@ -82,7 +82,7 @@ namespace network :: sockets
         void listen();
         tcp accept();
 
-        void send(const char *, const size_t &);
+        size_t send(const char *, const size_t &);
         size_t receive(char *, const size_t &);
 
         void rethrow();

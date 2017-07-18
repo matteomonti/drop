@@ -52,12 +52,17 @@ namespace network :: sockets
         const char * what() const noexcept;
     };
 
+    class send_timeout : public std :: exception
+    {
+        const char * what() const noexcept;
+    };
+
     class send_failed : public std :: exception
     {
         const char * what() const noexcept;
     };
 
-    class timeout : public std :: exception
+    class receive_timeout : public std :: exception
     {
         const char * what() const noexcept;
     };
@@ -68,6 +73,11 @@ namespace network :: sockets
     };
 
     class connect_timeout : public std :: exception
+    {
+        const char * what() const noexcept;
+    };
+
+    class connection_closed : public std :: exception
     {
         const char * what() const noexcept;
     };

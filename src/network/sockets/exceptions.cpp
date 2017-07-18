@@ -53,6 +53,13 @@ namespace network :: sockets
         return "Accept failed.";
     }
 
+    // send_timeout
+
+    const char * send_timeout :: what() const noexcept
+    {
+        return "Send timeout.";
+    }
+
     // send_failed
 
     const char * send_failed :: what() const noexcept
@@ -62,9 +69,9 @@ namespace network :: sockets
 
     // timeout
 
-    const char * timeout :: what() const noexcept
+    const char * receive_timeout :: what() const noexcept
     {
-        return "Timeout.";
+        return "Receive timeout.";
     }
 
     // receive_failed
@@ -79,5 +86,12 @@ namespace network :: sockets
     const char * connect_timeout :: what() const noexcept
     {
         return "Connect timeout.";
+    }
+
+    // connection_closed
+
+    const char * connection_closed :: what() const noexcept
+    {
+        return "Connection closed by remote endpoint.";
     }
 };
