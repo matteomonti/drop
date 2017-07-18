@@ -11,7 +11,7 @@ namespace network
 
     // Constructors
 
-    template <typename type> connection :: arc :: arc(const type & socket) : _socket(decltype(_socket) :: construct <type> (socket))
+    template <typename type> connection :: arc :: arc(const type & socket) : _socket(decltype(_socket) :: construct <type> (socket)), _locked(false)
     {
     }
 
@@ -22,6 +22,7 @@ namespace network
         try
         {
             this->_mutex.send.lock();
+            assert(!(this->_locked));
 
             this->send_setup(target);
             while(this->send_step() != completed);
@@ -40,6 +41,7 @@ namespace network
         try
         {
             this->_mutex.receive.lock();
+            assert(!(this->_locked));
 
             this->receive_setup(bytewise :: traits <type> :: size);
             while(this->receive_step() != completed);

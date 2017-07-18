@@ -82,6 +82,8 @@ namespace network
                 std :: mutex receive;
             } _mutex;
 
+            volatile bool _locked;
+
         public:
 
             // Constructors
@@ -91,6 +93,10 @@ namespace network
             // Destructor
 
             ~arc();
+
+            // Getters
+
+            int descriptor() const;
 
             // Methods
 

@@ -17,28 +17,6 @@ namespace network :: connectors
 
     // async
 
-    promise <connection> tcp :: async :: connect(const address & remote)
-    {
-        request request;
-        request.socket.block(false);
-
-        this->_mutex.lock();
-
-        try
-        {
-            request.socket.connect(remote);
-            this->_new.push(request);
-            this->wake();
-        }
-        catch(...)
-        {
-            request.promise.reject(std :: current_exception());
-        }
-
-        this->_mutex.unlock();
-        return request.promise;
-    }
-
     // Constructors
 
     tcp :: async :: async() : _alive(true)
@@ -64,6 +42,30 @@ namespace network :: connectors
 
         close(this->_wake.read);
         close(this->_wake.write);
+    }
+
+    // Methods
+
+    promise <connection> tcp :: async :: connect(const address & remote)
+    {
+        request request;
+        request.socket.block(false);
+
+        this->_mutex.lock();
+
+        try
+        {
+            request.socket.connect(remote);
+            this->_new.push(request);
+            this->wake();
+        }
+        catch(...)
+        {
+            request.promise.reject(std :: current_exception());
+        }
+
+        this->_mutex.unlock();
+        return request.promise;
     }
 
     // Private methods

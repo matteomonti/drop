@@ -16,6 +16,20 @@ namespace network
         });
     }
 
+    // Getters
+
+    int connection :: arc :: descriptor() const
+    {
+        int descriptor;
+
+        this->_socket.visit([&](auto && socket)
+        {
+            descriptor = socket.descriptor();
+        });
+
+        return descriptor;
+    }
+
     // Private methods
 
     void connection :: arc :: send_setup(const bytewise :: buffer & buffer)

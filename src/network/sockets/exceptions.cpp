@@ -53,6 +53,13 @@ namespace network :: sockets
         return "Accept failed.";
     }
 
+    // send_timeout
+
+    const char * send_timeout :: what() const noexcept
+    {
+        return "Send timeout.";
+    }
+
     // send_failed
 
     const char * send_failed :: what() const noexcept
