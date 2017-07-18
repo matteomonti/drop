@@ -19,15 +19,40 @@ namespace network
 
     template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> *> void connection :: arc :: send(const type & target)
     {
-        this->send_setup(target);
-        while(this->send_step() != completed);
+        try
+        {
+            this->_mutex.send.lock();
+
+            this->send_setup(target);
+            while(this->send_step() != completed);
+
+            this->_mutex.send.unlock();
+        }
+        catch(const std :: exception & exception)
+        {
+            this->_mutex.send.unlock();
+            std :: rethrow_exception(std :: current_exception());
+        }
     }
 
     template <typename type, std :: enable_if_t <bytewise :: traits <type> :: enabled || std :: is_same <type, bytewise :: buffer> :: value> *> type connection :: arc :: receive()
     {
-        this->receive_setup(bytewise :: traits <type> :: size);
-        while(this->receive_step() != completed);
-        return this->receive_finalize <type> ();
+        try
+        {
+            this->_mutex.receive.lock();
+
+            this->receive_setup(bytewise :: traits <type> :: size);
+            while(this->receive_step() != completed);
+            type value = this->receive_finalize <type> ();
+
+            this->_mutex.receive.unlock();
+            return value;
+        }
+        catch(const std :: exception & exception)
+        {
+            this->_mutex.receive.unlock();
+            std :: rethrow_exception(std :: current_exception());
+        }
     }
 
     // Private methods

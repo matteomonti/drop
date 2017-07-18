@@ -12,6 +12,7 @@ namespace network
 
 #include <memory>
 #include <type_traits>
+#include <mutex>
 
 // Includes
 
@@ -60,6 +61,12 @@ namespace network
                 size_t size;
                 size_t cursor;
             } _read;
+
+            struct
+            {
+                std :: mutex send;
+                std :: mutex receive;
+            } _mutex;
 
         public:
 
