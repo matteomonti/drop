@@ -37,7 +37,7 @@ namespace network
     {
         bytewise :: buffer buffer;
 
-        this->_socket.visit([&](sockets :: tcp & socket)
+        this->_socket.visit([&](auto && socket)
         {
             char sbuffer[sizeof(uint32_t)];
             for(char * cursor = sbuffer; cursor < sbuffer + sizeof(uint32_t);)
@@ -64,7 +64,7 @@ namespace network
     {
         bytewise :: block <bytewise :: traits <type> :: size> buffer;
 
-        this->_socket.visit([&](sockets :: tcp & socket)
+        this->_socket.visit([&](auto && socket)
         {
             for(char * cursor = buffer; cursor < buffer + bytewise :: traits <type> :: size;)
                 cursor += socket.receive(cursor, buffer + bytewise :: traits <type> :: size - cursor);
