@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <thread>
 
+#include "async/async.h"
 #include "network/pool/pool.hpp"
 #include "network/acceptors/tcp.hpp"
 #include "network/connectors/tcp.h"
@@ -13,20 +14,30 @@
 struct
 {
     network :: pool server;
-    // network :: pool client;
+    network :: pool client;
 } pools;
 
 promise <void> serve(const network :: pool :: connection & connection)
 {
-    return connection.receive <int> ().then([=](const int & value)
-    {
-        return connection.send(value * 2);
-    }).then([=]()
-    {
-        return serve(connection);
-    }).except([](const std :: exception_ptr &)
-    {
-    });
+    int value;
+
+    $
+    (
+        $try
+        ({
+            while(true)
+            {
+                $await(value) = connection.receive <int> ();
+                connection.send(value * 2);
+            }
+        },
+        catch(...)
+        {
+            std :: cout << "Exception!" << std :: endl;
+        });
+
+        return context.resolve();
+    )
 }
 
 void server()
@@ -42,30 +53,41 @@ size_t count = 0;
 
 promise <void> request(const network :: pool :: connection & connection)
 {
-    return connection.send(rand()).then([=]()
-    {
-        return connection.receive <int> ();
-    }).then([=](const int & value)
-    {
-        if(++count % 1000 == 0)
-            std :: cout << count << ": " << value << std :: endl;
+    int value;
+    size_t count = 0;
 
-        return request(connection);
-    }).except([](const std :: exception_ptr &)
-    {
-    });
+    $
+    (
+        $try
+        ({
+            while(true)
+            {
+                connection.send(rand());
+                $await(value) = connection.receive <int> ();
+
+                if(++count % 1000 == 0)
+                    std :: cout << count << ": " << value << std :: endl;
+            }
+        },
+        catch(...)
+        {
+            std :: cout << "Exception!" << std :: endl;
+        });
+
+        return context.resolve();
+    )
 }
 
 void client()
 {
     network :: connection connection = network :: connectors :: tcp :: sync :: connect({"127.0.0.1", PORT});
-    // request(pools.client.bind(connection));
+    request(pools.client.bind(connection));
 }
 
 int main()
 {
     server();
-    // client();
+    client();
 
     while(true)
         usleep(1.e6);

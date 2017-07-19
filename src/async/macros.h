@@ -9,7 +9,7 @@
 
 // Macros
 
-#define async(body)                                                 \
+#define $(body)                                                     \
                                                                     \
 return :: async :: contextualize([=](auto & context) mutable        \
 {                                                                   \
@@ -26,16 +26,16 @@ return :: async :: contextualize([=](auto & context) mutable        \
     };                                                              \
 });
 
-#define await_indirect(target, entrypoint)                          \
+#define $await_indirect(target, entrypoint)                         \
                                                                     \
 context.flag = true;                                                \
 case entrypoint:;                                                   \
 if(context.flag)                                                    \
     return leave(context, entrypoint, target)
 
-#define await(target) await_indirect(target, __counter__)
+#define $await(target) $await_indirect(target, __counter__)
 
-#define async_try_indirect(body, handlers, entrypoint)              \
+#define $try_indirect(body, handlers, entrypoint)                   \
                                                                     \
 context.handler(entrypoint);                                        \
 {                                                                   \
@@ -52,6 +52,6 @@ if(false)                                                           \
     handlers                                                        \
 }
 
-#define async_try(body, handlers) async_try_indirect(body, handlers, __counter__)
+#define $try(body, handlers) $try_indirect(body, handlers, __counter__)
 
 #endif
