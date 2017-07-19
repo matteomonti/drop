@@ -286,7 +286,7 @@ public:
     template <typename lambda, typename std :: enable_if_t <traits <lambda> :: valid && !(traits <lambda> :: chainable)> * = nullptr> auto then(const lambda &) const;
     template <typename lambda, std :: enable_if_t <utils :: is_callable <lambda, const std :: exception_ptr &> :: value> * = nullptr> void except(const lambda &) const;
     template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> * = nullptr> void resolve(const atypes &...) const; // TODO: Check accepted type
-    template <typename rtype> void reject(const rtype &);
+    template <typename rtype> void reject(const rtype &) const;
 
 private:
 

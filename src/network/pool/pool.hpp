@@ -49,6 +49,9 @@ namespace network
         request.promise.then([=]()
         {
             promise.resolve(connection._arc->_connection->receive_finalize <type> ());
+        }).except([=](const std :: exception_ptr & exception)
+        {
+            promise.reject(exception);
         });
 
         this->_mutex.lock();

@@ -325,7 +325,7 @@ template <typename type> template <typename... atypes, std :: enable_if_t <(std 
     this->_arc->unlock();
 }
 
-template <typename type> template <typename rtype> void promise <type> :: reject(const rtype & exception)
+template <typename type> template <typename rtype> void promise <type> :: reject(const rtype & exception) const
 {
     this->_arc->lock();
     this->_arc->reject(exception);
