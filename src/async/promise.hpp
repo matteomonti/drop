@@ -311,11 +311,13 @@ template <typename type> template <typename lambda, std :: enable_if_t <promise 
     return (*this);
 }
 
-template <typename type> template <typename lambda, std :: enable_if_t <utils :: is_callable <lambda, const std :: exception_ptr &> :: value> *> void promise <type> :: except(const lambda & reject_callback) const
+template <typename type> template <typename lambda, std :: enable_if_t <utils :: is_callable <lambda, const std :: exception_ptr &> :: value> *> auto promise <type> :: except(const lambda & reject_callback) const
 {
     this->_arc->lock();
     this->_arc->except(reject_callback);
     this->_arc->unlock();
+
+    return (*this);
 }
 
 template <typename type> template <typename... atypes, std :: enable_if_t <(std :: is_same <type, void> :: value && sizeof...(atypes) == 0) || (!(std :: is_same <type, void> :: value) && sizeof...(atypes) == 1)> *> void promise <type> :: resolve(const atypes & ... values) const
