@@ -36,7 +36,7 @@ promise <void> serve(const network :: pool :: connection & connection)
             std :: cout << "Exception!" << std :: endl;
         });
 
-        return context.resolve();
+        $return();
     )
 }
 
@@ -74,7 +74,7 @@ promise <void> request(const network :: pool :: connection & connection)
             std :: cout << "Exception!" << std :: endl;
         });
 
-        return context.resolve();
+        $return();
     )
 }
 

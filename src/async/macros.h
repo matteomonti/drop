@@ -54,4 +54,6 @@ if(false)                                                           \
 
 #define $try(body, handlers) $try_indirect(body, handlers, __counter__)
 
+#define $return(...) return context.resolve(__VA_ARGS__)
+
 #endif
