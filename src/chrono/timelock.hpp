@@ -37,6 +37,14 @@ namespace chrono
         else
             return data :: null;
     }
+
+    template <typename type> data :: optional <microtimestamp> timelock <type> :: next() const
+    {
+        if(this->_entries.size())
+            return this->_entries.peek().expiry;
+        else
+            return data :: null;
+    }
 };
 
 #endif

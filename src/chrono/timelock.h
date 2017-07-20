@@ -43,6 +43,8 @@ namespace chrono
 
         void push(const type &, const microtimestamp &);
         data :: optional <type> pop();
+
+        data :: optional <microtimestamp> next() const;
     };
 };
 

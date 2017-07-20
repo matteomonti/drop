@@ -4,36 +4,32 @@
 #include <unistd.h>
 #include <thread>
 
-#include "thread/semaphore.h"
+#include "chrono/crontab.h"
+#include "async/async.h"
 
-thread :: semaphore sema(1), semb;
-
-void a()
+promise <void> f(size_t id)
 {
-    while(true)
-    {
-        sema.wait();
-        std :: cout << "Hello ";
-        semb.post();
-    }
-}
+    $
+    (
+        static chrono :: crontab my_crontab;
 
-void b()
-{
-    while(true)
-    {
-        semb.wait();
-        std :: cout << "World!" << std :: endl;
-        sema.post();
-    }
+        while(true)
+        {
+            $await(my_crontab.wait(rand() % 1000000));
+            std :: cout << "Hello from " << id << std :: endl;
+        }
+
+        $return();
+    );
 }
 
 int main()
 {
-    std :: thread ta(a), tb(b);
+    for(size_t i = 0; i < 1024; i++)
+        f(i);
 
-    ta.join();
-    tb.join();
+    while(true)
+        usleep(1.e6);
 }
 
 #endif
