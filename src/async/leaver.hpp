@@ -23,6 +23,11 @@ namespace async
 
     // Functions
 
+    template <typename type, typename lambda> auto leave(context <type, lambda> & context, const ssize_t & entrypoint, const promise <void> & promise)
+    {
+        return context.leave(entrypoint, promise);
+    }
+
     template <typename type, typename lambda, typename ttype> leaver <type, lambda, ttype> leave(context <type, lambda> & context, const ssize_t & entrypoint, ttype & target)
     {
         return leaver <type, lambda, ttype> (context, entrypoint, target);

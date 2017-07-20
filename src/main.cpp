@@ -28,7 +28,7 @@ promise <void> serve(const network :: pool :: connection & connection)
             while(true)
             {
                 $await(value) = connection.receive <int> ();
-                connection.send(value * 2);
+                $await(connection.send(value * 2));
             }
         },
         catch(...)
@@ -36,7 +36,7 @@ promise <void> serve(const network :: pool :: connection & connection)
             std :: cout << "Exception!" << std :: endl;
         });
 
-        return context.resolve();
+        $return();
     )
 }
 
@@ -62,7 +62,7 @@ promise <void> request(const network :: pool :: connection & connection)
         ({
             while(true)
             {
-                connection.send(rand());
+                $await(connection.send(rand()));
                 $await(value) = connection.receive <int> ();
 
                 if(++count % 1000 == 0)
@@ -74,7 +74,7 @@ promise <void> request(const network :: pool :: connection & connection)
             std :: cout << "Exception!" << std :: endl;
         });
 
-        return context.resolve();
+        $return();
     )
 }
 
