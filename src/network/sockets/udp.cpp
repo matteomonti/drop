@@ -114,7 +114,7 @@ namespace network :: sockets
 
         if(:: sendto(this->_descriptor, message, size, 0, (struct sockaddr *) &remote, sizeof(sockaddr_in)) < 0)
         {
-            if(this->_blocking && errno == EWOULDBLOCK)
+            if(!(this->_blocking) && errno == EWOULDBLOCK)
                 return false;
             else if(errno == EAGAIN)
                 throw (class send_timeout){};
@@ -135,7 +135,7 @@ namespace network :: sockets
 
         if((packet._size = :: recvfrom(this->_descriptor, packet._message, settings :: mtu, 0, (sockaddr *) &(packet._remote), &remote_len)) < 0)
         {
-            if(this->_blocking && errno == EWOULDBLOCK)
+            if(!(this->_blocking) && errno == EWOULDBLOCK)
                 packet._size = 0;
             else if(errno == EAGAIN)
                 throw (class receive_timeout){};

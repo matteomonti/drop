@@ -13,8 +13,21 @@ void receiver()
 {
     while(true)
     {
-        auto packet = my_socket.receive();
-        std :: cout << packet.message() << std :: endl;
+        try
+        {
+            auto packet = my_socket.receive();
+
+            if(packet)
+                std :: cout << packet.message() << std :: endl;
+            else
+                std :: cout << "(silence)" << std :: endl;
+        }
+        catch(...)
+        {
+            std :: cout << "Exception" << std :: endl;
+        }
+
+        usleep(1.e6);
     }
 }
 
@@ -30,6 +43,8 @@ int main(int narg, char ** args)
     remote = atoi(args[2]);
 
     my_socket.bind(local);
+    my_socket.block(false);
+
     std :: thread receiver_thread(receiver);
 
     while(true)

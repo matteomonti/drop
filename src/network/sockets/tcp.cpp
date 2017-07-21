@@ -138,7 +138,7 @@ namespace network :: sockets
 
         if(res < 0)
         {
-            if(this->_blocking && errno == EWOULDBLOCK)
+            if(!(this->_blocking) && errno == EWOULDBLOCK)
                 return 0;
             else if(errno == EAGAIN)
                 throw (class receive_timeout){};
@@ -158,7 +158,7 @@ namespace network :: sockets
 
         if(res < 0)
         {
-            if(this->_blocking && errno == EWOULDBLOCK)
+            if(!(this->_blocking) && errno == EWOULDBLOCK)
                 return 0;
             else if(errno == EAGAIN)
                 throw (class receive_timeout){};
