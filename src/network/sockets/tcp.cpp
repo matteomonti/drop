@@ -140,6 +140,8 @@ namespace network :: sockets
         {
             if(this->_blocking && errno == EWOULDBLOCK)
                 return 0;
+            else if(errno == EAGAIN)
+                throw (class receive_timeout){};
             else
                 throw send_failed();
         }
@@ -158,9 +160,8 @@ namespace network :: sockets
         {
             if(this->_blocking && errno == EWOULDBLOCK)
                 return 0;
-
-            if(errno == EAGAIN)
-                throw :: network :: sockets :: receive_timeout();
+            else if(errno == EAGAIN)
+                throw (class receive_timeout){};
             else
                 throw receive_failed();
         }
@@ -184,9 +185,6 @@ namespace network :: sockets
 
     void tcp :: close()
     {
-        if(this->_descriptor < 0)
-            throw socket_closed();
-
         :: close(this->_descriptor);
         this->_descriptor = -1;
     }
