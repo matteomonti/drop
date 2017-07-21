@@ -118,6 +118,8 @@ namespace network
             int write;
         } _wake;
 
+        volatile bool _awake;
+
         std :: mutex _mutex;
         std :: thread _thread;
 

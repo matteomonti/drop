@@ -85,8 +85,10 @@ namespace network
     {
         while(true)
         {
+            this->_awake = false;
             size_t count = this->_queue.select(settings :: interval);
-
+            this->_awake = true;
+            
             if(!(this->_alive))
                 break;
 
@@ -165,8 +167,11 @@ namespace network
 
     void pool :: wake()
     {
-        char buffer[] = {'\0'};
-        write(this->_wake.write, buffer, 1);
+        if(!(this->_awake))
+        {
+            char buffer[] = {'\0'};
+            write(this->_wake.write, buffer, 1);
+        }
     }
 
     // Static members
