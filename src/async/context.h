@@ -37,6 +37,7 @@ namespace async
 
         struct exit
         {
+            bool resume = false;
         };
 
         // Members

@@ -291,6 +291,17 @@ template <typename type> promise <type> :: promise() : _arc(new arc)
 {
 }
 
+// Getters
+
+template <typename type> bool promise <type> :: resolved() const
+{
+    this->_arc->lock();
+    bool resolved = this->_arc->resolved();
+    this->_arc->unlock();
+
+    return resolved;
+}
+
 // Methods
 
 template <typename type> template <typename lambda, std :: enable_if_t <promise <type> :: template traits <lambda> :: valid && promise <type> :: template traits <lambda> :: chainable> *> auto promise <type> :: then(const lambda & resolve_callback) const

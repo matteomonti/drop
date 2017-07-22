@@ -28,14 +28,24 @@ namespace network
     template <typename type> promise <void> pool :: send(const connection & connection, const type & target)
     {
         request request {.connection = connection, .type = queue :: write};
+
         connection._arc->_connection->send_setup(target);
 
-        this->_mutex.lock();
+        :: network :: connection :: step status;
+        while((status = connection._arc->_connection->send_step()) == :: network :: connection :: more);
 
-        this->_new.push(request);
-        this->wake();
+        if(status == :: network :: connection :: wait)
+        {
+            this->_mutex.lock();
 
-        this->_mutex.unlock();
+            this->_new.push(request);
+            this->wake();
+
+            this->_mutex.unlock();
+        }
+        else
+            request.promise.resolve();
+
         return request.promise;
     }
 

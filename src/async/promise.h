@@ -280,6 +280,10 @@ public:
 
     promise();
 
+    // Getters
+
+    bool resolved() const;
+
     // Methods
 
     template <typename lambda, typename std :: enable_if_t <traits <lambda> :: valid && traits <lambda> :: chainable> * = nullptr> auto then(const lambda &) const;

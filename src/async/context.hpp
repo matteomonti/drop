@@ -47,17 +47,25 @@ namespace async
 
     template <typename type, typename lambda> typename context <type, lambda> :: exit context <type, lambda> :: leave(const ssize_t & entrypoint, const class :: promise <void> & promise)
     {
-        promise.then([this]()
-        {
-            this->run();
-        }).except([this](const std :: exception_ptr & exception)
-        {
-            this->_exception = exception;
-            this->run();
-        });
-
         this->_entrypoint = entrypoint;
-        return exit();
+
+        if(promise.resolved())
+        {
+            return exit{.resume = true};
+        }
+        else
+        {
+            promise.then([this]()
+            {
+                this->run();
+            }).except([this](const std :: exception_ptr & exception)
+            {
+                this->_exception = exception;
+                this->run();
+            });
+
+            return exit();
+        }
     }
 
     template <typename type, typename lambda> template <typename ttype> typename context <type, lambda> :: exit context <type, lambda> :: leave(const ssize_t & entrypoint, ttype & target, const class :: promise <ttype> & promise)
@@ -85,30 +93,36 @@ namespace async
 
     template <typename type, typename lambda> void context <type, lambda> :: run()
     {
-        if(this->_exception)
-        {
-            if(this->_handlers.size)
-            {
-                this->_entrypoint = this->_handlers.entrypoints[this->_handlers.size - 1];
-                this->_handlers.size--;
-            }
-            else
-            {
-                this->_promise.reject(this->_exception);
-                delete this;
-                return;
-            }
-        }
+        exit status;
 
-        try
+        do
         {
-            this->_kernel(*this);
+            if(this->_exception)
+            {
+                if(this->_handlers.size)
+                {
+                    this->_entrypoint = this->_handlers.entrypoints[this->_handlers.size - 1];
+                    this->_handlers.size--;
+                }
+                else
+                {
+                    this->_promise.reject(this->_exception);
+                    delete this;
+                    return;
+                }
+            }
+
+            try
+            {
+                status = this->_kernel(*this);
+            }
+            catch(...)
+            {
+                this->_exception = std :: current_exception();
+                status.resume = true;
+            }
         }
-        catch(...)
-        {
-            this->_exception = std :: current_exception();
-            this->run();
-        }
+        while(status.resume);
     }
 
     // Functions
