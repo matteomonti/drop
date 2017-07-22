@@ -9,7 +9,7 @@
 
 // Macros
 
-#define $(body)                                                     \
+#define $async(body)                                                \
                                                                     \
 return :: async :: contextualize([=](auto & context) mutable        \
 {                                                                   \

@@ -16,21 +16,21 @@
 #include "options.h"
 #include "utils/preprocessor/each.h"
 
-#define bytewise_options_prefix(name) ::bytewise::options::name
+#define $bytewise_options_prefix(name) ::bytewise::options::name
 
-#define bytewise_indirect(name, ...)                                \
+#define $bytewise_indirect(name, ...)                               \
                                                                     \
 template <typename, size_t> friend class :: bytewise :: exists;     \
 template <typename, size_t> friend class :: bytewise :: proxy;      \
 template <typename, typename> friend class :: bytewise :: on;       \
                                                                     \
-progressive(__bytewise__)                                           \
+$progressive(__bytewise__)                                          \
 {                                                                   \
     template <typename, size_t> friend class :: bytewise :: proxy;  \
                                                                     \
     typedef decltype(self :: name) type;                            \
     typedef :: bytewise :: options :: pack <utils_each(             \
-        bytewise_options_prefix, __VA_ARGS__)> options;             \
+        $bytewise_options_prefix, __VA_ARGS__)> options;            \
                                                                     \
     static constexpr const size_t offset()                          \
     {                                                               \
@@ -45,6 +45,6 @@ progressive(__bytewise__)                                           \
     }                                                               \
 };
 
-#define bytewise(name, ...) bytewise_indirect(name, __VA_ARGS__)
+#define $bytewise(name, ...) $bytewise_indirect(name, __VA_ARGS__)
 
 #endif

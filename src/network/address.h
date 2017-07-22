@@ -48,7 +48,7 @@ namespace network
 
             // Bytewise
 
-            bytewise(_ip, endianess :: local);
+            $bytewise(_ip, endianess :: local);
 
         public:
 
@@ -80,7 +80,7 @@ namespace network
 
             // Bytewise
 
-            bytewise(_port, endianess :: local);
+            $bytewise(_port, endianess :: local);
 
         public:
 
@@ -112,8 +112,8 @@ namespace network
 
         // Bytewise
 
-        bytewise(_address.sin_addr.s_addr, endianess :: local);
-        bytewise(_address.sin_port, endianess :: local);
+        $bytewise(_address.sin_addr.s_addr, endianess :: local);
+        $bytewise(_address.sin_port, endianess :: local);
 
     public:
 
