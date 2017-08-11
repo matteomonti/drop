@@ -13,7 +13,7 @@
 
 // Macros
 
-#define $progressive_indirect(scope)                                 \
+#define $progressive_indirect(scope)                                \
                                                                     \
 template <template <size_t, bool> typename, size_t, size_t> friend  \
     class :: progressive :: exists;                                 \
