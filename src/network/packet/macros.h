@@ -37,8 +37,7 @@ template <typename, size_t> friend class :: network :: packet ::    \
                                                                     \
 $progressive(__packet__)                                            \
 {                                                                   \
-    template <typename, size_t> friend class :: network :: packet   \
-        :: exists;                                                  \
+public:                                                             \
                                                                     \
     typedef :: network :: packet :: fields <__VA_ARGS__> fields;    \
 };                                                                  \

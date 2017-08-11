@@ -19,6 +19,7 @@ namespace network
 // Includes
 
 #include "count.h"
+#include "proxy.h"
 
 namespace network :: packet
 {
@@ -35,7 +36,7 @@ namespace network :: packet
 
         template <ssize_t index, bool dummy> struct iterator
         {
-            static constexpr bool value = std :: is_same <typename haystack :: template __packet__ <index, false>, needle> :: value || iterator <index - 1, false> :: value;
+            static constexpr bool value = std :: is_same <proxy_t <haystack, index>, needle> :: value || iterator <index - 1, false> :: value;
         };
 
     public:

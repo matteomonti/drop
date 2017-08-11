@@ -14,11 +14,13 @@ class myotherclass
 
 class myclass
 {
+    // Friends
+
+    friend int main();
+
     // Self
 
     typedef myclass self;
-
-public:
 
     // Packets
 
