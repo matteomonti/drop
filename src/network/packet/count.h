@@ -14,6 +14,8 @@ namespace network
 // Libraries
 
 #include <stddef.h>
+#include <stdint.h>
+#include <type_traits>
 
 // Includes
 
@@ -23,7 +25,7 @@ namespace network
 {
     namespace packet
     {
-        template <typename type> class count
+        template <typename ctype> class count
         {
             // Service nested classes
 
@@ -36,14 +38,19 @@ namespace network
 
             template <size_t index> struct iterator <index, true>
             {
-                static constexpr size_t value = iterator <index + 1, exists <type, index + 1> :: value> :: value;
+                static constexpr size_t value = iterator <index + 1, exists <ctype, index + 1> :: value> :: value;
             };
 
         public:
 
             // Static members
 
-            static constexpr size_t value = iterator <0, exists <type, 0> :: value> :: value;
+            static constexpr size_t value = iterator <0, exists <ctype, 0> :: value> :: value;
+            static constexpr size_t size = (value <= 256 ? 1 : (value <= 65536 ? 2 : 4));
+
+            // Typedefs
+
+            typedef std :: conditional_t <size == 1, uint8_t, std :: conditional_t <size == 2, uint16_t, uint32_t>> type;
         };
     };
 };

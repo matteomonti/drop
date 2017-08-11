@@ -27,8 +27,7 @@ public:
 
 int main()
 {
-    std :: cout << myclass :: first_packet :: index << std :: endl;
-    std :: cout << myclass :: second_packet :: index << std :: endl;
+    std :: cout << network :: packet :: count <myclass> :: size << std :: endl;
 }
 
 #endif
