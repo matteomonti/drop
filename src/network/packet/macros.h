@@ -41,7 +41,9 @@ $progressive(__packet__)                                            \
         :: exists;                                                  \
                                                                     \
     typedef :: network :: packet :: fields <__VA_ARGS__> fields;    \
-};
+};                                                                  \
+                                                                    \
+typedef $last(__packet__) name;
 
 #define $packet(name, ...) $packet_indirect(name, __VA_ARGS__)
 

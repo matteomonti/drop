@@ -17,15 +17,18 @@ class myclass
 
     typedef myclass self;
 
+public:
+
     // Packets
 
     $packet(first_packet, int);
-    $packet(second_packet, double, int, char, myotherclass);
+    $packet(second_packet, double, char);
 };
 
 int main()
 {
-    std :: cout << network :: packet :: count <myclass> :: value << std :: endl;
+    std :: cout << myclass :: first_packet :: index << std :: endl;
+    std :: cout << myclass :: second_packet :: index << std :: endl;
 }
 
 #endif
