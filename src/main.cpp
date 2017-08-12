@@ -4,39 +4,32 @@
 #include <unistd.h>
 #include <thread>
 
-#include "network/packet/macros.h"
-#include "network/packet/count.h"
-#include "network/packet/in.h"
+#include "network/dispatcher.hpp"
 
 class myotherclass
 {
 };
 
-class myclass
+class myprotocol
 {
-    // Friends
-
-    friend int main();
-
     // Self
 
-    typedef myclass self;
+    typedef myprotocol self;
+
+public:
 
     // Packets
 
     $packet(first_packet, int);
     $packet(second_packet, double, char);
-
-    class fake_third_packet
-    {
-    };
 };
 
 int main()
 {
-    std :: cout << network :: packet :: in <myclass, myclass :: first_packet> :: value << std :: endl;
-    std :: cout << network :: packet :: in <myclass, myclass :: second_packet> :: value << std :: endl;
-    std :: cout << network :: packet :: in <myclass, myclass :: fake_third_packet> :: value << std :: endl;
+    network :: sockets :: udp my_socket;
+    my_socket.bind(1234);
+
+    network :: dispatcher <myprotocol> my_dispatcher(my_socket);
 }
 
 #endif
