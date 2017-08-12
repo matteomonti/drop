@@ -21,11 +21,40 @@ namespace network
 #include "packet/proxy.h"
 #include "packet/in.h"
 #include "sockets/udp.h"
-
+#include "utils/template/is_callable.h"
 namespace network
 {
     template <typename protocol> class dispatcher
     {
+        // Service nested classes
+
+        template <typename ptype> struct packet
+        {
+            template <typename> struct prototype;
+
+            template <typename... types> struct prototype <:: network :: packet :: fields <types...>>
+            {
+                void operator () (const types & ...);
+            };
+
+            template <typename... types> struct is_callable
+            {
+                template <bool, bool> struct conditional;
+
+                template <bool dummy> struct conditional <true, dummy>
+                {
+                    static constexpr bool value = utils :: is_callable <prototype <typename ptype :: fields>, const types & ...> :: value;
+                };
+
+                template <bool dummy> struct conditional <false, dummy>
+                {
+                    static constexpr bool value = false;
+                };
+
+                static constexpr bool value = conditional <:: network :: packet :: template in <protocol, ptype> :: value, false> :: value;
+            };
+        };
+
         class arc
         {
             // Members
@@ -55,6 +84,10 @@ namespace network
             // Setters
 
             void block(const bool &);
+
+            // Methods
+
+            template <typename ptype, typename... types> void send(const types & ...);
         };
 
         // Members
@@ -66,6 +99,10 @@ namespace network
         // Constructors
 
         dispatcher(const sockets :: udp &);
+
+        // Methods
+
+        template <typename ptype, typename... types, std :: enable_if_t <packet <ptype> :: template is_callable <types...> :: value> * = nullptr> void send(const types & ...);
     };
 };
 

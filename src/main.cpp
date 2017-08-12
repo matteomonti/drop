@@ -30,6 +30,8 @@ int main()
     my_socket.bind(1234);
 
     network :: dispatcher <myprotocol> my_dispatcher(my_socket);
+    my_dispatcher.send <myprotocol :: first_packet> (44);
+    my_dispatcher.send <myprotocol :: second_packet> (4.44, '4');
 }
 
 #endif

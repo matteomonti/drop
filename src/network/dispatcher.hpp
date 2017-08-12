@@ -36,12 +36,25 @@ namespace network
         this->_socket.block(value);
     }
 
+    // Methods
+
+    template <typename protocol> template <typename ptype, typename... types> void dispatcher <protocol> :: arc :: send(const types & ... fields)
+    {
+    }
+
     // dispatcher
 
     // Constructors
 
     template <typename protocol> dispatcher <protocol> :: dispatcher(const sockets :: udp & socket) : _arc(new arc(socket))
     {
+    }
+
+    // Methods
+
+    template <typename protocol> template <typename ptype, typename... types, std :: enable_if_t <dispatcher <protocol> :: template packet <ptype> :: template is_callable <types...> :: value> *> void dispatcher <protocol> :: send(const types & ... fields)
+    {
+        this->_arc->template send <ptype> (fields...);
     }
 };
 
