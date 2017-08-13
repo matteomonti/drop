@@ -4,34 +4,29 @@
 #include <unistd.h>
 #include <thread>
 
-#include "network/dispatcher.hpp"
-
-class myotherclass
-{
-};
-
-class myprotocol
-{
-    // Self
-
-    typedef myprotocol self;
-
-public:
-
-    // Packets
-
-    $packet(first_packet, int);
-    $packet(second_packet, double, char);
-};
+#include "bytewise/tuple.hpp"
 
 int main()
 {
-    network :: sockets :: udp my_socket;
-    my_socket.bind(1234);
+    bytewise :: tuple <int, char, float, double> my_tuple(3, 'q', 4.44, 5.13);
 
-    network :: dispatcher <myprotocol> my_dispatcher(my_socket);
-    my_dispatcher.send <myprotocol :: first_packet> (44);
-    my_dispatcher.send <myprotocol :: second_packet> (4.44, '4');
+    std :: cout << my_tuple.get <0> () << std :: endl;
+    std :: cout << my_tuple.get <1> () << std :: endl;
+    std :: cout << my_tuple.get <2> () << std :: endl;
+    std :: cout << my_tuple.get <3> () << std :: endl << std :: endl;
+
+    my_tuple.visit([](int & a, char & b, float & c, double & d)
+    {
+        a = 4;
+        b = 'x';
+        c = 5.55;
+        d = 6.26;
+    });
+
+    std :: cout << my_tuple.get <0> () << std :: endl;
+    std :: cout << my_tuple.get <1> () << std :: endl;
+    std :: cout << my_tuple.get <2> () << std :: endl;
+    std :: cout << my_tuple.get <3> () << std :: endl << std :: endl;
 }
 
 #endif
