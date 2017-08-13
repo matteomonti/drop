@@ -24,6 +24,7 @@ namespace bytewise
 #include "visitors/buffer.h"
 #include "visitors/on.h"
 #include "utils/template/enable_in.h"
+#include "tuple.h"
 
 namespace bytewise
 {
@@ -85,6 +86,9 @@ namespace bytewise
 
     template <typename type, std :: enable_if_t <traits <type> :: arithmetic> * = nullptr> auto serialize(type &&);
     template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> * = nullptr> auto serialize(type &&);
+
+    template <typename ftype, typename stype, typename... ttypes> auto serialize(ftype &&, stype &&, ttypes && ...); // TODO: Add check for types to accept only bytewise enabled types or buffers
+                                                                                                                     // TODO: Do something about on
 };
 
 #endif

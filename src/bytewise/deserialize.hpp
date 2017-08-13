@@ -9,6 +9,7 @@
 #include "visitors/buffer.hpp"
 #include "visitors/on.hpp"
 #include "bsize.h"
+#include "tuple.hpp"
 
 namespace bytewise
 {
@@ -92,6 +93,11 @@ namespace bytewise
     template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> *> type deserialize(const std :: conditional_t <(traits <type> :: size > 0), block <traits <type> :: size>, buffer> & bytes)
     {
         return (deserializer <std :: remove_const_t <std :: remove_reference_t <type>>> (bytes)).finalize();
+    }
+
+    template <typename ftype, typename stype, typename... ttypes> tuple <ftype, stype, ttypes...> deserialize(const std :: conditional_t <(traits <tuple <ftype, stype, ttypes...>> :: size > 0), block <traits <tuple <ftype, stype, ttypes...>> :: size>, buffer> & bytes)
+    {
+        return deserialize <tuple <ftype, stype, ttypes...>> (bytes);
     }
 };
 

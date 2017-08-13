@@ -8,6 +8,16 @@ namespace bytewise
 #if !defined(__forward__) && !defined(__drop__bytewise__tuple__h)
 #define __drop__bytewise__tuple__h
 
+// Libraries
+
+#include <type_traits>
+
+// Forward includes
+
+#define __forward__
+#include "buffer.h"
+#undef __forward__
+
 // Includes
 
 #include "bytewise.h"
@@ -20,7 +30,7 @@ namespace bytewise
     {
         // Asserts
 
-        static_assert(traits <ltype> :: enabled, "Bytewise tuple can only be constructed with bytewise-compliant types.");
+        static_assert(traits <ltype> :: enabled || std :: is_same <ltype, buffer> :: value, "Bytewise tuple can only be constructed with bytewise-compliant types.");
 
         // Self
 
@@ -56,7 +66,7 @@ namespace bytewise
     {
         // Asserts
 
-        static_assert(traits <ftype> :: enabled, "Bytewise tuple can only be constructed with bytewise-compliant types.");
+        static_assert(traits <ftype> :: enabled || std :: is_same <ftype, buffer> :: value, "Bytewise tuple can only be constructed with bytewise-compliant types.");
 
         // Self
 

@@ -24,6 +24,7 @@ namespace bytewise
 #include "visitors/arithmetic.h"
 #include "visitors/buffer.h"
 #include "visitors/on.h"
+#include "tuple.h"
 
 namespace bytewise
 {
@@ -77,6 +78,8 @@ namespace bytewise
 
     template <typename type, std :: enable_if_t <traits <type> :: arithmetic> * = nullptr> type deserialize(const block <sizeof(type)> &);
     template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> * = nullptr> type deserialize(const std :: conditional_t <(traits <type> :: size > 0), block <traits <type> :: size>, buffer> &);
+
+    template <typename ftype, typename stype, typename... ttypes> tuple <ftype, stype, ttypes...> deserialize(const std :: conditional_t <(traits <tuple <ftype, stype, ttypes...>> :: size > 0), block <traits <tuple <ftype, stype, ttypes...>> :: size>, buffer> &); // TODO: Add check for types to accept only bytewise enabled types or buffers
 };
 
 #endif

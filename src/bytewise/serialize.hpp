@@ -10,6 +10,7 @@
 #include "visitors/on.hpp"
 #include "bsize.h"
 #include "endianess.hpp"
+#include "tuple.hpp"
 
 namespace bytewise
 {
@@ -91,6 +92,11 @@ namespace bytewise
     template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> *> auto serialize(type && target)
     {
         return (serializer <std :: remove_const_t <std :: remove_reference_t <type>>> (target)).finalize();
+    }
+
+    template <typename ftype, typename stype, typename... ttypes> auto serialize(ftype && first, stype && second, ttypes && ... tail)
+    {
+        return serialize(tuple <ftype, stype, ttypes...> (first, second, tail...));
     }
 };
 
