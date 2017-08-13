@@ -12,11 +12,16 @@ namespace bytewise
 
 #include "bytewise.h"
 #include "utils/template/is_callable.h"
+#include "traits.h"
 
 namespace bytewise
 {
     template <typename ltype> class tuple <ltype>
     {
+        // Asserts
+
+        static_assert(traits <ltype> :: enabled, "Bytewise tuple can only be constructed with bytewise-compliant types.");
+
         // Self
 
         typedef tuple self;
@@ -49,6 +54,10 @@ namespace bytewise
 
     template <typename ftype, typename stype, typename... ttypes> class tuple <ftype, stype, ttypes...>
     {
+        // Asserts
+
+        static_assert(traits <ftype> :: enabled, "Bytewise tuple can only be constructed with bytewise-compliant types.");
+
         // Self
 
         typedef tuple self;
