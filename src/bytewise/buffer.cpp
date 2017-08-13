@@ -20,6 +20,10 @@ namespace bytewise
     {
     }
 
+    buffer :: buffer(char * bytes, const size_t & size, class reference) : _bytes(bytes), _size(size), _alloc(0)
+    {
+    }
+
     buffer :: buffer(const buffer & that) : buffer(that._bytes, that._size)
     {
     }
@@ -106,4 +110,8 @@ namespace bytewise
     {
         return this->_bytes;
     }
+
+    // Static members declarations
+
+    class buffer :: reference buffer :: reference;
 };

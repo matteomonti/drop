@@ -12,11 +12,22 @@ namespace bytewise
 
 #include <stddef.h>
 #include <string.h>
+#include <utility>
 
 namespace bytewise
 {
     class buffer
     {
+    public:
+
+        // Nested classes
+
+        class reference
+        {
+        };
+
+    private:
+
         // Members
 
         char * _bytes;
@@ -30,6 +41,9 @@ namespace bytewise
         buffer();
         buffer(const char *, const size_t &);
         buffer(const char *);
+
+        buffer(char *, const size_t &, class reference);
+
         buffer(const buffer &);
         buffer(buffer &&);
 
@@ -57,6 +71,10 @@ namespace bytewise
 
         operator char * ();
         operator const char * () const;
+
+        // Static members
+
+        static reference reference;
     };
 };
 
