@@ -96,7 +96,7 @@ namespace bytewise
 
     template <typename ftype, typename stype, typename... ttypes> auto serialize(ftype && first, stype && second, ttypes && ... tail)
     {
-        return serialize(tuple <ftype, stype, ttypes...> (first, second, tail...));
+        return serialize(tuple <std :: remove_const_t <std :: remove_reference_t <ftype>>, std :: remove_const_t <std :: remove_reference_t <stype>>, std :: remove_const_t <std :: remove_reference_t <ttypes>>...> (first, second, tail...));
     }
 };
 

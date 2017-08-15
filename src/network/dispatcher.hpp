@@ -38,8 +38,12 @@ namespace network
 
     // Methods
 
-    template <typename protocol> template <typename ptype, typename... types> void dispatcher <protocol> :: arc :: send(const types & ... fields)
+    template <typename protocol> template <typename ptype, typename... types> void dispatcher <protocol> :: arc :: send(const address & remote, const types & ... fields)
     {
+        uint8_t index = ptype :: index;
+        auto message = bytewise :: serialize(index, ((types) fields)...);
+
+        this->_socket.send(remote, message, message.size());
     }
 
     // dispatcher
@@ -52,9 +56,9 @@ namespace network
 
     // Methods
 
-    template <typename protocol> template <typename ptype, typename... types, std :: enable_if_t <dispatcher <protocol> :: template packet <ptype> :: template is_callable <types...> :: value> *> void dispatcher <protocol> :: send(const types & ... fields)
+    template <typename protocol> template <typename ptype, typename... types, std :: enable_if_t <dispatcher <protocol> :: template packet <ptype> :: template is_callable <types...> :: value> *> void dispatcher <protocol> :: send(const address & remote, const types & ... fields)
     {
-        this->_arc->template send <ptype> (fields...);
+        this->_arc->template send <ptype> (remote, fields...);
     }
 };
 

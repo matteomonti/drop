@@ -22,6 +22,8 @@ namespace network
 #include "packet/in.h"
 #include "sockets/udp.h"
 #include "utils/template/is_callable.h"
+#include "bytewise/bytewise.h"
+
 namespace network
 {
     template <typename protocol> class dispatcher
@@ -87,7 +89,7 @@ namespace network
 
             // Methods
 
-            template <typename ptype, typename... types> void send(const types & ...);
+            template <typename ptype, typename... types> void send(const address &, const types & ...);
         };
 
         // Members
@@ -102,7 +104,7 @@ namespace network
 
         // Methods
 
-        template <typename ptype, typename... types, std :: enable_if_t <packet <ptype> :: template is_callable <types...> :: value> * = nullptr> void send(const types & ...);
+        template <typename ptype, typename... types, std :: enable_if_t <packet <ptype> :: template is_callable <types...> :: value> * = nullptr> void send(const address &, const types & ...);
     };
 };
 
