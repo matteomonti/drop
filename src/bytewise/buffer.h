@@ -42,7 +42,7 @@ namespace bytewise
         buffer(const char *, const size_t &);
         buffer(const char *);
 
-        buffer(char *, const size_t &, class reference);
+        buffer(class reference, char *, const size_t &);
 
         buffer(const buffer &);
         buffer(buffer &&);

@@ -20,7 +20,7 @@ namespace bytewise
     {
     }
 
-    buffer :: buffer(char * bytes, const size_t & size, class reference) : _bytes(bytes), _size(size), _alloc(0)
+    buffer :: buffer(class reference, char * bytes, const size_t & size) : _bytes(bytes), _size(size), _alloc(0)
     {
     }
 
