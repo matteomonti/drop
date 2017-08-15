@@ -2,7 +2,7 @@
 
 namespace bytewise
 {
-    template <typename> class serializer;
+    template <typename, size_t, size_t> class serializer;
 };
 
 #if !defined(__forward__) && !defined(__drop__bytewise__serialize__h)
@@ -25,10 +25,11 @@ namespace bytewise
 #include "visitors/on.h"
 #include "utils/template/enable_in.h"
 #include "tuple.h"
+#include "options.h"
 
 namespace bytewise
 {
-    template <typename ttype> class serializer
+    template <typename ttype, size_t pad_beg, size_t pad_end> class serializer
     {
         // Friends
 
@@ -39,7 +40,9 @@ namespace bytewise
 
         // Typedefs
 
-        typedef std :: conditional_t <(traits <ttype> :: size > 0), block <traits <ttype> :: size>, buffer> type;
+        typedef std :: conditional_t <(traits <ttype> :: size > 0), block <traits <ttype> :: size + pad_beg + pad_end>, buffer> type;
+
+    private:
 
         // Service nested classes
 
@@ -56,8 +59,6 @@ namespace bytewise
             static inline void alloc(type &, const ttype &);
             static inline void crop(type &, const size_t &);
         };
-
-    private:
 
         // Members
 
@@ -84,11 +85,10 @@ namespace bytewise
 
     // Functions
 
-    template <typename type, std :: enable_if_t <traits <type> :: arithmetic> * = nullptr> auto serialize(type &&);
-    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> * = nullptr> auto serialize(type &&);
+    template <typename... opts, typename type, std :: enable_if_t <traits <type> :: arithmetic> * = nullptr> auto serialize(type &&);
+    template <typename... opts, typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> * = nullptr> auto serialize(type &&);
 
-    template <typename ftype, typename stype, typename... ttypes> auto serialize(ftype &&, stype &&, ttypes && ...); // TODO: Add check for types to accept only bytewise enabled types or buffers
-                                                                                                                     // TODO: Do something about on
+    template <typename... opts, typename ftype, typename stype, typename... ttypes> auto serialize(ftype &&, stype &&, ttypes && ...); // TODO: Add check for types to accept only bytewise enabled types or buffers
 };
 
 #endif

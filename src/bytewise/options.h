@@ -13,6 +13,12 @@ namespace bytewise
             class network;
             class local;
         };
+
+        namespace pad
+        {
+            template <size_t> class beg;
+            template <size_t> class end;
+        };
     };
 };
 
@@ -33,17 +39,41 @@ namespace bytewise :: options
     {
         // Service nested classes
 
-        template <typename, typename...> struct has;
+        // Searchers
 
-        template <typename needle> struct has <needle>
+        template <typename, typename...> struct has_atomic;
+
+        template <typename needle> struct has_atomic <needle>
         {
             static constexpr bool value = false;
         };
 
-        template <typename needle, typename first, typename... haystack> struct has <needle, first, haystack...>
+        template <typename needle, typename first, typename... haystack> struct has_atomic <needle, first, haystack...>
         {
-            static constexpr bool value = std :: is_same <needle, first> :: value || has <needle, haystack...> :: value;
+            static constexpr bool value = std :: is_same <needle, first> :: value || has_atomic <needle, haystack...> :: value;
         };
+
+        template <template <size_t> typename, typename...> struct integral;
+
+        template <template <size_t> typename needle> struct integral <needle>
+        {
+            static constexpr bool defined = false;
+            static constexpr size_t value = 0;
+        };
+
+        template <template <size_t> typename needle, size_t optvalue, typename... haystack> struct integral <needle, needle <optvalue>, haystack...>
+        {
+            static constexpr bool defined = true;
+            static constexpr size_t value = optvalue;
+        };
+
+        template <template <size_t> typename needle, typename first, typename... haystack> struct integral <needle, first, haystack...>
+        {
+            static constexpr bool defined = integral <needle, haystack...> :: defined;
+            static constexpr size_t value = integral <needle, haystack...> :: value;
+        };
+
+        // Endianess
 
         template <bool, bool, bool, bool, bool> struct endianess_switch
         {
@@ -74,7 +104,13 @@ namespace bytewise :: options
 
         // Static members
 
-        static constexpr :: bytewise :: endianess :: type endianess = endianess_switch <has <endianess :: little, opts...> :: value, has <endianess :: big, opts...> :: value, has <endianess :: network, opts...> :: value, has <endianess :: local, opts...> :: value, false> :: value;
+        static constexpr :: bytewise :: endianess :: type endianess = endianess_switch <has_atomic <endianess :: little, opts...> :: value, has_atomic <endianess :: big, opts...> :: value, has_atomic <endianess :: network, opts...> :: value, has_atomic <endianess :: local, opts...> :: value, false> :: value;
+
+        struct pad
+        {
+            static constexpr size_t beg = (integral <:: bytewise :: options :: pad :: beg, opts...> :: defined ? integral <:: bytewise :: options :: pad :: beg, opts...> :: value : 0);
+            static constexpr size_t end = (integral <:: bytewise :: options :: pad :: end, opts...> :: defined ? integral <:: bytewise :: options :: pad :: end, opts...> :: value : 0);
+        };
     };
 };
 

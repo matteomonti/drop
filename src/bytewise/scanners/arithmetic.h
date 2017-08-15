@@ -37,7 +37,7 @@ namespace bytewise :: scanners
         // Friends
 
         template <typename> friend class arithmetic;
-        template <typename> friend class :: bytewise :: serializer;
+        template <typename, size_t, size_t> friend class :: bytewise :: serializer;
         template <typename> friend class :: bytewise :: deserializer;
         template <typename> friend class :: bytewise :: traits;
 

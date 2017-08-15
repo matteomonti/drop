@@ -4,28 +4,14 @@
 #include <unistd.h>
 #include <thread>
 
-#include "network/dispatcher.hpp"
-
-class my_protocol
-{
-    // Self
-
-    typedef my_protocol self;
-
-public:
-
-    // Packets
-
-    $packet(first_packet, int);
-    $packet(second_packet, double);
-    $packet(third_packet, int, double, char);
-};
+#include "bytewise/bytewise.h"
 
 int main()
 {
-    network :: sockets :: udp my_socket;
-    network :: dispatcher <my_protocol> my_dispatcher = my_socket;
-    my_dispatcher.send <my_protocol :: first_packet> ({"127.0.0.1", 1235}, 55.2);
+    auto bytes = bytewise :: serialize <bytewise :: options :: pad :: beg <15>, bytewise :: options :: pad :: end <3>> (44, 12);
+
+    for(size_t i = 0; i < bytes.size(); i++)
+        std :: cout << (unsigned int) bytes[i] << std :: endl;
 }
 
 #endif
