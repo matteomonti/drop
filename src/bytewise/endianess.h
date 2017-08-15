@@ -117,6 +117,11 @@ namespace bytewise
 
         template <size_t, bool = false> struct int_t;
 
+        template <bool dummy> struct int_t <1, dummy>
+        {
+            typedef int8_t type;
+        };
+
         template <bool dummy> struct int_t <2, dummy>
         {
             typedef int16_t type;
@@ -152,13 +157,14 @@ namespace bytewise
 
         // Static methods
 
+        static inline void swap(char (&)[1], const char (&)[1]);
         static inline void swap(char (&)[2], const char (&)[2]);
         static inline void swap(char (&)[4], const char (&)[4]);
         static inline void swap(char (&)[8], const char (&)[8]);
         static inline void swap(char (&)[16], const char (&)[16]);
 
-        template <type target, size_t size, std :: enable_if_t <size == 2 || size == 4 || size == 8 || size == 16> * = nullptr> static inline void to(char (&)[size], const char (&)[size]);
-        template <size_t size, std :: enable_if_t <size == 2 || size == 4 || size == 8 || size == 16> * = nullptr> static inline void translate(char (&)[size], const char (&)[size]);
+        template <type target, size_t size, std :: enable_if_t <size == 1 || size == 2 || size == 4 || size == 8 || size == 16> * = nullptr> static inline void to(char (&)[size], const char (&)[size]);
+        template <size_t size, std :: enable_if_t <size == 1 || size == 2 || size == 4 || size == 8 || size == 16> * = nullptr> static inline void translate(char (&)[size], const char (&)[size]);
     };
 };
 

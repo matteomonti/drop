@@ -40,8 +40,9 @@ namespace network
 
     template <typename protocol> template <typename ptype, typename... types> void dispatcher <protocol> :: arc :: send(const address & remote, const types & ... fields)
     {
-        uint8_t index = ptype :: index;
-        auto message = bytewise :: serialize(index, ((types) fields)...);
+        typename :: network :: packet :: template count <protocol> :: type index = ptype :: index;
+        auto message = bytewise :: serialize <bytewise :: options :: pad :: template beg <sizeof(index)>> (((types) fields)...);
+        bytewise :: endianess :: translate(reinterpret_cast <char (&)[sizeof(index)]> (message), reinterpret_cast <const char (&)[sizeof(index)]> (index));
 
         this->_socket.send(remote, message, message.size());
     }

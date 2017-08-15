@@ -9,6 +9,11 @@ namespace bytewise
 {
     // Static methods
 
+    inline void endianess :: swap(char (&destination)[1], const char (&source)[1])
+    {
+        destination[0] = source[0];
+    }
+
     inline void endianess :: swap(char (&destination)[2], const char (&source)[2])
     {
         reinterpret_cast <int16_t &> (destination) = __builtin_bswap16(reinterpret_cast <const int16_t &> (source));
@@ -36,7 +41,7 @@ namespace bytewise
         (reinterpret_cast <mask &> (destination)).low = __builtin_bswap64((reinterpret_cast <const mask &> (source)).high);
     }
 
-    template <endianess :: type target, size_t size, std :: enable_if_t <size == 2 || size == 4 || size == 8 || size == 16> *> inline void endianess :: to(char (&destination)[size], const char (&source)[size])
+    template <endianess :: type target, size_t size, std :: enable_if_t <size == 1 || size == 2 || size == 4 || size == 8 || size == 16> *> inline void endianess :: to(char (&destination)[size], const char (&source)[size])
     {
         struct yswap
         {
@@ -57,7 +62,7 @@ namespace bytewise
         std :: conditional <target != endianess :: local, yswap, nswap> :: type :: run(destination, source);
     }
 
-    template <size_t size, std :: enable_if_t <size == 2 || size == 4 || size == 8 || size == 16> *> inline void endianess :: translate(char (&destination)[size], const char (&source)[size])
+    template <size_t size, std :: enable_if_t <size == 1 || size == 2 || size == 4 || size == 8 || size == 16> *> inline void endianess :: translate(char (&destination)[size], const char (&source)[size])
     {
         to <endianess :: network> (destination, source);
     }
