@@ -7,6 +7,15 @@
 
 namespace network
 {
+    // proxy
+
+    // Static methods
+
+    template <typename protocol> template <typename... types> template <typename ptype> inline void dispatcher <protocol> :: proxy <:: network :: packet :: fields <types...>> :: send(arc & arc, const address & remote, const types & ... fields)
+    {
+        arc.template send <ptype> (remote, fields...);
+    }
+
     // arc
 
     // Constructors
@@ -59,7 +68,7 @@ namespace network
 
     template <typename protocol> template <typename ptype, typename... types, std :: enable_if_t <dispatcher <protocol> :: template packet <ptype> :: template is_callable <types...> :: value> *> void dispatcher <protocol> :: send(const address & remote, const types & ... fields)
     {
-        this->_arc->template send <ptype> (remote, fields...);
+        proxy <typename ptype :: fields> :: template send <ptype> (*(this->_arc), remote, fields...);
     }
 };
 

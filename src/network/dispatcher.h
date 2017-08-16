@@ -28,6 +28,10 @@ namespace network
 {
     template <typename protocol> class dispatcher
     {
+        // Forward declarations
+
+        class arc;
+
         // Service nested classes
 
         template <typename ptype> struct packet
@@ -55,6 +59,15 @@ namespace network
 
                 static constexpr bool value = conditional <:: network :: packet :: template in <protocol, ptype> :: value, false> :: value;
             };
+        };
+
+        template <typename ftype> struct proxy;
+
+        template <typename... types> struct proxy <:: network :: packet :: fields <types...>>
+        {
+            // Static methods
+
+            template <typename ptype> static inline void send(arc &, const address &, const types & ...);
         };
 
         class arc
