@@ -59,16 +59,19 @@ namespace network
 
                 static constexpr bool value = conditional <:: network :: packet :: template in <protocol, ptype> :: value, false> :: value;
             };
+
+            template <typename ftype> struct fproxy;
+
+            template <typename... types> struct fproxy <:: network :: packet :: fields <types...>>
+            {
+                // Static methods
+
+                static inline void send(arc &, const address &, const types & ...);
+            };
+
+            typedef fproxy <typename ptype :: fields> proxy;
         };
 
-        template <typename ftype> struct proxy;
-
-        template <typename... types> struct proxy <:: network :: packet :: fields <types...>>
-        {
-            // Static methods
-
-            template <typename ptype> static inline void send(arc &, const address &, const types & ...);
-        };
 
         class arc
         {
