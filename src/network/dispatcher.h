@@ -72,7 +72,6 @@ namespace network
             typedef fproxy <typename ptype :: fields> proxy;
         };
 
-
         class arc
         {
             // Members
