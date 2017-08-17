@@ -13,6 +13,7 @@ namespace network
 
 // Libraries
 
+#include <type_traits>
 #include <stddef.h>
 
 // Forward includes
@@ -35,11 +36,17 @@ template <typename, size_t> friend class :: network :: packet ::    \
 template <typename, size_t> friend class :: network :: packet ::    \
     proxy;                                                          \
                                                                     \
-$progressive(__packet__)                                            \
+$progressive(__packet__), public :: network :: packet :: packet     \
+    <__VA_ARGS__>                                                   \
 {                                                                   \
 public:                                                             \
-                                                                    \
-    typedef :: network :: packet :: fields <__VA_ARGS__> fields;    \
+    template <typename... types, std :: enable_if_t <std ::         \
+        is_constructible <:: network :: packet :: packet            \
+        <__VA_ARGS__>, types...> :: value> * = nullptr> __packet__  \
+        (types && ... args) : :: network :: packet :: packet        \
+        <__VA_ARGS__> (args...)                                     \
+        {                                                           \
+        }                                                           \
 };                                                                  \
                                                                     \
 typedef $last(__packet__) name;

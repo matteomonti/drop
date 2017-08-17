@@ -20,6 +20,7 @@ namespace network
 #include "bytewise/tuple.hpp"
 #include "network/address.h"
 #include "utils/template/is_callable.h"
+#include "macros.h"
 
 namespace network :: packet
 {
@@ -31,6 +32,10 @@ namespace network :: packet
         type _message;
 
     public:
+
+        // Typedefs
+
+        typedef :: network :: packet :: fields <type> fields;
 
         // Constructors
 
@@ -44,6 +49,10 @@ namespace network :: packet
 
     template <typename... types> class packet
     {
+        // Typedefs
+
+        typedef :: network :: packet :: fields <types...> fields;
+
         // Members
 
         address _remote;
