@@ -4,7 +4,7 @@ namespace network
 {
     namespace packet
     {
-        template <typename, typename> class in;
+        template <typename, typename...> class in;
     };
 };
 
@@ -23,7 +23,16 @@ namespace network
 
 namespace network :: packet
 {
-    template <typename haystack, typename needle> class in
+    template <typename haystack> class in <haystack>
+    {
+    public:
+
+        // Static members
+
+        static constexpr bool value = true;
+    };
+
+    template <typename haystack, typename needle, typename... needles> class in <haystack, needle, needles...>
     {
         // Service nested classes
 
@@ -43,7 +52,7 @@ namespace network :: packet
 
         // Static members
 
-        static constexpr bool value = iterator <((ssize_t) count <needle> :: value) - 1, false> :: value;
+        static constexpr bool value = iterator <((ssize_t) count <needle> :: value) - 1, false> :: value && in <haystack, needles...> :: value;
     };
 };
 
