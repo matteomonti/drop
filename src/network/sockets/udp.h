@@ -51,7 +51,7 @@ namespace network :: sockets
 
             address _remote;
             char _message[settings :: mtu + 1];
-            ssize_t _size;
+            size_t _size;
 
         public:
 

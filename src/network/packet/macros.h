@@ -26,6 +26,7 @@ namespace network
 // Includes
 
 #include "progressive/macros.h"
+#include "packet.hpp"
 
 // Macros
 

@@ -20,7 +20,7 @@ namespace network :: sockets
 
     const size_t & udp :: packet :: size() const
     {
-        return (const size_t &) this->_size;
+        return this->_size;
     }
 
     // Casting
@@ -99,7 +99,7 @@ namespace network :: sockets
         if(this->_descriptor < 0)
             throw socket_closed();
 
-        address address({}, port);
+        address address((class address :: ip){}, port);
 
         if(:: bind(this->_descriptor, (const struct sockaddr *) &(const sockaddr_in &)(address), sizeof(sockaddr_in)))
             throw bind_failed();
@@ -133,16 +133,18 @@ namespace network :: sockets
         packet packet;
         socklen_t remote_len = sizeof(sockaddr_in);
 
-        if((packet._size = :: recvfrom(this->_descriptor, packet._message, settings :: mtu, 0, (sockaddr *) &(packet._remote), &remote_len)) < 0)
+        int status;
+        if((status = :: recvfrom(this->_descriptor, packet._message, settings :: mtu, 0, (sockaddr *) &(packet._remote), &remote_len)) < 0)
         {
             if(!(this->_blocking) && errno == EWOULDBLOCK)
-                packet._size = 0;
+                status = 0;
             else if(errno == EAGAIN)
                 throw (class receive_timeout){};
             else
                 throw receive_failed();
         }
 
+        packet._size = status;
         packet._message[packet._size] = '\0';
         return packet;
     }

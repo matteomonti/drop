@@ -44,6 +44,11 @@ namespace network
 
     // Casting
 
+    address :: ip :: operator bool () const
+    {
+        return this->_ip.s_addr;
+    }
+
     address :: ip :: operator in_addr & ()
     {
         return this->_ip;
@@ -78,6 +83,11 @@ namespace network
     }
 
     // Casting
+
+    address :: port :: operator bool () const
+    {
+        return this->_port;
+    }
 
     address :: port :: operator in_port_t & ()
     {

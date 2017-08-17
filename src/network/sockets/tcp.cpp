@@ -83,7 +83,7 @@ namespace network :: sockets
         if(this->_descriptor < 0)
             throw socket_closed();
 
-        address address({}, port);
+        address address((class address :: ip){}, port);
 
         if(:: bind(this->_descriptor, (const struct sockaddr *) &(const sockaddr_in &)(address), sizeof(sockaddr_in)))
             throw bind_failed();

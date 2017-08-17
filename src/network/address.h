@@ -64,6 +64,8 @@ namespace network
 
             // Casting
 
+            operator bool () const;
+
             explicit operator in_addr & ();
             explicit operator const in_addr & () const;
         };
@@ -95,6 +97,8 @@ namespace network
             bool operator == (const port &) const;
 
             // Casting
+
+            operator bool () const;
 
             explicit operator in_port_t & ();
             explicit operator const in_port_t & () const;

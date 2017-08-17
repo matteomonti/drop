@@ -23,6 +23,7 @@ namespace network
 #include "sockets/udp.h"
 #include "utils/template/is_callable.h"
 #include "bytewise/bytewise.h"
+#include "utils/template/are_same.h"
 
 namespace network
 {
@@ -105,6 +106,17 @@ namespace network
             // Methods
 
             template <typename ptype, typename... types> void send(const address &, const types & ...);
+            template <typename ptype, typename... rtypes> ptype receive(const rtypes & ...);
+
+        private:
+
+            // Private static methods
+
+            static inline bool in(const address &);
+            template <typename rtype, typename... rtypes> static inline bool in(const address &, const rtype &, const rtypes & ...);
+
+            static inline bool match(const address &);
+            template <typename rtype, typename... rtypes> static inline bool match(const address &, const rtype &, const rtypes & ...);
         };
 
         // Members
@@ -120,6 +132,7 @@ namespace network
         // Methods
 
         template <typename ptype, typename... types, std :: enable_if_t <packet <ptype> :: template is_callable <types...> :: value> * = nullptr> void send(const address &, const types & ...);
+        template <typename ptype, typename... rtypes, std :: enable_if_t <:: network :: packet :: template in <protocol, ptype> :: value && utils :: are_same <address, rtypes...> :: value> * = nullptr> ptype receive(const rtypes & ...);
     };
 };
 
