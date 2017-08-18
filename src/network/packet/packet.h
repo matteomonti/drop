@@ -49,16 +49,16 @@ namespace network :: packet
 
     template <typename... types> class packet
     {
-        // Typedefs
-
-        typedef :: network :: packet :: fields <types...> fields;
-
         // Members
 
         address _remote;
         bytewise :: tuple <types...> _message;
 
     public:
+
+        // Typedefs
+
+        typedef :: network :: packet :: fields <types...> fields;
 
         // Constructors
 

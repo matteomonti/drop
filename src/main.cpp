@@ -4,37 +4,43 @@
 #include <unistd.h>
 #include <thread>
 
-#include "bytewise/bytewise.h"
+#include "network/dispatcher.hpp"
 
-class myclass
+class my_protocol
 {
-public:
-
     // Self
 
-    typedef myclass self;
+    typedef my_protocol self;
 
-    // Members
+public:
 
-    int i;
-    int j;
-    bytewise :: buffer k;
+    // Protocol
 
-    // Bytewise
-
-    $bytewise(i);
-    $bytewise(j);
-    $bytewise(k);
+    $packet(my_packet, int);
+    $packet(my_other_packet, int, bytewise :: buffer);
 };
 
 int main()
 {
-    auto x = bytewise :: serialize(13, 14, bytewise :: buffer("Hello World!"));
-    auto y = bytewise :: deserialize <int, int, bytewise :: buffer> (x);
+    network :: sockets :: udp my_socket;
+    my_socket.bind(1234);
 
-    std :: cout << y.get <0> () << std :: endl;
-    std :: cout << y.get <1> () << std :: endl;
-    std :: cout << y.get <2> () << std :: endl;
+    network :: dispatcher <my_protocol> my_dispatcher(my_socket);
+    data :: variant <my_protocol :: my_packet, my_protocol :: my_other_packet> my_packet = my_dispatcher.receive <my_protocol :: my_packet, my_protocol :: my_other_packet> ();
+
+    my_packet.visit([](const my_protocol :: my_packet & packet)
+    {
+        packet.visit([](const network :: address & remote, const int & value)
+        {
+            std :: cout << "Received my_packet from " << remote << " with value " << value << std :: endl;
+        });
+    }, [](const my_protocol :: my_other_packet & packet)
+    {
+        packet.visit([](const network :: address & remote, const int & value, const bytewise :: buffer & message)
+        {
+            std :: cout << "Received my_other_packet from " << remote << " with value " << value << " and message " << message << std :: endl;
+        });
+    });
 }
 
 #endif

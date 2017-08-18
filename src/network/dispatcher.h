@@ -88,6 +88,54 @@ namespace network
 
         class arc
         {
+            // Service nested classes
+
+            struct remote
+            {
+                // Static methods
+
+                static inline bool in(const address &);
+                template <typename rtype, typename... rtypes> static inline bool in(const address &, const rtype &, const rtypes & ...);
+
+                static inline bool match(const address &);
+                template <typename rtype, typename... rtypes> static inline bool match(const address &, const rtype &, const rtypes & ...);
+            };
+
+            struct message
+            {
+                // Nested classes
+
+                template <typename, typename> struct deserializer;
+
+                template <typename ptype, typename... types> struct deserializer <ptype, :: network :: packet :: fields <types...>>
+                {
+                    // Static methods
+
+                    static inline ptype run(const sockets :: udp :: packet &);
+                };
+
+                template <typename> struct wrapper;
+
+                template <typename... ptypes> struct wrapper <data :: variant <ptypes...>>
+                {
+                    // Static methods
+
+                    template <typename ptype> static inline data :: variant <ptypes...> run(const ptype &);
+                };
+
+                template <typename ptype> struct wrapper
+                {
+                    // Static methods
+
+                    static inline ptype run(const ptype &);
+                };
+
+                // Static methods
+
+                template <typename ret_type, typename... ptypes, std :: enable_if_t <sizeof...(ptypes) == 0> * = nullptr> static inline ret_type interpret(const size_t &, const sockets :: udp :: packet &);
+                template <typename ret_type, typename ptype, typename...ptypes> static inline ret_type interpret(const size_t &, const sockets :: udp :: packet &);
+            };
+
             // Members
 
             sockets :: udp _socket;
@@ -120,25 +168,6 @@ namespace network
 
             template <typename ptype, typename... types> void send(const address &, const types & ...);
             template <typename ptype, typename... ptypes, typename... rtypes> std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype> receive(const rtypes & ...);
-
-        private:
-
-            // Private static methods
-
-            struct remote
-            {
-                static inline bool in(const address &);
-                template <typename rtype, typename... rtypes> static inline bool in(const address &, const rtype &, const rtypes & ...);
-
-                static inline bool match(const address &);
-                template <typename rtype, typename... rtypes> static inline bool match(const address &, const rtype &, const rtypes & ...);
-            };
-
-            struct message
-            {
-                template <typename ret_type, typename... ptypes, std :: enable_if_t <sizeof...(ptypes) == 0> * = nullptr> static inline ret_type interpret(const size_t &, const sockets :: udp :: packet &);
-                template <typename ret_type, typename ptype, typename...ptypes> static inline ret_type interpret(const size_t &, const sockets :: udp :: packet &);
-            };
         };
 
         // Members
