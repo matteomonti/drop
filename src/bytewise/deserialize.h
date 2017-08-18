@@ -76,10 +76,15 @@ namespace bytewise
 
     // Functions
 
-    template <typename type, std :: enable_if_t <traits <type> :: arithmetic> * = nullptr> type deserialize(const block <sizeof(type)> &);
-    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> * = nullptr> type deserialize(const std :: conditional_t <(traits <type> :: size > 0), block <traits <type> :: size>, buffer> &);
+    template <typename type, size_t size, std :: enable_if_t <traits <type> :: arithmetic && (size >= sizeof(type))> * = nullptr> type deserialize(const block <size> &);
+    template <typename type, std :: enable_if_t <traits <type> :: arithmetic> * = nullptr> type deserialize(const buffer &);
 
-    template <typename ftype, typename stype, typename... ttypes> tuple <ftype, stype, ttypes...> deserialize(const std :: conditional_t <(traits <tuple <ftype, stype, ttypes...>> :: size > 0), block <traits <tuple <ftype, stype, ttypes...>> :: size>, buffer> &); // TODO: Add check for types to accept only bytewise enabled types or buffers
+    template <typename type, size_t size, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic) && (traits <type> :: size > 0) && (size >= traits <type> :: size)> * = nullptr> type deserialize(const block <size> &);
+    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic) && (traits <type> :: size > 0)> * = nullptr> type deserialize(const buffer &);
+
+    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic) && (traits <type> :: size == 0)> * = nullptr> type deserialize(const buffer &);
+
+    template <typename ftype, typename stype, typename... ttypes, typename btype> tuple <ftype, stype, ttypes...> deserialize(const btype &); // TODO: Add check for types to accept only bytewise enabled types or buffers
 };
 
 #endif

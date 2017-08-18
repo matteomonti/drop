@@ -83,19 +83,40 @@ namespace bytewise
 
     // Functions
 
-    template <typename type, std :: enable_if_t <traits <type> :: arithmetic> *> type deserialize(const block <sizeof(type)> & bytes)
+    template <typename type, size_t size, std :: enable_if_t <traits <type> :: arithmetic && (size >= sizeof(type))> *> type deserialize(const block <size> & bytes)
     {
         type target;
         endianess :: translate(reinterpret_cast <char (&)[sizeof(type)]> (target), reinterpret_cast <const char (&)[sizeof(type)]> (bytes));
         return target;
     }
 
-    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic)> *> type deserialize(const std :: conditional_t <(traits <type> :: size > 0), block <traits <type> :: size>, buffer> & bytes)
+    template <typename type, std :: enable_if_t <traits <type> :: arithmetic> *> type deserialize(const buffer & bytes)
+    {
+        if(bytes.size() < sizeof(type))
+            throw typename deserializer <type> :: overflow();
+
+        return deserialize <type> (reinterpret_cast <const block <sizeof(type)> &> (*((const char *) bytes)));
+    }
+
+    template <typename type, size_t size, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic) && (traits <type> :: size > 0) && (size >= traits <type> :: size)> *> type deserialize(const block <size> & bytes)
+    {
+        return (deserializer <std :: remove_const_t <std :: remove_reference_t <type>>> (reinterpret_cast <const block <traits <type> :: size> &> (bytes))).finalize();
+    }
+
+    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic) && (traits <type> :: size > 0)> *> type deserialize(const buffer & bytes)
+    {
+        if(bytes.size() < traits <type> :: size)
+            throw typename deserializer <type> :: overflow();
+
+        return deserialize <type> (reinterpret_cast <const block <traits <type> :: size> &> (*((const char *) bytes)));
+    }
+
+    template <typename type, std :: enable_if_t <traits <type> :: enabled && !(traits <type> :: arithmetic) && (traits <type> :: size == 0)> *> type deserialize(const buffer & bytes)
     {
         return (deserializer <std :: remove_const_t <std :: remove_reference_t <type>>> (bytes)).finalize();
     }
 
-    template <typename ftype, typename stype, typename... ttypes> tuple <ftype, stype, ttypes...> deserialize(const std :: conditional_t <(traits <tuple <ftype, stype, ttypes...>> :: size > 0), block <traits <tuple <ftype, stype, ttypes...>> :: size>, buffer> & bytes)
+    template <typename ftype, typename stype, typename... ttypes, typename btype> tuple <ftype, stype, ttypes...> deserialize(const btype & bytes)
     {
         return deserialize <tuple <ftype, stype, ttypes...>> (bytes);
     }

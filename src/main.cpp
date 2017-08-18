@@ -4,29 +4,37 @@
 #include <unistd.h>
 #include <thread>
 
-#include "network/dispatcher.hpp"
+#include "bytewise/bytewise.h"
 
-class my_protocol
+class myclass
 {
-    // Self
-
-    typedef my_protocol self;
-
 public:
 
-    // Protocol
+    // Self
 
-    $packet(my_packet, int);
-    $packet(my_other_packet, int, double);
+    typedef myclass self;
+
+    // Members
+
+    int i;
+    int j;
+    bytewise :: buffer k;
+
+    // Bytewise
+
+    $bytewise(i);
+    $bytewise(j);
+    $bytewise(k);
 };
 
 int main()
 {
-    network :: sockets :: udp my_socket;
-    my_socket.bind(1235);
-    network :: dispatcher <my_protocol> my_dispatcher(my_socket);
+    auto x = bytewise :: serialize(13, 14, bytewise :: buffer("Hello World!"));
+    auto y = bytewise :: deserialize <int, int, bytewise :: buffer> (x);
 
-    my_dispatcher.receive <my_protocol :: my_packet, my_protocol :: my_other_packet> ();
+    std :: cout << y.get <0> () << std :: endl;
+    std :: cout << y.get <1> () << std :: endl;
+    std :: cout << y.get <2> () << std :: endl;
 }
 
 #endif
