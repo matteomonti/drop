@@ -15,6 +15,18 @@ namespace network :: packet
     {
     }
 
+    // Getters
+
+    template <typename type> const address & packet <type> :: remote() const
+    {
+        return this->_remote;
+    }
+
+    template <typename type> const type & packet <type> :: message() const
+    {
+        return this->_message;
+    }
+
     // Methods
 
     template <typename type> template <typename lambda, std :: enable_if_t <utils :: is_callable <lambda, const address &, const type &> :: value> *> void packet <type> :: visit(const lambda & callback) const
@@ -33,6 +45,18 @@ namespace network :: packet
 
     template <typename... types> packet <types...> :: packet(const address & remote, const bytewise :: tuple <types...> & message) : _remote(remote), _message(message)
     {
+    }
+
+    // Getters
+
+    template <typename... types> const address & packet <types...> :: remote() const
+    {
+        return this->_remote;
+    }
+
+    template <typename... types> template <size_t index, std :: enable_if_t <(index < sizeof...(types))> *> const auto & packet <types...> :: message() const
+    {
+        return this->_message.template get <index> ();
     }
 
     // Methods

@@ -41,6 +41,11 @@ namespace network :: packet
 
         packet(const address &, const type &);
 
+        // Getters
+
+        const address & remote() const;
+        const type & message() const;
+
         // Methods
 
         template <typename lambda, std :: enable_if_t <utils :: is_callable <lambda, const address &, const type &> :: value> * = nullptr> void visit(const lambda &) const;
@@ -63,6 +68,11 @@ namespace network :: packet
         // Constructors
 
         packet(const address &, const bytewise :: tuple <types...> &);
+
+        // Getters
+
+        const address & remote() const;
+        template <size_t index, std :: enable_if_t <(index < sizeof...(types))> * = nullptr> const auto & message() const;
 
         // Methods
 

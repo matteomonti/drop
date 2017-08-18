@@ -30,16 +30,10 @@ int main()
 
     my_packet.visit([](const my_protocol :: my_packet & packet)
     {
-        packet.visit([](const network :: address & remote, const int & value)
-        {
-            std :: cout << "Received my_packet from " << remote << " with value " << value << std :: endl;
-        });
+        std :: cout << "Received my_packet from " << packet.remote() << " with value " << packet.message() << std :: endl;
     }, [](const my_protocol :: my_other_packet & packet)
     {
-        packet.visit([](const network :: address & remote, const int & value, const bytewise :: buffer & message)
-        {
-            std :: cout << "Received my_other_packet from " << remote << " with value " << value << " and message " << message << std :: endl;
-        });
+        std :: cout << "Received my_other_packet from " << packet.remote() << " with value " << packet.message <0> () << " and message " << packet.message <1> () << std :: endl;
     });
 }
 
