@@ -13,6 +13,7 @@ namespace network
 #include <stddef.h>
 #include <mutex>
 #include <memory>
+#include <exception>
 
 // Includes
 
@@ -24,11 +25,23 @@ namespace network
 #include "utils/template/is_callable.h"
 #include "bytewise/bytewise.h"
 #include "utils/template/are_same.h"
+#include "data/variant.hpp"
 
 namespace network
 {
     template <typename protocol> class dispatcher
     {
+    public:
+
+        // Exceptions
+
+        class wrong_header : public std :: exception
+        {
+            const char * what() const noexcept;
+        };
+
+    private:
+
         // Forward declarations
 
         class arc;
@@ -106,17 +119,26 @@ namespace network
             // Methods
 
             template <typename ptype, typename... types> void send(const address &, const types & ...);
-            template <typename ptype, typename... rtypes> ptype receive(const rtypes & ...);
+            template <typename ptype, typename... ptypes, typename... rtypes> std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype> receive(const rtypes & ...);
 
         private:
 
             // Private static methods
 
-            static inline bool in(const address &);
-            template <typename rtype, typename... rtypes> static inline bool in(const address &, const rtype &, const rtypes & ...);
+            struct remote
+            {
+                static inline bool in(const address &);
+                template <typename rtype, typename... rtypes> static inline bool in(const address &, const rtype &, const rtypes & ...);
 
-            static inline bool match(const address &);
-            template <typename rtype, typename... rtypes> static inline bool match(const address &, const rtype &, const rtypes & ...);
+                static inline bool match(const address &);
+                template <typename rtype, typename... rtypes> static inline bool match(const address &, const rtype &, const rtypes & ...);
+            };
+
+            struct message
+            {
+                template <typename ret_type, typename... ptypes, std :: enable_if_t <sizeof...(ptypes) == 0> * = nullptr> static inline ret_type interpret(const size_t &, const sockets :: udp :: packet &);
+                template <typename ret_type, typename ptype, typename...ptypes> static inline ret_type interpret(const size_t &, const sockets :: udp :: packet &);
+            };
         };
 
         // Members
@@ -132,7 +154,7 @@ namespace network
         // Methods
 
         template <typename ptype, typename... types, std :: enable_if_t <packet <ptype> :: template is_callable <types...> :: value> * = nullptr> void send(const address &, const types & ...);
-        template <typename ptype, typename... rtypes, std :: enable_if_t <:: network :: packet :: template in <protocol, ptype> :: value && utils :: are_same <address, rtypes...> :: value> * = nullptr> ptype receive(const rtypes & ...);
+        template <typename ptype, typename... ptypes, typename... rtypes, std :: enable_if_t <:: network :: packet :: template in <protocol, ptype, ptypes...> :: value && utils :: are_same <address, rtypes...> :: value> * = nullptr> std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype> receive(const rtypes & ...);
     };
 };
 

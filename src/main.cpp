@@ -26,7 +26,7 @@ int main()
     my_socket.bind(1235);
     network :: dispatcher <my_protocol> my_dispatcher(my_socket);
 
-    my_dispatcher.receive <my_protocol :: my_packet> ();
+    my_dispatcher.receive <my_protocol :: my_packet, my_protocol :: my_other_packet> ();
 }
 
 #endif
