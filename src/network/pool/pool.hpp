@@ -27,7 +27,7 @@ namespace network
 
     template <typename type> promise <void> pool :: send(const connection & connection, const type & target)
     {
-        request request {.connection = connection, .type = queue :: write};
+        request :: connection request{.connection = connection, .type = queue :: write};
 
         connection._arc->_connection->send_setup(target);
 
@@ -38,7 +38,7 @@ namespace network
         {
             this->_mutex.lock();
 
-            this->_new.push(request);
+            this->_new.push(data :: variant <request :: connection> :: construct <request :: connection> (request));
             this->wake();
 
             this->_mutex.unlock();
@@ -53,7 +53,7 @@ namespace network
     {
         promise <type> promise;
 
-        request request {.connection = connection, .type = queue :: read};
+        request :: connection request {.connection = connection, .type = queue :: read};
         connection._arc->_connection->receive_setup(bytewise :: traits <type> :: size);
 
         request.promise.then([=]()
@@ -66,7 +66,7 @@ namespace network
 
         this->_mutex.lock();
 
-        this->_new.push(request);
+        this->_new.push(data :: variant <request :: connection> :: construct <request :: connection> (request));
         this->wake();
 
         this->_mutex.unlock();

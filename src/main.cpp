@@ -4,37 +4,63 @@
 #include <unistd.h>
 #include <thread>
 
-#include "network/dispatcher.hpp"
+#include "network/pool/pool.hpp"
+#include "network/acceptors/tcp.hpp"
+#include "network/connectors/tcp.h"
+#include "network/pool/pool.hpp"
+#include "async/async.h"
+#include "chrono/crontab.h"
 
-class my_protocol
+chrono :: crontab crontab;
+network :: pool pool;
+
+promise <void> server(const network :: pool :: connection & connection)
 {
-    // Self
+    int request;
 
-    typedef my_protocol self;
+    $async
+    (
+        while(true)
+        {
+            $await(request) = connection.receive <int> ();
+            $await(connection.send(request * 2));
+        }
+    );
+}
 
-public:
+promise <void> client(const network :: pool :: connection & connection)
+{
+    int response;
 
-    // Protocol
+    $async
+    (
+        while(true)
+        {
+            $await(connection.send(rand()));
+            $await(response) = connection.receive <int> ();
 
-    $packet(my_packet, int);
-    $packet(my_other_packet, int, bytewise :: buffer);
-};
+            std :: cout << response << std :: endl;
+            $await(crontab.wait(1e6));
+        }
+    );
+}
 
 int main()
 {
-    network :: sockets :: udp my_socket;
-    my_socket.bind(1234);
-
-    network :: dispatcher <my_protocol> my_dispatcher(my_socket);
-    data :: variant <my_protocol :: my_packet, my_protocol :: my_other_packet> my_packet = my_dispatcher.receive <my_protocol :: my_packet, my_protocol :: my_other_packet> ();
-
-    my_packet.visit([](const my_protocol :: my_packet & packet)
+    network :: acceptors :: tcp :: async my_acceptor(1234);
+    my_acceptor.on <network :: connection> ([](const network :: connection & connection)
     {
-        std :: cout << "Received my_packet from " << packet.remote() << " with value " << packet.message() << std :: endl;
-    }, [](const my_protocol :: my_other_packet & packet)
-    {
-        std :: cout << "Received my_other_packet from " << packet.remote() << " with value " << packet.message <0> () << " and message " << packet.message <1> () << std :: endl;
+        server(pool.bind(connection));
     });
+
+    network :: connectors :: tcp :: async my_connector;
+    my_connector.connect({"127.0.0.1", 1234}).then([](const network :: connection & connection)
+    {
+        client(pool.bind(connection));
+    });
+
+    while(true)
+        usleep(1.e6);
 }
 
 #endif

@@ -88,7 +88,7 @@ namespace network
             this->_awake = false;
             size_t count = this->_queue.select(settings :: interval);
             this->_awake = true;
-            
+
             if(!(this->_alive))
                 break;
 
@@ -102,65 +102,77 @@ namespace network
                     continue;
                 }
 
-                data :: optional <request> request = this->_pending[this->_queue[i].descriptor()];
+                data :: optional <data :: variant <request :: connection>> request = this->_pending[this->_queue[i].descriptor()];
                 assert(request);
 
-                try
+                request->visit([&](request :: connection & request)
                 {
-                    queue :: type type = this->_queue[i].type();
-                    :: network :: connection :: step status;
+                    try
+                    {
+                        queue :: type type = this->_queue[i].type();
+                        :: network :: connection :: step status;
 
-                    while((status = (type == queue :: read ? request->connection._arc->_connection->receive_step() : request->connection._arc->_connection->send_step())) == :: network :: connection :: more);
+                        while((status = (type == queue :: read ? request.connection._arc->_connection->receive_step() : request.connection._arc->_connection->send_step())) == :: network :: connection :: more);
 
-                    if(status == :: network :: connection :: wait)
-                        continue;
+                        if(status == :: network :: connection :: wait)
+                            return;
 
-                    request->promise.resolve();
-                }
-                catch(...)
-                {
-                    request->promise.reject(std :: current_exception());
-                }
+                        request.promise.resolve();
+                    }
+                    catch(...)
+                    {
+                        request.promise.reject(std :: current_exception());
+                    }
 
-                this->_pending.remove(this->_queue[i].descriptor());
+                    this->_pending.remove(this->_queue[i].descriptor());
 
-                if(this->_queue[i].type() == queue :: read)
-                    this->_queue.remove <queue :: read> (this->_queue[i].descriptor());
-                else
-                    this->_queue.remove <queue :: write> (this->_queue[i].descriptor());
+                    if(this->_queue[i].type() == queue :: read)
+                        this->_queue.remove <queue :: read> (this->_queue[i].descriptor());
+                    else
+                        this->_queue.remove <queue :: write> (this->_queue[i].descriptor());
+                });
             }
 
             while(data :: optional <timeout> timeout = this->_timeouts.pop())
             {
-                data :: optional <request> request = this->_pending[timeout->descriptor];
+                data :: optional <data :: variant <request :: connection>> request = this->_pending[timeout->descriptor];
 
-                if(request && request->version == timeout->version)
+                if(request)
                 {
-                    this->_pending.remove(timeout->descriptor);
+                    request->visit([&](request :: connection & request)
+                    {
+                        if(request.version == timeout->version)
+                        {
+                            this->_pending.remove(timeout->descriptor);
 
-                    if(request->type == queue :: read)
-                    {
-                        this->_queue.remove <queue :: read> (timeout->descriptor);
-                        request->promise.reject(sockets :: receive_timeout());
-                    }
-                    else
-                    {
-                        this->_queue.remove <queue :: write> (timeout->descriptor);
-                        request->promise.reject(sockets :: send_timeout());
-                    }
+                            if(request.type == queue :: read)
+                            {
+                                this->_queue.remove <queue :: read> (timeout->descriptor);
+                                request.promise.reject(sockets :: receive_timeout());
+                            }
+                            else
+                            {
+                                this->_queue.remove <queue :: write> (timeout->descriptor);
+                                request.promise.reject(sockets :: send_timeout());
+                            }
+                        }
+                    });
                 }
             }
 
-            while(data :: optional <request> request = this->_new.pop())
+            while(data :: optional <data :: variant <request :: connection>> request = this->_new.pop())
             {
-                if(request->type == queue :: read)
-                    this->_queue.add <queue :: read> (request->connection._arc->_connection->descriptor());
-                else
-                    this->_queue.add <queue :: write> (request->connection._arc->_connection->descriptor());
+                request->visit([&](request :: connection & request)
+                {
+                    if(request.type == queue :: read)
+                        this->_queue.add <queue :: read> (request.connection._arc->_connection->descriptor());
+                    else
+                        this->_queue.add <queue :: write> (request.connection._arc->_connection->descriptor());
 
-                request->version = version++;
-                this->_pending.add(request->connection._arc->_connection->descriptor(), *request);
-                this->_timeouts.push({.descriptor = request->connection._arc->_connection->descriptor(), .version = request->version}, microtime() + settings :: timeout);
+                    request.version = version++;
+                    this->_pending.add(request.connection._arc->_connection->descriptor(), data :: variant <request :: connection> :: construct <request :: connection> (request));
+                    this->_timeouts.push({.descriptor = request.connection._arc->_connection->descriptor(), .version = request.version}, microtime() + settings :: timeout);
+                });
             }
         }
     }

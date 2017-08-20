@@ -21,6 +21,7 @@ namespace network
 #include "data/hashtable.hpp"
 #include "thread/channel.hpp"
 #include "chrono/timelock.hpp"
+#include "data/variant.hpp"
 
 namespace network
 {
@@ -89,10 +90,13 @@ namespace network
 
         struct request
         {
-            connection connection;
-            promise <void> promise;
-            queue :: type type;
-            size_t version;
+            struct connection
+            {
+                pool :: connection connection;
+                promise <void> promise;
+                queue :: type type;
+                size_t version;
+            };
         };
 
         struct timeout
@@ -107,8 +111,8 @@ namespace network
 
         volatile bool _alive;
 
-        thread :: channel <request> _new;
-        data :: hashtable <int, request> _pending;
+        thread :: channel <data :: variant <request :: connection>> _new;
+        data :: hashtable <int, data :: variant <request :: connection>> _pending;
 
         chrono :: timelock <timeout> _timeouts;
 
