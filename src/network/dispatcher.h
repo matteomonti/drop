@@ -146,6 +146,8 @@ namespace network
                 std :: mutex receive;
             } _mutex;
 
+            volatile bool _locked;
+            
         public:
 
             // Constructors

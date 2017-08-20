@@ -124,35 +124,62 @@ namespace network
 
     template <typename protocol> template <typename ptype, typename... types> void dispatcher <protocol> :: arc :: send(const address & remote, const types & ... fields)
     {
-        typename :: network :: packet :: template count <protocol> :: type index = ptype :: index;
-        auto message = bytewise :: serialize <bytewise :: options :: pad :: template beg <sizeof(index)>> (((types) fields)...);
-        bytewise :: endianess :: translate(reinterpret_cast <char (&)[sizeof(index)]> (message), reinterpret_cast <const char (&)[sizeof(index)]> (index));
+        try
+        {
+            this->_mutex.send.lock();
+            assert(!(this->_locked));
 
-        this->_socket.send(remote, message, message.size());
+            typename :: network :: packet :: template count <protocol> :: type index = ptype :: index;
+            auto message = bytewise :: serialize <bytewise :: options :: pad :: template beg <sizeof(index)>> (((types) fields)...);
+            bytewise :: endianess :: translate(reinterpret_cast <char (&)[sizeof(index)]> (message), reinterpret_cast <const char (&)[sizeof(index)]> (index));
+
+            this->_socket.send(remote, message, message.size());
+
+            this->_mutex.send.unlock();
+        }
+        catch(...)
+        {
+            this->_mutex.send.unlock();
+            std :: rethrow_exception(std :: current_exception());
+        }
     }
 
     template <typename protocol> template <typename ptype, typename... ptypes, typename... rtypes> std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype> dispatcher <protocol> :: arc :: receive(const rtypes & ... remotes)
     {
-        while(true)
+        try
         {
-            sockets :: udp :: packet packet = this->_socket.receive();
+            this->_mutex.receive.lock();
+            assert(!(this->_locked));
 
-            if(!(remote :: match(packet.remote(), remotes...)))
-                continue;
-
-            if(packet.size() < :: network :: packet :: count <protocol> :: size)
-                continue;
-
-            typename :: network :: packet :: count <protocol> :: type index;
-            bytewise :: endianess :: translate(reinterpret_cast <char (&)[:: network :: packet :: count <protocol> :: size]> (index), reinterpret_cast <const char (&)[:: network :: packet :: count <protocol> :: size]> (*(packet.message())));
-
-            try
+            while(true)
             {
-                return message :: template interpret <std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype>, ptype, ptypes...> (index, packet);
+                sockets :: udp :: packet packet = this->_socket.receive();
+
+                if(!(remote :: match(packet.remote(), remotes...)))
+                    continue;
+
+                if(packet.size() < :: network :: packet :: count <protocol> :: size)
+                    continue;
+
+                typename :: network :: packet :: count <protocol> :: type index;
+                bytewise :: endianess :: translate(reinterpret_cast <char (&)[:: network :: packet :: count <protocol> :: size]> (index), reinterpret_cast <const char (&)[:: network :: packet :: count <protocol> :: size]> (*(packet.message())));
+
+                try
+                {
+                    auto response = message :: template interpret <std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype>, ptype, ptypes...> (index, packet);
+                    this->_mutex.receive.unlock();
+
+                    return response;
+                }
+                catch(...)
+                {
+                }
             }
-            catch(...)
-            {
-            }
+        }
+        catch(...)
+        {
+            this->_mutex.receive.unlock();
+            std :: rethrow_exception(std :: current_exception());
         }
     }
 
