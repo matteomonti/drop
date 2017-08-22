@@ -76,7 +76,7 @@ namespace network
 
     pool :: connection pool :: bind(const :: network :: connection & connection)
     {
-        return (class connection){*this, connection};
+        return {*this, connection};
     }
 
     // Private methods

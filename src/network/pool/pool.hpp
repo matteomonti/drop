@@ -21,7 +21,52 @@ namespace network
         return this->_arc->_pool.receive <type> (*this);
     }
 
+    // arc
+
+    // Constructors
+
+    template <typename protocol> pool :: dispatcher <protocol> :: arc :: arc(pool & pool, const :: network :: dispatcher <protocol> & dispatcher) : _pool(pool), _dispatcher(dispatcher._arc)
+    {
+        this->_dispatcher->_mutex.send.lock();
+        this->_dispatcher->_mutex.receive.lock();
+
+        this->_dispatcher->_locked = true;
+        this->_dispatcher->block(false);
+
+        this->_dispatcher->_mutex.send.unlock();
+        this->_dispatcher->_mutex.receive.unlock();
+    }
+
+    // Destructor
+
+    template <typename protocol> pool :: dispatcher <protocol> :: arc :: ~arc()
+    {
+        this->_dispatcher->_mutex.send.lock();
+        this->_dispatcher->_mutex.receive.lock();
+
+        this->_dispatcher->_locked = false;
+        this->_dispatcher->block(true);
+
+        this->_dispatcher->_mutex.send.unlock();
+        this->_dispatcher->_mutex.receive.unlock();
+    }
+
+    // dispatcher
+
+    // Private constructors
+
+    template <typename protocol> pool :: dispatcher <protocol> :: dispatcher(pool & pool, const :: network :: dispatcher <protocol> & dispatcher) : _arc(new arc(pool, dispatcher))
+    {
+    }
+
     // pool
+
+    // Methods
+
+    template <typename protocol> pool :: dispatcher <protocol> pool :: bind(const :: network :: dispatcher <protocol> & dispatcher)
+    {
+        return {*this, dispatcher};
+    }
 
     // Private methods
 

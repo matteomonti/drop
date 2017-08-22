@@ -22,6 +22,8 @@ namespace network
 #include "thread/channel.hpp"
 #include "chrono/timelock.hpp"
 #include "data/variant.hpp"
+#include "utils/template/function.hpp"
+#include "network/dispatcher.hpp"
 
 namespace network
 {
@@ -86,6 +88,46 @@ namespace network
             template <typename type> promise <type> receive() const;
         };
 
+        template <typename protocol> class dispatcher
+        {
+            // Friends
+
+            friend class pool;
+
+            // Service nested classes
+
+            class arc
+            {
+                // Friends
+
+                friend class pool;
+                template <typename> friend class dispatcher;
+
+                // Members
+
+                pool & _pool;
+                std :: shared_ptr <typename :: network :: dispatcher <protocol> :: arc> _dispatcher;
+
+            public:
+
+                // Constructors
+
+                arc(pool &, const :: network :: dispatcher <protocol> &);
+
+                // Destructor
+
+                ~arc();
+            };
+
+            // Members
+
+            std :: shared_ptr <arc> _arc;
+
+            // Private constructors
+
+            dispatcher(pool &, const :: network :: dispatcher <protocol> &);
+        };
+
         // Service nested classes
 
         struct request
@@ -140,7 +182,8 @@ namespace network
         // Methods
 
         connection bind(const :: network :: connection &);
-
+        template <typename protocol> dispatcher <protocol> bind(const :: network :: dispatcher <protocol> &);
+        
     private:
 
         // Private methods

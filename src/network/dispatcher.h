@@ -31,6 +31,10 @@ namespace network
 {
     template <typename protocol> class dispatcher
     {
+        // Friends
+
+        friend class pool;
+
     public:
 
         // Exceptions
@@ -88,6 +92,10 @@ namespace network
 
         class arc
         {
+            // Friend classes
+
+            friend class pool;
+
             // Service nested classes
 
             struct remote
@@ -147,7 +155,7 @@ namespace network
             } _mutex;
 
             volatile bool _locked;
-            
+
         public:
 
             // Constructors
