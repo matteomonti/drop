@@ -87,7 +87,7 @@ namespace network :: acceptors
 
             // Methods
 
-            template <typename etype, typename lambda, typename std :: enable_if_t <std :: is_same <etype, connection> :: value && utils :: is_callable <lambda, const connection &> :: value> * = nullptr> void on(const lambda &);
+            template <typename etype, typename lambda, typename std :: enable_if_t <std :: is_same <etype, connection> :: value && utils :: is_callable <lambda, const connection &> :: value && std :: is_same <std :: result_of_t <lambda(const connection &)>, void> :: value> * = nullptr> void on(const lambda &);
             void clear();
 
         private:

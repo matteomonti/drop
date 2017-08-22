@@ -9,7 +9,7 @@ namespace network :: acceptors
 
     // Methods
 
-    template <typename type, typename lambda, typename std :: enable_if_t <std :: is_same <type, connection> :: value && utils :: is_callable <lambda, const connection &> :: value> *> void tcp :: async :: on(const lambda & callback)
+    template <typename etype, typename lambda, typename std :: enable_if_t <std :: is_same <etype, connection> :: value && utils :: is_callable <lambda, const connection &> :: value && std :: is_same <std :: result_of_t <lambda(const connection &)>, void> :: value> *> void tcp :: async :: on(const lambda & callback)
     {
         this->_mutex.lock();
 
