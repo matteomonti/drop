@@ -5,21 +5,6 @@
 
 namespace network :: acceptors
 {
-    // callback
-
-    // Constructors
-
-    template <typename lambda> tcp :: async :: callback <lambda> :: callback(const lambda & callback) : _callback(callback)
-    {
-    }
-
-    // Methods
-
-    template <typename lambda> void tcp :: async :: callback <lambda> :: run(const connection & connection)
-    {
-        this->_callback(connection);
-    }
-
     // async
 
     // Methods
@@ -33,7 +18,7 @@ namespace network :: acceptors
         for(size_t i = 0; i < settings :: callbacks; i++)
             if(!(this->_callbacks[i]))
             {
-                this->_callbacks[i] = new (class tcp :: async :: callback <lambda>){callback};
+                this->_callbacks[i] = callback;
                 break;
             }
 

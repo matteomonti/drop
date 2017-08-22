@@ -4,22 +4,18 @@
 #include <unistd.h>
 #include <thread>
 
-#include "utils/template/function.hpp"
+#include "network/acceptors/tcp.hpp"
 
 int main()
 {
-    utils :: function <int (int)> f([](int x)
+    network :: acceptors :: tcp :: async my_acceptor(1234);
+    my_acceptor.on <network :: connection> ([](const network :: connection & my_connection)
     {
-        return 2 * x;
+        my_connection.send(bytewise :: buffer("Hello World!"));
     });
 
-    f = [](int x)
-    {
-        return 3 * x;
-    };
-
-    std :: cout << f(2) << std :: endl;
-    f.release();
+    while(true)
+        usleep(1.e6);
 }
 
 #endif

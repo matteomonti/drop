@@ -52,6 +52,13 @@ namespace utils
     {
         this->_functor.reset(new wrapper <lambda> (functor));
     }
+
+    // Operators
+
+    template <typename ret_type, typename... types> function <ret_type (types...)> :: operator bool () const
+    {
+        return (bool) (this->_functor);
+    }
 };
 
 #endif

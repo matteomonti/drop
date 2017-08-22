@@ -24,6 +24,7 @@ namespace network
 #include "network/connection.hpp"
 #include "utils/template/is_callable.h"
 #include "network/connectors/tcp.h"
+#include "utils/template/function.hpp"
 
 namespace network :: acceptors
 {
@@ -63,45 +64,13 @@ namespace network :: acceptors
 
         private:
 
-            // Service nested classes
-
-            class callback_base
-            {
-            public:
-
-                // Destructor
-
-                virtual ~callback_base();
-
-                // Methods
-
-                virtual void run(const connection &) = 0;
-            };
-
-            template <typename lambda> class callback : public callback_base
-            {
-                // Members
-
-                lambda _callback;
-
-            public:
-
-                // Constructors
-
-                callback(const lambda &);
-
-                // Methods
-
-                void run(const connection &);
-            };
-
             // Members
 
             sync _acceptor;
             uint16_t _port;
             volatile bool _alive;
 
-            callback_base * _callbacks[settings :: callbacks];
+            utils :: function <void (const connection &)> _callbacks[settings :: callbacks];
 
             std :: mutex _mutex;
             std :: thread _thread;

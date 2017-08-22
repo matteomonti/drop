@@ -68,6 +68,10 @@ namespace utils
 
         ret_type operator () (types && ...) const;
         template <typename lambda, std :: enable_if_t <is_callable <lambda, types...> :: value && std :: is_same <std :: result_of_t <lambda(types...)>, ret_type> :: value> * = nullptr> void operator = (const lambda &);
+
+        // Casting
+
+        operator bool () const;
     };
 };
 

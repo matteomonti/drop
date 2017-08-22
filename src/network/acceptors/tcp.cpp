@@ -21,19 +21,12 @@ namespace network :: acceptors
         return connection(this->_socket.accept());
     }
 
-    // callback_base
-
-    tcp :: async :: callback_base :: ~callback_base()
-    {
-    }
-
     // async
 
     // Constructors
 
     tcp :: async :: async(const uint16_t & port) : _acceptor(port), _port(port), _alive(true)
     {
-        memset(this->_callbacks, '\0', sizeof(callback_base *) * settings :: callbacks);
         this->_thread = std :: thread(&async :: run, this);
     }
 
@@ -55,10 +48,7 @@ namespace network :: acceptors
         this->_mutex.lock();
 
         for(size_t i = 0; i < settings :: callbacks && this->_callbacks[i]; i++)
-        {
-            delete this->_callbacks[i];
-            this->_callbacks[i] = nullptr;
-        }
+            this->_callbacks[i].release();
 
         this->_mutex.unlock();
     }
@@ -75,7 +65,7 @@ namespace network :: acceptors
                 break;
 
             for(size_t i = 0; i < settings :: callbacks && this->_callbacks[i]; i++)
-                this->_callbacks[i]->run(connection);
+                this->_callbacks[i](connection);
         }
     }
 
