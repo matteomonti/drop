@@ -5,6 +5,10 @@
 
 #include "promise.h"
 
+// Settings
+
+template <typename type> constexpr size_t promise <type> :: settings :: resolve_callbacks;
+
 // resolve_callback_base
 
 // Destructor

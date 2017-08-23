@@ -4,6 +4,11 @@
 
 namespace network
 {
+    // Settings
+
+    constexpr microtimestamp pool :: settings :: timeout;
+    constexpr microtimestamp pool :: settings :: interval;
+
     // arc
 
     // Constructors

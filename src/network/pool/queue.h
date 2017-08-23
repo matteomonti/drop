@@ -34,6 +34,7 @@ namespace network
     class queue
     {
     public:
+        
         // Settings
 
         struct settings

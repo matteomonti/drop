@@ -8,6 +8,10 @@
 
 namespace async
 {
+    // Settings
+
+    template <typename type, typename lambda> constexpr size_t context <type, lambda> :: settings :: handlers;
+
     // Constructors
 
     template <typename type, typename lambda> context <type, lambda> :: context(const lambda & kernel) : _kernel(kernel), _entrypoint(-1), _handlers{.size = 0}

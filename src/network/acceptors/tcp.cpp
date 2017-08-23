@@ -4,6 +4,10 @@
 
 namespace network :: acceptors
 {
+    // Settings
+
+    constexpr size_t tcp :: async :: settings :: callbacks;
+
     // sync
 
     // Constructors

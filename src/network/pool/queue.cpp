@@ -4,6 +4,10 @@
 
 namespace network
 {
+    // Settings
+
+    constexpr size_t queue :: settings :: buffer_size;
+
     // kevent_failed
 
     const char * queue :: kevent_failed :: what() const noexcept

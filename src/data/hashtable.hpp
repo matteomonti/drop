@@ -9,6 +9,12 @@
 
 namespace data
 {
+    // Settings
+
+    template <typename ktype, typename vtype> constexpr size_t hashtable <ktype, vtype> :: settings :: base_alloc;
+    template <typename ktype, typename vtype> constexpr size_t hashtable <ktype, vtype> :: settings :: expand_threshold;
+    template <typename ktype, typename vtype> constexpr size_t hashtable <ktype, vtype> :: settings :: contract_threshold;
+
     // Constructors
 
     template <typename ktype, typename vtype> hashtable <ktype, vtype> :: hashtable() : _entries(utils :: pnew <optional <entry>> :: uniform [settings :: base_alloc] (null)), _size(0), _alloc(settings :: base_alloc)
