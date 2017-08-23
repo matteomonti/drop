@@ -13,10 +13,17 @@ namespace network
 #include <type_traits>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/event.h>
 #include <sys/time.h>
 #include <exception>
 #include <assert.h>
+
+#ifdef __APPLE__
+#include <sys/event.h>
+#endif
+
+#ifdef __linux__
+#include <sys/epoll.h>
+#endif
 
 // Includes
 
@@ -41,14 +48,24 @@ namespace network
             const char * what() const noexcept;
         };
 
+        class epoll_ctl_failed : public std :: exception
+        {
+            const char * what() const noexcept;
+        };
+
         // Nested enums
 
         enum type {read, write};
 
         // Nested classes
 
-        #ifdef __APPLE__
-        class event : public kevent
+        class event : public
+                            #ifdef __APPLE__
+                            kevent
+                            #endif
+                            #ifdef __linux__
+                            epoll_event
+                            #endif
         {
         public:
 
@@ -57,7 +74,6 @@ namespace network
             int descriptor() const;
             type type() const;
         };
-        #endif
 
     private:
 

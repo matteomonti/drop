@@ -11,6 +11,10 @@ namespace thread
         #ifdef __APPLE__
         this->_semaphore = dispatch_semaphore_create(this->_base);
         #endif
+
+        #ifdef __linux__
+        sem_init(&(this->_semaphore), 0, this->_base);
+        #endif
     }
 
     // Destructor
@@ -22,6 +26,10 @@ namespace thread
             this->post();
 
         dispatch_release(this->_semaphore);
+        #endif
+
+        #ifdef __linux__
+        sem_destroy(&(this->_semaphore));
         #endif
     }
 
@@ -38,12 +46,42 @@ namespace thread
             return dispatch_semaphore_wait(this->_semaphore, time);
         }
         #endif
+
+        #ifdef __linux__
+        if(!timeout)
+            return sem_wait(&(this->_semaphore));
+        else
+        {
+    		struct timeval now;
+    		gettimeofday(&now, 0);
+
+            struct timeval offset
+            {
+                .tv_sec = (__time_t) (timeout / 1000000),
+                .tv_usec = (__time_t) (timeout % 1000000)
+            };
+
+            timeradd(&now, &offset, &now);
+
+            struct timespec time
+            {
+    			.tv_sec = now.tv_sec,
+                .tv_nsec = now.tv_usec * 1000
+    		};
+
+            return sem_timedwait(&(this->_semaphore), &time);
+        }
+        #endif
     }
 
     void semaphore :: post()
     {
         #ifdef __APPLE__
         dispatch_semaphore_signal(this->_semaphore);
+        #endif
+
+        #ifdef __linux__
+        sem_post(&(this->_semaphore));
         #endif
     }
 };
