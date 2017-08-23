@@ -51,7 +51,7 @@ namespace utils
 
         // Members
 
-        std :: unique_ptr <base> _functor;
+        std :: shared_ptr <base> _functor;
 
     public:
 
@@ -62,7 +62,7 @@ namespace utils
 
         // Methods
 
-        void release();
+        void reset();
 
         // Operators
 

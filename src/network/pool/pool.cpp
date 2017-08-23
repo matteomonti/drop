@@ -102,7 +102,7 @@ namespace network
                     continue;
                 }
 
-                data :: optional <data :: variant <request :: connection>> request = this->_pending[this->_queue[i].descriptor()];
+                data :: optional <data :: variant <request :: connection, request :: dispatcher>> request = this->_pending[this->_queue[i].descriptor()];
                 assert(request);
 
                 request->visit([&](request :: connection & request)
@@ -130,12 +130,23 @@ namespace network
                         this->_queue.remove <queue :: read> (this->_queue[i].descriptor());
                     else
                         this->_queue.remove <queue :: write> (this->_queue[i].descriptor());
+                }, [&](request :: dispatcher & request)
+                {
+                    if(this->_queue[i].type() == queue :: read)
+                    {
+                        this->_queue.remove <queue :: read> (this->_queue[i].descriptor());
+                    }
+                    else
+                    {
+                        request.resolve();
+                        this->_queue.remove <queue :: write> (this->_queue[i].descriptor());
+                    }
                 });
             }
 
             while(data :: optional <timeout> timeout = this->_timeouts.pop())
             {
-                data :: optional <data :: variant <request :: connection>> request = this->_pending[timeout->descriptor];
+                data :: optional <data :: variant <request :: connection, request :: dispatcher>> request = this->_pending[timeout->descriptor];
 
                 if(request)
                 {
@@ -156,11 +167,28 @@ namespace network
                                 request.promise.reject(sockets :: send_timeout());
                             }
                         }
+                    }, [&](request :: dispatcher & request)
+                    {
+                        if(request.version == timeout->version)
+                        {
+                            this->_pending.remove(timeout->descriptor);
+
+                            if(request.type == queue :: read)
+                            {
+                                this->_queue.remove <queue :: read> (timeout->descriptor);
+                                request.reject(std :: make_exception_ptr(sockets :: receive_timeout()));
+                            }
+                            else
+                            {
+                                this->_queue.remove <queue :: write> (timeout->descriptor);
+                                request.reject(std :: make_exception_ptr(sockets :: send_timeout()));
+                            }
+                        }
                     });
                 }
             }
 
-            while(data :: optional <data :: variant <request :: connection>> request = this->_new.pop())
+            while(data :: optional <data :: variant <request :: connection, request :: dispatcher>> request = this->_new.pop())
             {
                 request->visit([&](request :: connection & request)
                 {
@@ -170,8 +198,18 @@ namespace network
                         this->_queue.add <queue :: write> (request.connection._arc->_connection->descriptor());
 
                     request.version = version++;
-                    this->_pending.add(request.connection._arc->_connection->descriptor(), data :: variant <request :: connection> :: construct <request :: connection> (request));
+                    this->_pending.add(request.connection._arc->_connection->descriptor(), data :: variant <request :: connection, request :: dispatcher> :: construct <request :: connection> (request));
                     this->_timeouts.push({.descriptor = request.connection._arc->_connection->descriptor(), .version = request.version}, microtime() + settings :: timeout);
+                }, [&](request :: dispatcher & request)
+                {
+                    if(request.type == queue :: read)
+                        this->_queue.add <queue :: read> (request.descriptor);
+                    else
+                        this->_queue.add <queue :: write> (request.descriptor);
+
+                    request.version = version++;
+                    this->_pending.add(request.descriptor, data :: variant <request :: connection, request :: dispatcher> :: construct <request :: dispatcher> (request));
+                    this->_timeouts.push({.descriptor = request.descriptor, .version = request.version}, microtime() + settings :: timeout);
                 });
             }
         }

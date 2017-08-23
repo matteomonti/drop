@@ -36,9 +36,9 @@ namespace utils
 
     // Methods
 
-    template <typename ret_type, typename... types> void function <ret_type (types...)> :: release()
+    template <typename ret_type, typename... types> void function <ret_type (types...)> :: reset()
     {
-        this->_functor.release();
+        this->_functor.reset();
     }
 
     // Operators

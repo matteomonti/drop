@@ -129,11 +129,8 @@ namespace network
             this->_mutex.send.lock();
             assert(!(this->_locked));
 
-            typename :: network :: packet :: template count <protocol> :: type index = ptype :: index;
-            auto message = bytewise :: serialize <bytewise :: options :: pad :: template beg <sizeof(index)>> (((types) fields)...);
-            bytewise :: endianess :: translate(reinterpret_cast <char (&)[sizeof(index)]> (message), reinterpret_cast <const char (&)[sizeof(index)]> (index));
-
-            this->_socket.send(remote, message, message.size());
+            this->send_setup <ptype> (remote, fields...);
+            this->send();
 
             this->_mutex.send.unlock();
         }
@@ -181,6 +178,24 @@ namespace network
             this->_mutex.receive.unlock();
             std :: rethrow_exception(std :: current_exception());
         }
+    }
+
+    // Private methods
+
+    template <typename protocol> template <typename ptype, typename... types> void dispatcher <protocol> :: arc :: send_setup(const address & remote, const types & ... fields)
+    {
+        typename :: network :: packet :: template count <protocol> :: type index = ptype :: index;
+        auto message = bytewise :: serialize <bytewise :: options :: pad :: template beg <sizeof(index)>> (((types) fields)...);
+        bytewise :: endianess :: translate(reinterpret_cast <char (&)[sizeof(index)]> (message), reinterpret_cast <const char (&)[sizeof(index)]> (index));
+
+        this->_write.remote = remote;
+        memcpy(this->_write.buffer, message, message.size());
+        this->_write.size = message.size();
+    }
+
+    template <typename protocol> bool dispatcher <protocol> :: arc :: send()
+    {
+        return this->_socket.send(this->_write.remote, this->_write.buffer, this->_write.size);
     }
 
     // dispatcher

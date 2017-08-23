@@ -126,6 +126,12 @@ namespace network
             // Private constructors
 
             dispatcher(pool &, const :: network :: dispatcher <protocol> &);
+
+        public:
+
+            // Methods
+
+            template <typename ptype, typename... types, std :: enable_if_t <:: network :: dispatcher <protocol> :: template packet <ptype> :: template is_callable <types...> :: value> * = nullptr> promise <void> send(const address &, const types & ...);
         };
 
         // Service nested classes
@@ -136,6 +142,15 @@ namespace network
             {
                 pool :: connection connection;
                 promise <void> promise;
+                queue :: type type;
+                size_t version;
+            };
+
+            struct dispatcher
+            {
+                int descriptor;
+                utils :: function <bool ()> resolve;
+                utils :: function <void (const std :: exception_ptr &)> reject;
                 queue :: type type;
                 size_t version;
             };
@@ -153,8 +168,8 @@ namespace network
 
         volatile bool _alive;
 
-        thread :: channel <data :: variant <request :: connection>> _new;
-        data :: hashtable <int, data :: variant <request :: connection>> _pending;
+        thread :: channel <data :: variant <request :: connection, request :: dispatcher>> _new;
+        data :: hashtable <int, data :: variant <request :: connection, request :: dispatcher>> _pending;
 
         chrono :: timelock <timeout> _timeouts;
 
@@ -183,13 +198,15 @@ namespace network
 
         connection bind(const :: network :: connection &);
         template <typename protocol> dispatcher <protocol> bind(const :: network :: dispatcher <protocol> &);
-        
+
     private:
 
         // Private methods
 
         template <typename type> promise <void> send(const connection &, const type &);
         template <typename type> promise <type> receive(const connection &);
+
+        template <typename ptype, typename protocol, typename... types> promise <void> send(const dispatcher <protocol> &, const address &, const types & ...);
 
         void run();
         void wake();

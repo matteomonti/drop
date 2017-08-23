@@ -150,6 +150,13 @@ namespace network
 
             struct
             {
+                address remote;
+                char buffer[sockets :: udp :: settings :: mtu];
+                size_t size;
+            } _write;
+
+            struct
+            {
                 std :: mutex send;
                 std :: mutex receive;
             } _mutex;
@@ -178,6 +185,13 @@ namespace network
 
             template <typename ptype, typename... types> void send(const address &, const types & ...);
             template <typename ptype, typename... ptypes, typename... rtypes> std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype> receive(const rtypes & ...);
+
+        private:
+
+            // Private methods
+
+            template <typename ptype, typename... types> void send_setup(const address &, const types & ...);
+            bool send();
         };
 
         // Members

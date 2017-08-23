@@ -48,7 +48,7 @@ namespace network :: acceptors
         this->_mutex.lock();
 
         for(size_t i = 0; i < settings :: callbacks && this->_callbacks[i]; i++)
-            this->_callbacks[i].release();
+            this->_callbacks[i].reset();
 
         this->_mutex.unlock();
     }
