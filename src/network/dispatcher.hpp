@@ -150,27 +150,10 @@ namespace network
 
             while(true)
             {
-                sockets :: udp :: packet packet = this->_socket.receive();
+                auto packet = receive_round <ptype, ptypes...> (remotes...);
 
-                if(!(remote :: match(packet.remote(), remotes...)))
-                    continue;
-
-                if(packet.size() < :: network :: packet :: count <protocol> :: size)
-                    continue;
-
-                typename :: network :: packet :: count <protocol> :: type index;
-                bytewise :: endianess :: translate(reinterpret_cast <char (&)[:: network :: packet :: count <protocol> :: size]> (index), reinterpret_cast <const char (&)[:: network :: packet :: count <protocol> :: size]> (*(packet.message())));
-
-                try
-                {
-                    auto response = message :: template interpret <std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype>, ptype, ptypes...> (index, packet);
-                    this->_mutex.receive.unlock();
-
-                    return response;
-                }
-                catch(...)
-                {
-                }
+                if(packet)
+                    return *packet;
             }
         }
         catch(...)
@@ -196,6 +179,33 @@ namespace network
     template <typename protocol> bool dispatcher <protocol> :: arc :: send()
     {
         return this->_socket.send(this->_write.remote, this->_write.buffer, this->_write.size);
+    }
+
+    template <typename protocol> template <typename ptype, typename... ptypes, typename... rtypes> data :: optional <std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype>> dispatcher <protocol> :: arc :: receive_round(const rtypes & ... remotes)
+    {
+        sockets :: udp :: packet packet = this->_socket.receive();
+
+        if(!(remote :: match(packet.remote(), remotes...)))
+            return data :: null;
+
+        if(packet.size() < :: network :: packet :: count <protocol> :: size)
+            return data :: null;
+
+        typename :: network :: packet :: count <protocol> :: type index;
+        bytewise :: endianess :: translate(reinterpret_cast <char (&)[:: network :: packet :: count <protocol> :: size]> (index), reinterpret_cast <const char (&)[:: network :: packet :: count <protocol> :: size]> (*(packet.message())));
+
+        try
+        {
+            auto response = message :: template interpret <std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype>, ptype, ptypes...> (index, packet);
+            this->_mutex.receive.unlock();
+
+            return response;
+        }
+        catch(...)
+        {
+        }
+
+        return data :: null;
     }
 
     // dispatcher

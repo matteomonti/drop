@@ -66,6 +66,11 @@ namespace network
         return this->_arc->_pool.template send <ptype> (*this, remote, fields...);
     }
 
+    template <typename protocol> template <typename ptype, typename... ptypes, typename... rtypes, std :: enable_if_t <:: network :: packet :: template in <protocol, ptype, ptypes...> :: value && utils :: are_same <address, rtypes...> :: value> *> promise <std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype>> pool :: dispatcher <protocol> :: receive(const rtypes & ... remotes)
+    {
+        return this->_arc->_pool.template receive <ptype, ptypes...> (*this, remotes...);
+    }
+
     // pool
 
     // Methods
@@ -165,6 +170,49 @@ namespace network
 
             this->_mutex.unlock();
         }
+
+        return promise;
+    }
+
+    template <typename ptype, typename... ptypes, typename protocol, typename... rtypes> promise <std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype>> pool :: receive(const dispatcher <protocol> & dispatcher, const rtypes & ... remotes)
+    {
+        promise <std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype>> promise;
+
+        request :: dispatcher request
+        {
+            .descriptor = dispatcher._arc->_dispatcher->descriptor(),
+            .resolve = [=]()
+            {
+                try
+                {
+                    auto packet = dispatcher._arc->_dispatcher->template receive_round <ptype, ptypes...> (remotes...);
+
+                    if(packet)
+                    {
+                        promise.resolve(*packet);
+                        return true;
+                    }
+                }
+                catch(...)
+                {
+                    promise.reject(std :: current_exception());
+                }
+
+                return false;
+            },
+            .reject = [=](const std :: exception_ptr & exception)
+            {
+                promise.reject(exception);
+            },
+            .type = queue :: read
+        };
+
+        this->_mutex.lock();
+
+        this->_new.push(data :: variant <request :: connection, request :: dispatcher> :: construct <request :: dispatcher> (request));
+        this->wake();
+
+        this->_mutex.unlock();
 
         return promise;
     }

@@ -26,6 +26,7 @@ namespace network
 #include "bytewise/bytewise.h"
 #include "utils/template/are_same.h"
 #include "data/variant.hpp"
+#include "data/optional.hpp"
 
 namespace network
 {
@@ -192,6 +193,8 @@ namespace network
 
             template <typename ptype, typename... types> void send_setup(const address &, const types & ...);
             bool send();
+
+            template <typename ptype, typename... ptypes, typename... rtypes> data :: optional <std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype>> receive_round(const rtypes & ...);
         };
 
         // Members

@@ -134,11 +134,16 @@ namespace network
                 {
                     if(this->_queue[i].type() == queue :: read)
                     {
-                        this->_queue.remove <queue :: read> (this->_queue[i].descriptor());
+                        if(request.resolve())
+                        {
+                            this->_pending.remove(this->_queue[i].descriptor());
+                            this->_queue.remove <queue :: read> (this->_queue[i].descriptor());
+                        }
                     }
                     else
                     {
                         request.resolve();
+                        this->_pending.remove(this->_queue[i].descriptor());
                         this->_queue.remove <queue :: write> (this->_queue[i].descriptor());
                     }
                 });

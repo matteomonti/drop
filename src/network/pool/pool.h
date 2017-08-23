@@ -132,6 +132,7 @@ namespace network
             // Methods
 
             template <typename ptype, typename... types, std :: enable_if_t <:: network :: dispatcher <protocol> :: template packet <ptype> :: template is_callable <types...> :: value> * = nullptr> promise <void> send(const address &, const types & ...);
+            template <typename ptype, typename... ptypes, typename... rtypes, std :: enable_if_t <:: network :: packet :: template in <protocol, ptype, ptypes...> :: value && utils :: are_same <address, rtypes...> :: value> * = nullptr> promise <std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype>> receive(const rtypes & ...);
         };
 
         // Service nested classes
@@ -207,6 +208,7 @@ namespace network
         template <typename type> promise <type> receive(const connection &);
 
         template <typename ptype, typename protocol, typename... types> promise <void> send(const dispatcher <protocol> &, const address &, const types & ...);
+        template <typename ptype, typename... ptypes, typename protocol, typename... rtypes> promise <std :: conditional_t <(sizeof...(ptypes) > 0), data :: variant <ptype, ptypes...>, ptype>> receive(const dispatcher <protocol> &, const rtypes & ...);
 
         void run();
         void wake();
