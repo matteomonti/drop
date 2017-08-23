@@ -17,6 +17,11 @@ namespace network :: connectors
 
     // async
 
+    // Settings
+
+    constexpr microtimestamp tcp :: async :: settings :: timeout;
+    constexpr microtimestamp tcp :: async :: settings :: interval;
+
     // Constructors
 
     tcp :: async :: async() : _alive(true)
