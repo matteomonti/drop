@@ -47,7 +47,7 @@ namespace network
         #ifdef __linux__
         if(this->events == EPOLLOUT)
             return write;
-        else if(this->filter == EPOLLIN)
+        else if(this->events == EPOLLIN)
             return read;
         else
             assert(false);

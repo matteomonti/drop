@@ -91,7 +91,7 @@ namespace network
             .events = EPOLLIN
         };
 
-        if(epoll_ctl(this->_queue, EPOLL_CTL_DEL, descriptor, &event) < 0)
+        if(epoll_ctl(this->_descriptor, EPOLL_CTL_DEL, descriptor, &event) < 0)
             throw epoll_ctl_failed();
         #endif
     }
@@ -120,7 +120,7 @@ namespace network
             .events = EPOLLOUT
         };
 
-        if(epoll_ctl(this->_queue, EPOLL_CTL_DEL, descriptor, &event) < 0)
+        if(epoll_ctl(this->_descriptor, EPOLL_CTL_DEL, descriptor, &event) < 0)
             throw epoll_ctl_failed();
         #endif
     }
