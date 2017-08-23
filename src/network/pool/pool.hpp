@@ -115,7 +115,14 @@ namespace network
 
         request.promise.then([=]()
         {
-            promise.resolve(connection._arc->_connection->receive_finalize <type> ());
+            try
+            {
+                promise.resolve(connection._arc->_connection->receive_finalize <type> ());
+            }
+            catch(...)
+            {
+                promise.reject(std :: current_exception());
+            }
         }).except([=](const std :: exception_ptr & exception)
         {
             promise.reject(exception);
