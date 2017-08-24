@@ -11,9 +11,14 @@ namespace thread
 // Libraries
 
 #include <stddef.h>
+#include <time.h>
 
 #ifdef __APPLE__
 #include <dispatch/dispatch.h>
+#endif
+
+#ifdef __linux__
+#include <semaphore.h>
 #endif
 
 // Includes
@@ -28,6 +33,10 @@ namespace thread
 
         #ifdef __APPLE__
         dispatch_semaphore_t _semaphore;
+        #endif
+
+        #ifdef __linux__
+        sem_t _semaphore;
         #endif
 
         size_t _base;

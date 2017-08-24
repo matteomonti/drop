@@ -25,6 +25,17 @@ namespace network
         if(kevent(this->_descriptor, &event, 1, 0, 0, 0) < 0)
             throw kevent_failed();
         #endif
+
+        #ifdef __linux__
+        struct epoll_event event
+        {
+            .data.fd = descriptor,
+            .events = EPOLLIN
+        };
+
+        if(epoll_ctl(this->_descriptor, EPOLL_CTL_ADD, descriptor, &event) < 0)
+            throw epoll_ctl_failed();
+        #endif
     }
 
     template <queue :: type filter, std :: enable_if_t <filter == queue :: write> *> void queue :: add(const int & descriptor)
@@ -42,6 +53,17 @@ namespace network
 
         if(kevent(this->_descriptor, &event, 1, 0, 0, 0) < 0)
             throw kevent_failed();
+        #endif
+
+        #ifdef __linux__
+        struct epoll_event event
+        {
+            .data.fd = descriptor,
+            .events = EPOLLOUT
+        };
+
+        if(epoll_ctl(this->_descriptor, EPOLL_CTL_ADD, descriptor, &event) < 0)
+            throw epoll_ctl_failed();
         #endif
     }
 
@@ -61,6 +83,17 @@ namespace network
         if(kevent(this->_descriptor, &event, 1, 0, 0, 0) < 0)
             throw kevent_failed();
         #endif
+
+        #ifdef __linux__
+        struct epoll_event event
+        {
+            .data.fd = descriptor,
+            .events = EPOLLIN
+        };
+
+        if(epoll_ctl(this->_descriptor, EPOLL_CTL_DEL, descriptor, &event) < 0)
+            throw epoll_ctl_failed();
+        #endif
     }
 
     template <queue :: type filter, std :: enable_if_t <filter == queue :: write> *> void queue :: remove(const int & descriptor)
@@ -78,6 +111,17 @@ namespace network
 
         if(kevent(this->_descriptor, &event, 1, 0, 0, 0) < 0)
             throw kevent_failed();
+        #endif
+
+        #ifdef __linux__
+        struct epoll_event event
+        {
+            .data.fd = descriptor,
+            .events = EPOLLOUT
+        };
+
+        if(epoll_ctl(this->_descriptor, EPOLL_CTL_DEL, descriptor, &event) < 0)
+            throw epoll_ctl_failed();
         #endif
     }
 };

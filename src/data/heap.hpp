@@ -7,6 +7,10 @@
 
 namespace data
 {
+    // Settings
+
+    template <typename type> constexpr size_t heap <type> :: settings :: base_alloc;
+
     // Constructors
 
     template <typename type> heap <type> :: heap() : _items(utils :: pnew <optional <type>> :: uniform [settings :: base_alloc + 1] (null)), _size(0), _alloc(settings :: base_alloc)

@@ -4,6 +4,10 @@
 
 namespace network :: sockets
 {
+    // Settings
+
+    constexpr size_t tcp :: settings :: listen_buffer_size;
+
     // Constructors
 
     tcp :: tcp() : _blocking(true)

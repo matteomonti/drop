@@ -8,6 +8,10 @@
 
 namespace thread
 {
+    // Settings
+
+    template <typename type> constexpr size_t channel <type> :: settings :: base_chunk_alloc;
+
     // chunk
 
     // Constructors

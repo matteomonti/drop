@@ -4,6 +4,10 @@
 
 namespace network :: sockets
 {
+    // Settings
+
+    constexpr size_t udp :: settings :: mtu;
+
     // packet
 
     // Getters

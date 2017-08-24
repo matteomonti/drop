@@ -23,6 +23,10 @@ namespace network :: acceptors
 
     // async
 
+    // Settings
+
+    constexpr size_t tcp :: async :: settings :: callbacks;
+    
     // Constructors
 
     tcp :: async :: async(const uint16_t & port) : _acceptor(port), _port(port), _alive(true)

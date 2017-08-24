@@ -4,11 +4,22 @@
 
 namespace network
 {
+    // Settings
+
+    constexpr size_t queue :: settings :: buffer_size;
+
     // kevent_failed
 
     const char * queue :: kevent_failed :: what() const noexcept
     {
         return "Kevent failed.";
+    }
+
+    // epoll_ctl_failed
+
+    const char * queue :: epoll_ctl_failed :: what() const noexcept
+    {
+        return "Epoll_ctl failed.";
     }
 
     // event
@@ -20,6 +31,10 @@ namespace network
         #ifdef __APPLE__
         return this->ident;
         #endif
+
+        #ifdef __linux__
+        return this->data.fd;
+        #endif
     }
 
     queue :: type queue :: event :: type() const
@@ -28,6 +43,15 @@ namespace network
         if(this->filter == EVFILT_WRITE)
             return write;
         else if(this->filter == EVFILT_READ)
+            return read;
+        else
+            assert(false);
+        #endif
+
+        #ifdef __linux__
+        if(this->events == EPOLLOUT)
+            return write;
+        else if(this->events == EPOLLIN)
             return read;
         else
             assert(false);
@@ -42,6 +66,10 @@ namespace network
     {
         #ifdef __APPLE__
         this->_descriptor = kqueue();
+        #endif
+
+        #ifdef __linux__
+        this->_descriptor = epoll_create1(0);
         #endif
     }
 
@@ -73,6 +101,10 @@ namespace network
             count = kevent(this->_descriptor, 0, 0, this->_events, (int) settings :: buffer_size, nullptr);
 
         return count;
+        #endif
+
+        #ifdef __linux__
+        return epoll_wait(this->_descriptor, this->_events, (int) settings :: buffer_size, (int) (timeout / 1000));
         #endif
     }
 
