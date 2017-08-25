@@ -48,27 +48,19 @@ int main()
     03 61 73 64 03 61 73 64 03 61 73 64 03 61 73 64 03 61 73 64 03 61 73 64 03 61 73 64 03 61 73 64 03 61 73 64 03 61 73 64 03 61 73 64 03 61 73 64 03 61 73 64 03 61 73 64 03 61 73 64 03 61 73 64 03 61 73 64 00 00 01 00 01";
 
     char message[512];
-
     size_t size = hex2bin(message, hex);
-    network :: dns :: message dnsmessage(message, size);
 
-    std :: cout  << "Id: " << dnsmessage.id() << std :: endl;
-    std :: cout << "Type: " << dnsmessage.type() << std :: endl;
-    std :: cout << "Opcode: " << dnsmessage.opcode() << std :: endl;
-    std :: cout << "Authoritative: " << dnsmessage.authoritative() << std :: endl;
-    std :: cout << "Truncated: " << dnsmessage.truncated() << std :: endl;
-    std :: cout << "Rescode: " << dnsmessage.rescode() << std :: endl << std :: endl;
-
-    std :: cout << "Queries:" << std :: endl << std :: endl;
-    for(size_t i = 0; i < dnsmessage.queries.size(); i++)
+    size_t total = 0;
+    for(size_t n = 0;; n++)
     {
-        dnsmessage.queries[i].visit([&](const network :: dns :: query <network :: dns :: A> & query)
-        {
-            std :: cout << " " << i << ": " <<  query.name() << std :: endl;
-        }, [&](const network :: dns :: query <network :: dns :: null> & query)
-        {
-            std :: cout << " " << i << ": " << "Error" << std :: endl;
-        });
+        if(n % 1000000 == 0)
+            std :: cout << n << "  (" << total << ")"<< std :: endl;
+
+        message[0] = rand();
+        message[1] = rand();
+
+        network :: dns :: message dnsmessage(message, size);
+        total += dnsmessage.queries.size();
     }
 }
 
