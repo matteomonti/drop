@@ -4,12 +4,12 @@ namespace network
 {
     namespace dns
     {
-        class name;
+        class string;
     };
 };
 
-#if !defined(__forward__) && !defined(__drop__network__dns__name__h)
-#define __drop__network__dns__name__h
+#if !defined(__forward__) && !defined(__drop__network__dns__string__h)
+#define __drop__network__dns__string__h
 
 // Libraries
 
@@ -18,7 +18,7 @@ namespace network
 
 namespace network :: dns
 {
-    class name
+    class string
     {
     public:
 
@@ -33,15 +33,16 @@ namespace network :: dns
 
         // Members
 
-        char _name[settings :: max_length];
+        char _value[settings :: max_length];
         size_t _length;
 
     public:
 
         // Constructors
 
-        name(const char *, const size_t &);
-        name(const char *);
+        string();
+        string(const char *, const size_t &);
+        string(const char *);
 
         // Getters
 

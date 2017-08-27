@@ -5,6 +5,7 @@
 #include "network/sockets/udp.h"
 #include "network/dns/message.h"
 #include "network/dns/query.hpp"
+#include "network/dns/record.h"
 
 int main()
 {

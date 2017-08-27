@@ -4,6 +4,10 @@
 
 namespace network :: dns
 {
+    // Settings
+
+    constexpr size_t name :: settings :: max_length;
+
     // Constructors
 
     name :: name(const char * name, const size_t & length) : _length(length)
