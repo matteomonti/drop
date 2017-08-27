@@ -1,59 +1,13 @@
 // Includes
 
-#include "query.hpp"
+#include "query.h"
 
-namespace network :: dns
+namespace network :: dns :: parse
 {
     // Functions
 
-    data :: variant <query <A>, query <NS>, query <CNAME>, query <SOA>, query <WKS>, query <PTR>, query <HINFO>, query <MINFO>, query <MX>, query <TXT>, query <null>> parse :: query(const char * message, const size_t & size, size_t & cursor)
+    data :: variant <:: network :: dns :: query <A>, :: network :: dns :: query <NS>, :: network :: dns :: query <CNAME>, :: network :: dns :: query <SOA>, :: network :: dns :: query <WKS>, :: network :: dns :: query <PTR>, :: network :: dns :: query <HINFO>, :: network :: dns :: query <MINFO>, :: network :: dns :: query <MX>, :: network :: dns :: query <TXT>, :: network :: dns :: query <null>> query(const char * message, const size_t & size, size_t & cursor)
     {
-        struct range
-        {
-            size_t beg;
-            size_t end;
-        };
-
-        struct mask
-        {
-            range labels[64];
-            size_t size;
-        };
-
-        struct parse
-        {
-            static inline bool name(mask & mask, const char * message, const size_t & size, const size_t & entry)
-            {
-                size_t cursor = entry;
-
-                while(true)
-                {
-                    if(cursor >= size)
-                        return false;
-
-                    uint8_t len = message[cursor];
-
-                    if(len == 0)
-                        return true;
-                    else if(len & 0xc0)
-                    {
-                        size_t jump = ntohs(reinterpret_cast <const uint16_t &> (message[cursor])) & 0x3ff;
-                        return name(mask, message, entry, jump);
-                    }
-                    else
-                    {
-                        if(cursor + len + 1 > size)
-                            return false;
-                        else
-                        {
-                            mask.labels[mask.size++] = {.beg = cursor + 1, .end = cursor + len + 1};
-                            cursor += len + 1;
-                        }
-                    }
-                }
-            }
-        };
-
         typedef data :: variant <:: network :: dns :: query <A>, :: network :: dns :: query <NS>, :: network :: dns :: query <CNAME>, :: network :: dns :: query <SOA>, :: network :: dns :: query <WKS>, :: network :: dns :: query <PTR>, :: network :: dns :: query <HINFO>, :: network :: dns :: query <MINFO>, :: network :: dns :: query <MX>, :: network :: dns :: query <TXT>, :: network :: dns :: query <null>> variant;
 
         mask mask{.size = 0};
@@ -125,4 +79,4 @@ namespace network :: dns
 
         return variant :: construct <:: network :: dns :: query <null>> ();
     }
-}
+};

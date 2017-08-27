@@ -22,6 +22,7 @@ namespace network
 #include "data/variant.hpp"
 #include "utils/misc/pnew.hpp"
 #include "query.hpp"
+#include "parse/query.h"
 
 namespace network :: dns
 {

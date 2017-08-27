@@ -57,11 +57,6 @@ namespace network :: dns
         const size_t & length() const;
         const qclass & qclass() const;
     };
-
-    namespace parse
-    {
-        data :: variant <query <A>, query <NS>, query <CNAME>, query <SOA>, query <WKS>, query <PTR>, query <HINFO>, query <MINFO>, query <MX>, query <TXT>, query <null>> query(const char *, const size_t &, size_t &);
-    }
 }
 
 #endif
