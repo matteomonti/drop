@@ -54,25 +54,25 @@ namespace network :: dns :: parse
         switch(qtype)
         {
             case 1:
-                return variant :: construct <:: network :: dns :: query <A>> (name, nsize, static_cast <enum qclass> (qclass));
+                return variant :: construct <:: network :: dns :: query <A>> ((class name) {name, nsize}, static_cast <enum qclass> (qclass));
             case 2:
-                return variant :: construct <:: network :: dns :: query <NS>> (name, nsize, static_cast <enum qclass> (qclass));
+                return variant :: construct <:: network :: dns :: query <NS>> ((class name) {name, nsize}, static_cast <enum qclass> (qclass));
             case 5:
-                return variant :: construct <:: network :: dns :: query <CNAME>> (name, nsize, static_cast <enum qclass> (qclass));
+                return variant :: construct <:: network :: dns :: query <CNAME>> ((class name) {name, nsize}, static_cast <enum qclass> (qclass));
             case 6:
-                return variant :: construct <:: network :: dns :: query <SOA>> (name, nsize, static_cast <enum qclass> (qclass));
+                return variant :: construct <:: network :: dns :: query <SOA>> ((class name) {name, nsize}, static_cast <enum qclass> (qclass));
             case 11:
-                return variant :: construct <:: network :: dns :: query <WKS>> (name, nsize, static_cast <enum qclass> (qclass));
+                return variant :: construct <:: network :: dns :: query <WKS>> ((class name) {name, nsize}, static_cast <enum qclass> (qclass));
             case 12:
-                return variant :: construct <:: network :: dns :: query <PTR>> (name, nsize, static_cast <enum qclass> (qclass));
+                return variant :: construct <:: network :: dns :: query <PTR>> ((class name) {name, nsize}, static_cast <enum qclass> (qclass));
             case 13:
-                return variant :: construct <:: network :: dns :: query <HINFO>> (name, nsize, static_cast <enum qclass> (qclass));
+                return variant :: construct <:: network :: dns :: query <HINFO>> ((class name) {name, nsize}, static_cast <enum qclass> (qclass));
             case 14:
-                return variant :: construct <:: network :: dns :: query <MINFO>> (name, nsize, static_cast <enum qclass> (qclass));
+                return variant :: construct <:: network :: dns :: query <MINFO>> ((class name) {name, nsize}, static_cast <enum qclass> (qclass));
             case 15:
-                return variant :: construct <:: network :: dns :: query <MX>> (name, nsize, static_cast <enum qclass> (qclass));
+                return variant :: construct <:: network :: dns :: query <MX>> ((class name) {name, nsize}, static_cast <enum qclass> (qclass));
             case 16:
-                return variant :: construct <:: network :: dns :: query <TXT>> (name, nsize, static_cast <enum qclass> (qclass));
+                return variant :: construct <:: network :: dns :: query <TXT>> ((class name) {name, nsize}, static_cast <enum qclass> (qclass));
             default:
                 return variant :: construct <:: network :: dns :: query <null>> ();
         };

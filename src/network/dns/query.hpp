@@ -9,21 +9,15 @@ namespace network :: dns
 {
     // Constructors
 
-    template <typename type> query <type> :: query(const char * name, const size_t & length, const enum qclass & qclass) : _length(length), _qclass(qclass)
+    template <typename type> query <type> :: query(const class name & name, const enum qclass & qclass) : _name(name), _qclass(qclass)
     {
-        memcpy(this->_name, name, this->_length);
     }
 
     // Getters
 
-    template <typename type> const char * query <type> :: name() const
+    template <typename type> const name & query <type> :: name() const
     {
         return this->_name;
-    }
-
-    template <typename type> const size_t & query <type> :: length() const
-    {
-        return this->_length;
     }
 
     template <typename type> const enum qclass & query <type> :: qclass() const

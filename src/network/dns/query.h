@@ -26,6 +26,7 @@ namespace network
 #include "types.h"
 #include "data/variant.hpp"
 #include "data/optional.hpp"
+#include "name.h"
 
 namespace network :: dns
 {
@@ -41,20 +42,18 @@ namespace network :: dns
 
         // Members
 
-        char _name[256];
-        size_t _length;
+        name _name;
         qclass _qclass;
 
     public:
 
         // Constructors
 
-        query(const char *, const size_t &, const qclass &);
+        query(const name &, const qclass &);
 
         // Getters
 
-        const char * name() const;
-        const size_t & length() const;
+        const name & name() const;
         const qclass & qclass() const;
     };
 }
