@@ -21,6 +21,11 @@ namespace network
 #include <stdint.h>
 #include <netinet/in.h>
 
+// Includes
+
+#include "network/dns/name.h"
+#include "data/optional.hpp"
+
 namespace network :: dns :: parse
 {
     struct range
@@ -35,7 +40,7 @@ namespace network :: dns :: parse
         size_t size;
     };
 
-    bool name(mask & mask, const char * message, const size_t & size, const size_t & entry);
+    data :: optional <:: network :: dns :: name> name(const char *, const size_t &, size_t &);
 };
 
 #endif
