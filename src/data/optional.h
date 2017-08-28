@@ -14,6 +14,7 @@ namespace data
 
 #include <type_traits>
 #include <assert.h>
+#include <algorithm>
 
 // Includes
 
