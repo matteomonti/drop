@@ -9,7 +9,7 @@
 
 namespace network :: dns :: parse
 {
-    data :: variant <query <A>, query <NS>, query <CNAME>, query <SOA>, query <WKS>, query <PTR>, query <HINFO>, query <MINFO>, query <MX>, query <TXT>, query <null>> query(const char * message, const size_t & size, size_t & cursor);
+    data :: variant <query <A>, query <NS>, query <CNAME>, query <SOA>, query <WKS>, query <PTR>, query <HINFO>, query <MINFO>, query <MX>, query <TXT>, query <null>> query(const char *, const size_t &, size_t &);
 };
 
 #endif

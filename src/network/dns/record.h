@@ -250,7 +250,7 @@ public:
 
         // Constructors
 
-        record(const class name &, const enum qclass &, const uint32_t & ttl, const string *, const size_t &);
+        record(const class name &, const enum qclass &, const uint32_t &, const string *, const size_t &);
 
         // Getters
 

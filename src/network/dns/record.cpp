@@ -223,7 +223,7 @@ namespace network :: dns
 
     // Constructors
 
-    record <TXT> :: record(const class name & name, const enum qclass & qclass, const uint32_t & ttl, const string * texts, const size_t & count) : record_base(name, qclass, ttl), _count(_count)
+    record <TXT> :: record(const class name & name, const enum qclass & qclass, const uint32_t & ttl, const string * texts, const size_t & count) : record_base(name, qclass, ttl), _count(count)
     {
         for(size_t i = 0; i < this->_count; i++)
             this->_texts[i] = texts[i];

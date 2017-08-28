@@ -10,7 +10,7 @@
 int main()
 {
     network :: sockets :: udp socket;
-    socket.bind(53);
+    socket.bind(1234);
 
     while(true)
     {
