@@ -260,6 +260,10 @@ public:
 
         const string & operator [] (const size_t &) const;
     };
+
+    template <> class record <null>
+    {
+    };
 };
 
 #endif
