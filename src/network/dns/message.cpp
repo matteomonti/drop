@@ -72,14 +72,13 @@ namespace network :: dns
         this->recursion._available = reinterpret_cast <const unsigned char &> (message[3]) & 0x80;
         this->_rescode = static_cast <enum rescode> (reinterpret_cast <const unsigned char &> (message[3]) & 0xf);
 
+        size_t cursor = 12;
         this->queries._size = ntohs(reinterpret_cast <const uint16_t &> (message[4]));
 
         if(this->queries._size)
         {
             utils :: pnew <data :: variant <:: network :: dns :: query <A>, :: network :: dns :: query <NS>, :: network :: dns :: query <CNAME>, :: network :: dns :: query <SOA>, :: network :: dns :: query <WKS>, :: network :: dns :: query <PTR>, :: network :: dns :: query <HINFO>, :: network :: dns :: query <MINFO>, :: network :: dns :: query <MX>, :: network :: dns :: query <TXT>, :: network :: dns :: query <null>>> queries(this->queries._size);
             this->queries._queries = queries;
-
-            size_t cursor = 12;
 
             for(size_t q = 0; q < this->queries._size; q++)
             {
@@ -98,8 +97,6 @@ namespace network :: dns
             utils :: pnew <data :: variant <:: network :: dns :: record <A>, :: network :: dns :: record <NS>, :: network :: dns :: record <CNAME>, :: network :: dns :: record <SOA>, :: network :: dns :: record <WKS>, :: network :: dns :: record <PTR>, :: network :: dns :: record <HINFO>, :: network :: dns :: record <MINFO>, :: network :: dns :: record <MX>, :: network :: dns :: record <TXT>, :: network :: dns :: record <null>>> records(this->answers._size);
             this->answers._records = records;
 
-            size_t cursor = 12;
-
             for(size_t q = 0; q < this->answers._size; q++)
             {
                 records[q](parse :: record(message, size, cursor));
@@ -117,8 +114,6 @@ namespace network :: dns
             utils :: pnew <data :: variant <:: network :: dns :: record <A>, :: network :: dns :: record <NS>, :: network :: dns :: record <CNAME>, :: network :: dns :: record <SOA>, :: network :: dns :: record <WKS>, :: network :: dns :: record <PTR>, :: network :: dns :: record <HINFO>, :: network :: dns :: record <MINFO>, :: network :: dns :: record <MX>, :: network :: dns :: record <TXT>, :: network :: dns :: record <null>>> records(this->authorities._size);
             this->authorities._records = records;
 
-            size_t cursor = 12;
-
             for(size_t q = 0; q < this->authorities._size; q++)
             {
                 records[q](parse :: record(message, size, cursor));
@@ -135,8 +130,6 @@ namespace network :: dns
         {
             utils :: pnew <data :: variant <:: network :: dns :: record <A>, :: network :: dns :: record <NS>, :: network :: dns :: record <CNAME>, :: network :: dns :: record <SOA>, :: network :: dns :: record <WKS>, :: network :: dns :: record <PTR>, :: network :: dns :: record <HINFO>, :: network :: dns :: record <MINFO>, :: network :: dns :: record <MX>, :: network :: dns :: record <TXT>, :: network :: dns :: record <null>>> records(this->extras._size);
             this->extras._records = records;
-
-            size_t cursor = 12;
 
             for(size_t q = 0; q < this->extras._size; q++)
             {
