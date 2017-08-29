@@ -23,6 +23,8 @@ namespace network
 #include "utils/misc/pnew.hpp"
 #include "query.hpp"
 #include "parse/query.h"
+#include "record.h"
+#include "parse/record.h"
 
 namespace network :: dns
 {
@@ -81,6 +83,28 @@ namespace network :: dns
             const data :: variant <:: network :: dns :: query <A>, :: network :: dns :: query <NS>, :: network :: dns :: query <CNAME>, :: network :: dns :: query <SOA>, :: network :: dns :: query <WKS>, :: network :: dns :: query <PTR>, :: network :: dns :: query <HINFO>, :: network :: dns :: query <MINFO>, :: network :: dns :: query <MX>, :: network :: dns :: query <TXT>, :: network :: dns :: query <null>> & operator [] (const size_t &) const;
         };
 
+        class records
+        {
+            // Friends
+
+            friend class message;
+
+            // Members
+
+            data :: variant <:: network :: dns :: record <A>, :: network :: dns :: record <NS>, :: network :: dns :: record <CNAME>, :: network :: dns :: record <SOA>, :: network :: dns :: record <WKS>, :: network :: dns :: record <PTR>, :: network :: dns :: record <HINFO>, :: network :: dns :: record <MINFO>, :: network :: dns :: record <MX>, :: network :: dns :: record <TXT>, :: network :: dns :: record <null>> * _records;
+            size_t _size;
+
+        public:
+
+            // Getters
+
+            const size_t & size() const;
+
+            // Operators
+
+            const data :: variant <:: network :: dns :: record <A>, :: network :: dns :: record <NS>, :: network :: dns :: record <CNAME>, :: network :: dns :: record <SOA>, :: network :: dns :: record <WKS>, :: network :: dns :: record <PTR>, :: network :: dns :: record <HINFO>, :: network :: dns :: record <MINFO>, :: network :: dns :: record <MX>, :: network :: dns :: record <TXT>, :: network :: dns :: record <null>> & operator [] (const size_t &) const;
+        };
+
         // Members
 
         bool _valid;
@@ -99,6 +123,9 @@ namespace network :: dns
 
         recursion recursion;
         queries queries;
+        records answers;
+        records authorities;
+        records extras;
 
         // Constructors
 

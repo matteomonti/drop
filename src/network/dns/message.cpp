@@ -34,6 +34,22 @@ namespace network :: dns
         return this->_queries[index];
     }
 
+    // records
+
+    // Getters
+
+    const size_t & message :: records :: size() const
+    {
+        return this->_size;
+    }
+
+    // Operators
+
+    const data :: variant <:: network :: dns :: record <A>, :: network :: dns :: record <NS>, :: network :: dns :: record <CNAME>, :: network :: dns :: record <SOA>, :: network :: dns :: record <WKS>, :: network :: dns :: record <PTR>, :: network :: dns :: record <HINFO>, :: network :: dns :: record <MINFO>, :: network :: dns :: record <MX>, :: network :: dns :: record <TXT>, :: network :: dns :: record <null>> & message :: records :: operator [] (const size_t & index) const
+    {
+        return this->_records[index];
+    }
+
     // message
 
     // Constructors
@@ -66,7 +82,70 @@ namespace network :: dns
             size_t cursor = 12;
 
             for(size_t q = 0; q < this->queries._size; q++)
+            {
                 queries[q](parse :: query(message, size, cursor));
+                this->queries._queries[q].visit([this](:: network :: dns :: query <null> &)
+                {
+                    this->_valid = false;
+                });
+            }
+        }
+
+        this->answers._size = ntohs(reinterpret_cast <const uint16_t &> (message[6]));
+
+        if(this->answers._size)
+        {
+            utils :: pnew <data :: variant <:: network :: dns :: record <A>, :: network :: dns :: record <NS>, :: network :: dns :: record <CNAME>, :: network :: dns :: record <SOA>, :: network :: dns :: record <WKS>, :: network :: dns :: record <PTR>, :: network :: dns :: record <HINFO>, :: network :: dns :: record <MINFO>, :: network :: dns :: record <MX>, :: network :: dns :: record <TXT>, :: network :: dns :: record <null>>> records(this->answers._size);
+            this->answers._records = records;
+
+            size_t cursor = 12;
+
+            for(size_t q = 0; q < this->answers._size; q++)
+            {
+                records[q](parse :: record(message, size, cursor));
+                this->answers._records[q].visit([this](:: network :: dns :: record <null> &)
+                {
+                    this->_valid = false;
+                });
+            }
+        }
+
+        this->authorities._size = ntohs(reinterpret_cast <const uint16_t &> (message[8]));
+
+        if(this->authorities._size)
+        {
+            utils :: pnew <data :: variant <:: network :: dns :: record <A>, :: network :: dns :: record <NS>, :: network :: dns :: record <CNAME>, :: network :: dns :: record <SOA>, :: network :: dns :: record <WKS>, :: network :: dns :: record <PTR>, :: network :: dns :: record <HINFO>, :: network :: dns :: record <MINFO>, :: network :: dns :: record <MX>, :: network :: dns :: record <TXT>, :: network :: dns :: record <null>>> records(this->authorities._size);
+            this->authorities._records = records;
+
+            size_t cursor = 12;
+
+            for(size_t q = 0; q < this->authorities._size; q++)
+            {
+                records[q](parse :: record(message, size, cursor));
+                this->authorities._records[q].visit([this](:: network :: dns :: record <null> &)
+                {
+                    this->_valid = false;
+                });
+            }
+        }
+
+        this->extras._size = ntohs(reinterpret_cast <const uint16_t &> (message[10]));
+
+        if(this->extras._size)
+        {
+            utils :: pnew <data :: variant <:: network :: dns :: record <A>, :: network :: dns :: record <NS>, :: network :: dns :: record <CNAME>, :: network :: dns :: record <SOA>, :: network :: dns :: record <WKS>, :: network :: dns :: record <PTR>, :: network :: dns :: record <HINFO>, :: network :: dns :: record <MINFO>, :: network :: dns :: record <MX>, :: network :: dns :: record <TXT>, :: network :: dns :: record <null>>> records(this->extras._size);
+            this->extras._records = records;
+
+            size_t cursor = 12;
+
+            for(size_t q = 0; q < this->extras._size; q++)
+            {
+                records[q](parse :: record(message, size, cursor));
+                this->extras._records[q].visit([this](:: network :: dns :: record <null> &)
+                {
+                    this->_valid = false;
+                });
+            }
         }
     }
 

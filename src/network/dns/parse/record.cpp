@@ -22,7 +22,7 @@ namespace network :: dns :: parse
 
         switch(qtype)
         {
-            case 1: // A
+            case 1:
             {
                 if(length < 4 || cursor + 4 > size)
                     return variant :: construct <:: network :: dns :: record <null>> ();
@@ -32,7 +32,7 @@ namespace network :: dns :: parse
                 cursor += length;
                 return variant :: construct <:: network :: dns :: record <A>> (*name, qclass, ttl, address);
             }
-            case 2: // NS
+            case 2:
             {
                 size_t rsize = cursor + length;
                 data :: optional <class name> nameserver = parse :: name(message, rsize, cursor);
@@ -43,7 +43,7 @@ namespace network :: dns :: parse
                 cursor = rsize;
                 return variant :: construct <:: network :: dns :: record <NS>> (*name, qclass, ttl, *nameserver);
             }
-            case 5: // CNAME
+            case 5:
             {
                 size_t rsize = cursor + length;
                 data :: optional <class name> cname = parse :: name(message, rsize, cursor);
@@ -54,7 +54,7 @@ namespace network :: dns :: parse
                 cursor = rsize;
                 return variant :: construct <:: network :: dns :: record <CNAME>> (*name, qclass, ttl, *cname);
             }
-            case 6: // SOA
+            case 6:
             {
                 size_t rsize = cursor + length;
 
@@ -80,7 +80,7 @@ namespace network :: dns :: parse
                 cursor = rsize;
                 return variant :: construct <:: network :: dns :: record <SOA>> (*name, qclass, ttl, *mname, *rname, serial, refresh, retry, expire, minimum);
             }
-            case 11: // WKS
+            case 11:
             {
                 if(length < 5)
                     return variant :: construct <:: network :: dns :: record <null>> ();
@@ -93,7 +93,7 @@ namespace network :: dns :: parse
                 cursor += length;
                 return variant :: construct <:: network :: dns :: record <WKS>> (*name, qclass, ttl, address, protocol, bitmask);
             }
-            case 12: // PTR
+            case 12:
             {
                 size_t rsize = cursor + length;
                 data :: optional <class name> pointer = parse :: name(message, rsize, cursor);
@@ -104,7 +104,7 @@ namespace network :: dns :: parse
                 cursor = rsize;
                 return variant :: construct <:: network :: dns :: record <PTR>> (*name, qclass, ttl, *pointer);
             }
-            case 13: // HINFO
+            case 13:
             {
                 size_t rsize = cursor + length;
                 data :: optional <class string> cpu = parse :: string(message, rsize, cursor);
@@ -120,7 +120,7 @@ namespace network :: dns :: parse
                 cursor = rsize;
                 return variant :: construct <:: network :: dns :: record <HINFO>> (*name, qclass, ttl, *cpu, *os);
             }
-            case 14: // MINFO
+            case 14:
             {
                 size_t rsize = cursor + length;
                 data :: optional <class name> rmailbox = parse :: name(message, rsize, cursor);
@@ -136,7 +136,7 @@ namespace network :: dns :: parse
                 cursor = rsize;
                 return variant :: construct <:: network :: dns :: record <MINFO>> (*name, qclass, ttl, *rmailbox, *emailbox);
             }
-            case 15: // MX
+            case 15:
             {
                 if(length < 2)
                     return variant :: construct <:: network :: dns :: record <null>> ();
@@ -154,7 +154,7 @@ namespace network :: dns :: parse
                 cursor = rsize;
                 return variant :: construct <:: network :: dns :: record <MX>> (*name, qclass, ttl, preference, *exchange);
             }
-            case 16: // TXT
+            case 16:
             {
                 size_t rsize = cursor + length;
 
