@@ -21,26 +21,17 @@ int main()
 {
     char message[1024];
 
-    size_t cursor = 0;
-    data :: hashtable <bytewise :: buffer, uint16_t> shortcuts;
+    for(size_t i = 0;; i++)
+    {
+        if(i % 1000000 == 0)
+            std :: cout << i << std :: endl;
 
-    network :: dns :: dump :: name(message, cursor, shortcuts, "it");
-    print(message, cursor);
+        size_t cursor = i % 16;
+        data :: hashtable <bytewise :: buffer, uint16_t> shortcuts;
 
-    network :: dns :: dump :: name(message, cursor, shortcuts, "com");
-    print(message, cursor);
-
-    network :: dns :: dump :: name(message, cursor, shortcuts, "google.com");
-    print(message, cursor);
-
-    network :: dns :: dump :: name(message, cursor, shortcuts, "sub.google.com");
-    print(message, cursor);
-
-    network :: dns :: dump :: name(message, cursor, shortcuts, "my.pretty.sub.google.com");
-    print(message, cursor);
-
-    network :: dns :: dump :: name(message, cursor, shortcuts, "totally.different.domain.net");
-    print(message, cursor);
+        network :: dns :: dump :: name(message, cursor, shortcuts, "net.google.it");
+        network :: dns :: dump :: name(message, cursor, shortcuts, "net.google.it");
+    }
 }
 
 #endif
