@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "network/dns/dump/name.h"
+#include "network/dns/dump/string.h"
 
 void print(char * message, const size_t & cursor)
 {
@@ -21,17 +21,15 @@ int main()
 {
     char message[1024];
 
-    for(size_t i = 0;; i++)
-    {
-        if(i % 1000000 == 0)
-            std :: cout << i << std :: endl;
+    size_t cursor = 0;
+    network :: dns :: dump :: string(message, cursor, "asd");
+    network :: dns :: dump :: string(message, cursor, "lol");
+    network :: dns :: dump :: string(message, cursor, "lmfao");
+    network :: dns :: dump :: string(message, cursor, "xd");
+    network :: dns :: dump :: string(message, cursor, "rotlmfao");
+    network :: dns :: dump :: string(message, cursor, "ghghgh");
 
-        size_t cursor = i % 16;
-        data :: hashtable <bytewise :: buffer, uint16_t> shortcuts;
-
-        network :: dns :: dump :: name(message, cursor, shortcuts, "net.google.it");
-        network :: dns :: dump :: name(message, cursor, shortcuts, "net.google.it");
-    }
+    print(message, cursor);
 }
 
 #endif
