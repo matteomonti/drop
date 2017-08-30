@@ -99,6 +99,11 @@ namespace bytewise
         return *this;
     }
 
+    bool buffer :: operator == (const buffer & that) const
+    {
+        return (this->_size == that._size && !memcmp(this->_bytes, that._bytes, this->_size));
+    }
+
     // Casting
 
     buffer :: operator char * ()

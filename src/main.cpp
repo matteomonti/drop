@@ -2,21 +2,19 @@
 
 #include <iostream>
 
-#include "pmurhash32/pmurhash32.h"
+#include "data/hashtable.hpp"
 
 int main()
 {
-    char string[128];
-    memset(string, 'x', 128);
+    data :: hashtable <bytewise :: buffer, bytewise :: buffer> my_hashtable;
 
-    uint32_t total = 0;
-    for(reinterpret_cast <size_t &> (string[0]) = 0;; reinterpret_cast <size_t &> (string[0])++)
-    {
-        if(reinterpret_cast <size_t &> (string[0]) % 1000000 == 0)
-            std :: cout << reinterpret_cast <size_t &> (string[0]) << " (" << total << ")" << std :: endl;
+    my_hashtable.add("Sherlock", "Holmes");
+    my_hashtable.add("John", "Watson");
+    my_hashtable.add("James", "Moriarty");
 
-        total += PMurHash32(0, string, 128);
-    }
+    std :: cout << *my_hashtable["Sherlock"] << std :: endl;
+    std :: cout << *my_hashtable["John"] << std :: endl;
+    std :: cout << *my_hashtable["James"] << std :: endl;
 }
 
 #endif

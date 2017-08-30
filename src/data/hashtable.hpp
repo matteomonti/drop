@@ -164,6 +164,11 @@ namespace data
 
         return hash;
     }
+
+    template <typename ktype, typename vtype> size_t hashtable <ktype, vtype> :: hash(const bytewise :: buffer & key)
+    {
+        return (size_t) PMurHash32(0, key, key.size());
+    }
 };
 
 #endif

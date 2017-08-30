@@ -14,11 +14,14 @@ namespace data
 #include <stddef.h>
 #include <type_traits>
 
+#include "pmurhash32/pmurhash32.h"
+
 // Includes
 
 #include "optional.h"
 #include "utils/template/is_callable.h"
 #include "utils/misc/pnew.h"
+#include "bytewise/buffer.h"
 
 namespace data
 {
@@ -83,6 +86,7 @@ namespace data
 
         template <typename type, std :: enable_if_t <std :: is_arithmetic <type> :: value && sizeof(type) == 4> * = nullptr> static size_t hash(const type &);
         template <typename type, std :: enable_if_t <std :: is_arithmetic <type> :: value && sizeof(type) == 8> * = nullptr> static size_t hash(const type &);
+        static size_t hash(const bytewise :: buffer &);
     };
 };
 

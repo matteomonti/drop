@@ -67,6 +67,8 @@ namespace bytewise
         buffer & operator = (const buffer &);
         buffer & operator = (buffer &&);
 
+        bool operator == (const buffer &) const;
+
         // Casting
 
         operator char * ();
