@@ -60,6 +60,10 @@ namespace data
 
         ~hashtable();
 
+        // Getters
+
+        const size_t & size() const;
+
         // Methods
 
         void add(const ktype &, const vtype &);

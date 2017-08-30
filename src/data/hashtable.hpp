@@ -28,6 +28,13 @@ namespace data
         utils :: pdelete(this->_entries, this->_alloc);
     }
 
+    // Getters
+
+    template <typename ktype, typename vtype> const size_t & hashtable <ktype, vtype> :: size() const
+    {
+        return this->_size;
+    }
+
     // Methods
 
     template <typename ktype, typename vtype> void hashtable <ktype, vtype> :: add(const ktype & key, const vtype & value)
