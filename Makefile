@@ -1,3 +1,4 @@
+LIBDIR := lib
 SRCDIR := src
 TESTDIR := test
 
@@ -9,6 +10,8 @@ SOBJDIR := obj/src
 SDEPDIR := dep/src
 TOBJDIR := obj/test
 TDEPDIR := dep/test
+LOBJDIR := obj/lib
+LDEPDIR := dep/lib
 
 TESTEXEC := test.out
 MAINEXEC := main.out
@@ -23,10 +26,16 @@ TOBJS := $(TESTS:$(TESTDIR)/%.cpp=$(TOBJDIR)/%.o)
 TDEPS := $(TESTS:$(TESTDIR)/%.cpp=$(TDEPDIR)/%.d)
 TTREE := $(patsubst %/,%,$(dir $(TOBJS)))
 
+LIBS := $(shell find $(LIBDIR) -name "*.cpp")
+LOBJS := $(LIBS:$(LIBDIR)/%.cpp=$(LOBJDIR)/%.o)
+LDEPS := $(LIBS:$(LIBDIR)/%.cpp=$(LDEPDIR)/%.d)
+LTREE := $(patsubst %/,%,$(dir $(LOBJS)))
+
 SCPPFLAGS  = -MMD -MP -MF $(@:$(SOBJDIR)/%.o=$(SDEPDIR)/%.d)
 TCPPFLAGS  = -MMD -MP -MF $(@:$(TOBJDIR)/%.o=$(TDEPDIR)/%.d)
+LCPPFLAGS  = -MMD -MP -MF $(@:$(LOBJDIR)/%.o=$(LDEPDIR)/%.d)
 
-BCXXFLAGS = -I$(SRCDIR) -I$(TESTDIR) -O3 -std=c++1z -stdlib=libc++
+BCXXFLAGS = -I$(SRCDIR) -I$(TESTDIR) -I$(LIBDIR) -O3 -std=c++1z -stdlib=libc++
 LINKERFLAGS = -stdlib=libc++ -pthread
 
 all: CXXFLAGS = $(BCXXFLAGS) -D __main__
@@ -53,6 +62,9 @@ $(SOBJDIR)/%.o: $(SRCDIR)/%.cpp | $$(@D)
 $(TOBJDIR)/%.o: $(TESTDIR)/%.cpp | $$(@D)
 	$(CXX) $(TCPPFLAGS) $(CXXFLAGS) -o $@ -c $<
 
+$(LOBJDIR)/%.o: $(LIBDIR)/%.cpp | $$(@D)
+	$(CXX) $(LCPPFLAGS) $(CXXFLAGS) -o $@ -c $<
+
 $(BINDIR):
 	mkdir -p $(BINDIR)
 
@@ -64,12 +76,17 @@ $(TTREE): %:
 	mkdir -p $@
 	mkdir -p $(@:$(TOBJDIR)%=$(TDEPDIR)%)
 
-$(BINDIR)/$(TESTEXEC): $(SOBJS) $(TOBJS) $(BINDIR)
-	$(CXX) -o $(BINDIR)/$(TESTEXEC) $(SOBJS) $(TOBJS)
+$(LTREE): %:
+	mkdir -p $@
+	mkdir -p $(@:$(LOBJDIR)%=$(LDEPDIR)%)
 
-$(BINDIR)/$(MAINEXEC): $(SOBJS) $(BINDIR)
-	$(CXX) $(LINKERFLAGS) -o $(BINDIR)/$(MAINEXEC) $(SOBJS)
+$(BINDIR)/$(TESTEXEC): $(SOBJS) $(TOBJS) $(LOBJS) $(BINDIR)
+	$(CXX) $(LINKERFLAGS) -o $(BINDIR)/$(TESTEXEC) $(SOBJS) $(TOBJS) $(LOBJS)
+
+$(BINDIR)/$(MAINEXEC): $(SOBJS) $(LOBJS) $(BINDIR)
+	$(CXX) $(LINKERFLAGS) -o $(BINDIR)/$(MAINEXEC) $(SOBJS) $(LOBJS)
 ifeq "$(MAKECMDGOALS)" ""
 -include $(SDEPS)
 -include $(TDEPS)
+-include $(LDEPS)
 endif
