@@ -1,3 +1,7 @@
+// Forward declarations includes
+
+#include "types.h"
+
 // Forward declarations
 
 namespace network
@@ -5,7 +9,7 @@ namespace network
     namespace dns
     {
         class record_base;
-        template <typename> class record;
+        template <qtype> class record;
     };
 };
 
@@ -30,7 +34,7 @@ namespace network :: dns
     {
         // Friends
 
-        template <typename> friend class record;
+        template <qtype> friend class record;
 
         // Members
 

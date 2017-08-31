@@ -9,18 +9,18 @@ namespace network :: dns
 {
     // Constructors
 
-    template <typename type> query <type> :: query(const class name & name, const enum qclass & qclass) : _name(name), _qclass(qclass)
+    template <qtype type> query <type> :: query(const class name & name, const enum qclass & qclass) : _name(name), _qclass(qclass)
     {
     }
 
     // Getters
 
-    template <typename type> const name & query <type> :: name() const
+    template <qtype type> const name & query <type> :: name() const
     {
         return this->_name;
     }
 
-    template <typename type> const enum qclass & query <type> :: qclass() const
+    template <qtype type> const enum qclass & query <type> :: qclass() const
     {
         return this->_qclass;
     }
