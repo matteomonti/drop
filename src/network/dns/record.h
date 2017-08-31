@@ -1,6 +1,6 @@
 // Forward declarations includes
 
-#include "types.h"
+#include "enums.h"
 
 // Forward declarations
 
@@ -22,7 +22,6 @@ namespace network
 
 // Includes
 
-#include "types.h"
 #include "name.h"
 #include "network/address.h"
 #include "bitmask.h"

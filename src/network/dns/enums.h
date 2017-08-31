@@ -7,8 +7,8 @@ namespace network
     };
 };
 
-#if !defined(__forward__) && !defined(__drop__network__dns__types__h)
-#define __drop__network__dns__types__h
+#if !defined(__forward__) && !defined(__drop__network__dns__enums__h)
+#define __drop__network__dns__enums__h
 
 namespace network :: dns
 {

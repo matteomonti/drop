@@ -1,6 +1,6 @@
 // Forward declarations includes
 
-#include "types.h"
+#include "enums.h"
 
 // Forward declarations
 
