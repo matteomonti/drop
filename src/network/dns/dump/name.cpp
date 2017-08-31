@@ -4,6 +4,8 @@
 
 namespace network :: dns :: dump
 {
+    // Functions
+    
     void name(char * message, size_t & wcursor, data :: hashtable <bytewise :: buffer, uint16_t> & shortcuts, const :: network :: dns :: name & name)
     {
         bool compress = shortcuts.size();

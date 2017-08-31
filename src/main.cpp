@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "network/dns/dump/query.hpp"
+#include "network/dns/dump/record.hpp"
 
 void print(char * message, const size_t & cursor)
 {
@@ -24,9 +24,9 @@ int main()
     size_t cursor = 0;
     data :: hashtable <bytewise :: buffer, uint16_t> shortcuts;
 
-    network :: dns :: query <network :: dns :: A> my_query("google.it", network :: dns :: internet);
+    network :: dns :: record <network :: dns :: A> my_record("google.it", network :: dns :: internet, 3600, network :: address("8.8.8.8", 0).ip());
+    network :: dns :: dump :: record(message, cursor, shortcuts, my_record);
 
-    network :: dns :: dump :: query(message, cursor, shortcuts, my_query);
     print(message, cursor);
 }
 

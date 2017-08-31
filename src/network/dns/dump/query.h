@@ -16,7 +16,6 @@ namespace network
 // Libraries
 
 #include <stdint.h>
-#include <string.h>
 #include <type_traits>
 
 // Includes
