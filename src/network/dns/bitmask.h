@@ -39,9 +39,17 @@ namespace network :: dns
 
         bitmask(const char *, const size_t &);
 
+        // Getters
+
+        const size_t & size() const;
+
         // Operators
 
         bool operator [] (const size_t &) const;
+
+        // Casting
+
+        operator const char * () const;
     };
 };
 

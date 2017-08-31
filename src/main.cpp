@@ -24,7 +24,8 @@ int main()
     size_t cursor = 0;
     data :: hashtable <bytewise :: buffer, uint16_t> shortcuts;
 
-    network :: dns :: record <network :: dns :: A> my_record("google.it", network :: dns :: internet, 3600, network :: address("8.8.8.8", 0).ip());
+    network :: dns :: string strings[] = {"asd", "lol", "lmfao"};
+    network :: dns :: record <network :: dns :: TXT> my_record("google.it", network :: dns :: internet, 3600, strings, 3);
     network :: dns :: dump :: record(message, cursor, shortcuts, my_record);
 
     print(message, cursor);
