@@ -156,6 +156,8 @@ namespace network :: dns
 
         // Methods
 
+        template <qtype rtype> void answer(const :: network :: dns :: record <rtype> &, const bool &);
+
         class dump dump() const;
     };
 };

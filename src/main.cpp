@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "network/dns/message.h"
+#include "network/dns/message.hpp"
 #include "network/sockets/udp.h"
 
 void print(char * message, const size_t & cursor)
@@ -26,8 +26,16 @@ int main()
     auto packet = socket.receive();
     network :: dns :: message message(packet.message(), packet.size());
 
-    auto dump = message.dump();
-    print(dump.message, dump.size);
+    auto query = message.queries[0];
+    query.visit([&](network :: dns :: query <network :: dns :: A> & query)
+    {
+        message.answer(network :: dns :: record <network :: dns :: A> (query.name(), network :: dns :: internet, 60, network :: address("127.0.0.1", 0).ip()), true);
+        auto dump = message.dump();
+
+        std :: cout << "Should send to " << packet.remote() << std :: endl << std :: endl;
+        print(dump.message, dump.size);
+        socket.send(packet.remote(), dump.message, dump.size);
+    });
 }
 
 #endif

@@ -148,6 +148,15 @@ namespace network :: dns
     {
         if(this->queries._size)
             utils :: pdelete(this->queries._queries, this->queries._size);
+
+        if(this->answers._size)
+            utils :: pdelete(this->answers._records, this->answers._size);
+
+        if(this->authorities._size)
+            utils :: pdelete(this->authorities._records, this->authorities._size);
+
+        if(this->extras._size)
+            utils :: pdelete(this->extras._records, this->extras._size);
     }
 
     // Getters
@@ -212,7 +221,6 @@ namespace network :: dns
         for(size_t i = 0; i < this->answers._size; i++)
             this->answers._records[i].visit([](const :: network :: dns :: record <null> &)
             {
-
             }, [&](auto && record)
             {
                 :: network :: dns :: dump :: record(dump.message, dump.size, shortcuts, record);
@@ -221,7 +229,6 @@ namespace network :: dns
         for(size_t i = 0; i < this->authorities._size; i++)
             this->authorities._records[i].visit([](const :: network :: dns :: record <null> &)
             {
-
             }, [&](auto && record)
             {
                 :: network :: dns :: dump :: record(dump.message, dump.size, shortcuts, record);
@@ -230,7 +237,6 @@ namespace network :: dns
         for(size_t i = 0; i < this->extras._size; i++)
             this->extras._records[i].visit([](const :: network :: dns :: record <null> &)
             {
-
             }, [&](auto && record)
             {
                 :: network :: dns :: dump :: record(dump.message, dump.size, shortcuts, record);
