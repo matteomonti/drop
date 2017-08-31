@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "network/dns/dump/string.h"
+#include "network/dns/dump/query.hpp"
 
 void print(char * message, const size_t & cursor)
 {
@@ -22,13 +22,11 @@ int main()
     char message[1024];
 
     size_t cursor = 0;
-    network :: dns :: dump :: string(message, cursor, "asd");
-    network :: dns :: dump :: string(message, cursor, "lol");
-    network :: dns :: dump :: string(message, cursor, "lmfao");
-    network :: dns :: dump :: string(message, cursor, "xd");
-    network :: dns :: dump :: string(message, cursor, "rotlmfao");
-    network :: dns :: dump :: string(message, cursor, "ghghgh");
+    data :: hashtable <bytewise :: buffer, uint16_t> shortcuts;
 
+    network :: dns :: query <network :: dns :: A> my_query("google.it", network :: dns :: internet);
+
+    network :: dns :: dump :: query(message, cursor, shortcuts, my_query);
     print(message, cursor);
 }
 
