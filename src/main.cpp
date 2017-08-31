@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-#include "network/dns/dump/record.hpp"
+#include "network/dns/message.h"
+#include "network/sockets/udp.h"
 
 void print(char * message, const size_t & cursor)
 {
@@ -19,16 +20,14 @@ void print(char * message, const size_t & cursor)
 
 int main()
 {
-    char message[1024];
+    network :: sockets :: udp socket;
+    socket.bind(1234);
 
-    size_t cursor = 0;
-    data :: hashtable <bytewise :: buffer, uint16_t> shortcuts;
+    auto packet = socket.receive();
+    network :: dns :: message message(packet.message(), packet.size());
 
-    network :: dns :: string strings[] = {"asd", "lol", "lmfao"};
-    network :: dns :: record <network :: dns :: TXT> my_record("google.it", network :: dns :: internet, 3600, strings, 3);
-    network :: dns :: dump :: record(message, cursor, shortcuts, my_record);
-
-    print(message, cursor);
+    auto dump = message.dump();
+    print(dump.message, dump.size);
 }
 
 #endif

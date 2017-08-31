@@ -23,8 +23,10 @@ namespace network
 #include "utils/misc/pnew.hpp"
 #include "query.hpp"
 #include "parse/query.h"
+#include "dump/query.hpp"
 #include "record.h"
 #include "parse/record.h"
+#include "dump/record.h"
 
 namespace network :: dns
 {
@@ -37,6 +39,14 @@ namespace network :: dns
         enum type {query, response};
         enum opcode {standard = 0, inverse = 1, status = 2};
         enum rescode {success = 0, format = 1, server = 2, name = 3, unimplemented = 4, refused = 5};
+
+        // Nested classes
+
+        struct dump
+        {
+            char message[512];
+            size_t size;
+        };
 
     private:
 
@@ -143,6 +153,10 @@ namespace network :: dns
         const bool & authoritative() const;
         const bool & truncated() const;
         const rescode & rescode() const;
+
+        // Methods
+
+        class dump dump() const;
     };
 };
 

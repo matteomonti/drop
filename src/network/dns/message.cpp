@@ -64,13 +64,13 @@ namespace network :: dns
 
         this->_id = ntohs(reinterpret_cast <const uint16_t &> (message[0]));
 
-        this->_type = (reinterpret_cast <const unsigned char &> (message[2]) & 0x80) ? response : query;
-        this->_opcode = static_cast <enum opcode> ((reinterpret_cast <const unsigned char &> (message[2]) >> 3) & 0x7);
-        this->_authoritative = reinterpret_cast <const unsigned char &> (message[2]) & 0x4;
-        this->_truncated = reinterpret_cast <const unsigned char &> (message[2]) & 0x2;
-        this->recursion._desired = reinterpret_cast <const unsigned char &> (message[2]) & 0x1;
-        this->recursion._available = reinterpret_cast <const unsigned char &> (message[3]) & 0x80;
-        this->_rescode = static_cast <enum rescode> (reinterpret_cast <const unsigned char &> (message[3]) & 0xf);
+        this->_type = (reinterpret_cast <const uint8_t &> (message[2]) & 0x80) ? response : query;
+        this->_opcode = static_cast <enum opcode> ((reinterpret_cast <const uint8_t &> (message[2]) >> 3) & 0x7);
+        this->_authoritative = reinterpret_cast <const uint8_t &> (message[2]) & 0x4;
+        this->_truncated = reinterpret_cast <const uint8_t &> (message[2]) & 0x2;
+        this->recursion._desired = reinterpret_cast <const uint8_t &> (message[2]) & 0x1;
+        this->recursion._available = reinterpret_cast <const uint8_t &> (message[3]) & 0x80;
+        this->_rescode = static_cast <enum rescode> (reinterpret_cast <const uint8_t &> (message[3]) & 0xf);
 
         size_t cursor = 12;
         this->queries._size = ntohs(reinterpret_cast <const uint16_t &> (message[4]));
@@ -180,5 +180,62 @@ namespace network :: dns
     const enum message :: rescode & message :: rescode() const
     {
         return this->_rescode;
+    }
+
+    // Methods
+
+    class message :: dump message :: dump() const
+    {
+        class dump dump;
+
+        reinterpret_cast <uint16_t &> (dump.message[0]) = htons(this->_id);
+        reinterpret_cast <uint8_t &> (dump.message[2]) = ((this->_type == response) ? 0x80 : 0x0) | (this->_opcode << 3) | ((this->_authoritative) ? 0x4 : 0x0) | ((this->_truncated) ? 0x2 : 0x0) | ((this->recursion._desired) ? 0x1 : 0x0);
+        reinterpret_cast <uint8_t &> (dump.message[3]) = ((this->recursion._available) ? 0x80 : 0x0) | this->_rescode;
+
+        reinterpret_cast <uint16_t &> (dump.message[4]) = htons(this->queries._size);
+        reinterpret_cast <uint16_t &> (dump.message[6]) = htons(this->answers._size);
+        reinterpret_cast <uint16_t &> (dump.message[8]) = htons(this->authorities._size);
+        reinterpret_cast <uint16_t &> (dump.message[10]) = htons(this->extras._size);
+
+        dump.size = 12;
+
+        data :: hashtable <bytewise :: buffer, uint16_t> shortcuts;
+
+        for(size_t i = 0; i < this->queries._size; i++)
+            this->queries._queries[i].visit([](const :: network :: dns :: query <null> &)
+            {
+            }, [&](auto && query)
+            {
+                :: network :: dns :: dump :: query(dump.message, dump.size, shortcuts, query);
+            });
+
+        for(size_t i = 0; i < this->answers._size; i++)
+            this->answers._records[i].visit([](const :: network :: dns :: record <null> &)
+            {
+
+            }, [&](auto && record)
+            {
+                :: network :: dns :: dump :: record(dump.message, dump.size, shortcuts, record);
+            });
+
+        for(size_t i = 0; i < this->authorities._size; i++)
+            this->authorities._records[i].visit([](const :: network :: dns :: record <null> &)
+            {
+
+            }, [&](auto && record)
+            {
+                :: network :: dns :: dump :: record(dump.message, dump.size, shortcuts, record);
+            });
+
+        for(size_t i = 0; i < this->extras._size; i++)
+            this->extras._records[i].visit([](const :: network :: dns :: record <null> &)
+            {
+
+            }, [&](auto && record)
+            {
+                :: network :: dns :: dump :: record(dump.message, dump.size, shortcuts, record);
+            });
+
+        return dump;
     }
 };
