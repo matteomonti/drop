@@ -26,8 +26,7 @@ int main()
     auto packet = socket.receive();
     network :: dns :: message message(packet.message(), packet.size());
 
-    auto query = message.queries[0];
-    query.visit([&](network :: dns :: query <network :: dns :: A> & query)
+    message.queries[0].visit([&](const network :: dns :: query <network :: dns :: A> & query)
     {
         message.answer(network :: dns :: record <network :: dns :: A> (query.name(), network :: dns :: internet, 60, network :: address("127.0.0.1", 0).ip()), true);
         auto dump = message.dump();
